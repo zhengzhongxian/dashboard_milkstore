@@ -1,0 +1,243 @@
+@model Dashboard_MilkStore.Models.Account.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "_LoginLayout";
+}
+
+<style>
+    .text-danger {
+        color: #f44336 !important;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        margin-bottom: 0.75rem;
+        display: block;
+        font-weight: 500;
+        max-height: 1.5em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        position: relative;
+        cursor: help;
+    }
+
+    .tooltip {
+        font-family: 'Poppins', sans-serif;
+        opacity: 1 !important;
+    }
+
+    .tooltip .tooltip-inner {
+        background-color: rgba(229, 57, 53, 0.95);
+        padding: 0.75rem 1rem;
+        max-width: 300px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        border-radius: 6px;
+        text-align: left;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .tooltip .tooltip-arrow::before {
+        border-bottom-color: rgba(229, 57, 53, 0.95);
+    }
+
+    .validation-summary {
+        background-color: rgba(229, 57, 53, 0.05);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        border-left: 3px solid #f44336;
+        box-shadow: 0 4px 15px rgba(229, 57, 53, 0.08);
+    }
+
+    .validation-summary ul {
+        margin-bottom: 0;
+        padding-left: 1.25rem;
+    }
+
+    .validation-summary-errors {
+        color: #f44336;
+        font-weight: 500;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .alert-danger {
+        background-color: rgba(229, 57, 53, 0.08);
+        color: #f44336;
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        font-weight: 500;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(229, 57, 53, 0.1);
+        border-left: 3px solid #f44336;
+    }
+
+    .alert-danger i {
+        color: #f44336;
+        font-size: 1.1rem;
+        margin-right: 0.75rem;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card animate__animated animate__fadeIn animate__faster">
+        <div class="login-header">
+            <h4>Trang quản trị viên</h4>
+            <div class="logo-container">
+                <i class="bi bi-cup-hot-fill"></i>
+                <h2>MilkStore</h2>
+            </div>
+        </div>
+
+        <div class="login-body">
+            <div class="logo-container-mobile">
+                <i class="bi bi-cup-hot-fill"></i>
+                <h2>MilkStore</h2>
+            </div>
+            <h3 class="mb-4 fw-bold">Đăng nhập</h3>
+
+            <form asp-action="Login" method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <div class="form-group mb-4">
+                    <label asp-for="Username" class="form-label">Tên đăng nhập</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                        <input asp-for="Username" class="form-control" placeholder="Nhập tên đăng nhập" autocomplete="username" />
+                    </div>
+                    <span asp-validation-for="Username" class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Password" class="form-label">Mật khẩu</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                        <input asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" autocomplete="current-password" />
+                        <button type="button" class="btn toggle-password">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input asp-for="RememberMe" class="form-check-input" id="rememberMe" />
+                            <label asp-for="RememberMe" class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
+                        </div>
+                        <a href="#" class="text-decoration-none">Quên mật khẩu?</a>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert alert-danger animate__animated animate__fadeIn mb-4">
+                        <i class="fas fa-exclamation-circle"></i>
+                        @Model.ErrorMessage
+                    </div>
+                }
+
+                <div asp-validation-summary="ModelOnly" class="text-danger validation-summary mb-4 validation-summary-valid" data-valmsg-summary="true" id="validationSummary"></div>
+
+                <div class="form-group mb-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="mb-0 text-muted small">© 2025 MilkStore Dashboard</p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Toggle password visibility
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.querySelector('#Password');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+
+        // Focus first input field and setup validation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Focus username field
+            document.querySelector('#Username').focus();
+
+            // Add animation to validation messages
+            $('form').on('submit', function() {
+                if (!$(this).valid()) {
+                    // Show validation summary only if there are errors
+                    if ($('.field-validation-error').length > 0) {
+                        $('#validationSummary').removeClass('validation-summary-valid');
+                        $('#validationSummary').addClass('animate__animated animate__shakeX');
+                        setTimeout(function() {
+                            $('#validationSummary').removeClass('animate__shakeX');
+                        }, 1000);
+                    }
+                    return false;
+                }
+                return true;
+            });
+
+            // Highlight input fields with errors
+            $('input.input-validation-error').closest('.input-group').addClass('border-danger');
+
+            // Remove error highlighting when user starts typing
+            $('input').on('keyup', function() {
+                $(this).closest('.input-group').removeClass('border-danger');
+            });
+
+            // Handle validation errors display
+            if ($('.field-validation-error').length > 0) {
+                $('#validationSummary').removeClass('validation-summary-valid');
+            }
+
+            // Xử lý thông báo lỗi dài
+            $('.text-danger, span.field-validation-error').each(function() {
+                var $this = $(this);
+                var text = $this.text();
+
+                // Thêm tooltip cho tất cả thông báo lỗi
+                $this.attr('title', text);
+                $this.attr('data-bs-toggle', 'tooltip');
+                $this.attr('data-bs-placement', 'bottom');
+
+                // Khởi tạo tooltip với các tùy chọn
+                var tooltip = new bootstrap.Tooltip($this[0], {
+                    template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner" style="max-width: 300px; text-align: left;"></div></div>'
+                });
+
+                // Thêm sự kiện click để hiển thị/ẩn tooltip
+                $this.on('click', function(e) {
+                    e.preventDefault();
+                    $(this).tooltip('toggle');
+                });
+            });
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

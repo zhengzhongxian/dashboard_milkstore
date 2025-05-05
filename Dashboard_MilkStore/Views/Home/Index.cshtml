@@ -1,0 +1,533 @@
+﻿@model Dashboard_MilkStore.Models.Home.HomeViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/statistics.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<div class="container-fluid">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="dashboard-title-container">
+            <div class="dashboard-icon">
+                <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <div class="dashboard-title-content">
+                <h1 class="dashboard-title">Dashboard <span style="color: #4cc9f0;">Analytics</span></h1>
+                <p class="dashboard-subtitle">Tổng quan về doanh thu và hoạt động kinh doanh</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row equal-height-cards">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="stat-card bg-info">
+                <div class="stat-card-inner">
+                    <h2 class="stat-value">@(Model.YearlyRevenue?.TotalRevenue.ToString("N0") ?? "0")</h2>
+                    <p class="stat-label">Tổng doanh thu năm @Model.CurrentYear</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="stat-card bg-success">
+                <div class="stat-card-inner">
+                    <h2 class="stat-value">@(Model.YearlyRevenue?.MonthlyRevenues?.Count(m => m.Revenue > 0) ?? 0)</h2>
+                    <p class="stat-label">Tháng có doanh thu</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="stat-card bg-warning">
+                <div class="stat-card-inner">
+                    @{
+                        var maxRevenueMonth = Model.YearlyRevenue?.MonthlyRevenues?.OrderByDescending(m => m.Revenue).FirstOrDefault();
+                    }
+                    <h2 class="stat-value">@(maxRevenueMonth?.MonthName ?? "N/A")</h2>
+                    <p class="stat-label">Tháng doanh thu cao nhất</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="stat-card bg-danger">
+                <div class="stat-card-inner">
+                    @{
+                        var avgRevenue = Model.YearlyRevenue?.MonthlyRevenues?.Where(m => m.Revenue > 0)?.Average(m => m.Revenue) ?? 0;
+                    }
+                    <h2 class="stat-value">@avgRevenue.ToString("N0")</h2>
+                    <p class="stat-label">Doanh thu trung bình/tháng</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Charts -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="statistic-title">
+                        <div class="statistic-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <span class="statistic-main">Doanh thu theo tháng năm</span>
+                        <span class="statistic-sub">@Model.CurrentYear</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <h4 class="chart-title">Biểu đồ cột doanh thu</h4>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trend Chart -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="statistic-title">
+                        <div class="statistic-icon" style="color: #00c6fb;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="statistic-main">Doanh thu tích lũy</span>
+                        <span class="statistic-sub" style="color: #00c6fb;">@Model.CurrentYear</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <h4 class="chart-title" style="color: #005bea; font-weight: 700;">Biểu đồ doanh thu tích lũy</h4>
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/chart-responsive.js"></script>
+    <script>
+        // Dữ liệu doanh thu từ Model
+        const monthlyRevenue = [
+            @foreach (var item in Model.YearlyRevenue?.MonthlyRevenues ?? new List<Dashboard_MilkStore.Models.Statistics.MonthlyRevenueViewModel>())
+            {
+                <text>
+                {
+                    month: @item.Month,
+                    monthName: "@item.MonthName",
+                    revenue: @Html.Raw(item.Revenue.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                },
+                </text>
+            }
+        ];
+
+        const currentYear = @Model.CurrentYear;
+
+        // Hàm để làm sáng màu
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16),
+                amt = Math.round(2.55 * percent),
+                R = (num >> 16) + amt,
+                G = (num >> 8 & 0x00FF) + amt,
+                B = (num & 0x0000FF) + amt;
+            return "#" + (
+                0x1000000 +
+                (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+                (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+                (B < 255 ? (B < 1 ? 0 : B) : 255)
+            ).toString(16).slice(1);
+        }
+
+        // Hàm để làm tối màu
+        function darkenColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16),
+                amt = Math.round(2.55 * percent),
+                R = (num >> 16) - amt,
+                G = (num >> 8 & 0x00FF) - amt,
+                B = (num & 0x0000FF) - amt;
+            return "#" + (
+                0x1000000 +
+                (R > 0 ? (R > 255 ? 255 : R) : 0) * 0x10000 +
+                (G > 0 ? (G > 255 ? 255 : G) : 0) * 0x100 +
+                (B > 0 ? (B > 255 ? 255 : B) : 0)
+            ).toString(16).slice(1);
+        }
+
+        // Cấu hình chung cho biểu đồ
+        function getCommonChartOptions(title) {
+            return {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: window.innerWidth < 768 ? 1.5 : 2,
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart',
+                    delay: function(context) {
+                        // Tạo hiệu ứng xuất hiện lần lượt cho các cột
+                        return context.dataIndex * 50;
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 16,
+                                family: "'Segoe UI', 'Roboto', sans-serif",
+                                weight: 'bold'
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            color: '#333'
+                        }
+                    },
+                    title: {
+                        display: false // Đã có tiêu đề bên ngoài
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        titleColor: '#333',
+                        bodyColor: '#333',
+                        titleFont: {
+                            size: 16,
+                            weight: 'bold',
+                            family: "'Inter', sans-serif"
+                        },
+                        bodyFont: {
+                            size: 14,
+                            family: "'Inter', sans-serif"
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 14,
+                                family: "'Segoe UI', 'Roboto', sans-serif",
+                                weight: 'bold'
+                            },
+                            padding: 12,
+                            color: '#333',
+                            callback: function(value) {
+                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 14,
+                                family: "'Segoe UI', 'Roboto', sans-serif",
+                                weight: 'bold'
+                            },
+                            padding: 12,
+                            color: '#333'
+                        }
+                    }
+                }
+            };
+        }
+
+        // Vẽ biểu đồ doanh thu
+        function renderCharts() {
+            let labels = [];
+            let data = [];
+
+            for (let month = 1; month <= 12; month++) {
+                const monthStr = month.toString().padStart(2, '0');
+                labels.push(`Tháng ${monthStr}`);
+                data.push(0);
+            }
+
+            monthlyRevenue.forEach(item => {
+                const index = item.month - 1;
+                data[index] = item.revenue;
+            });
+
+            // Màu gradient hiện đại
+            const colorPairs = [
+                { start: '#0061ff', end: '#60efff' }, // Modern Blue
+                { start: '#ff0f7b', end: '#f89b29' }, // Sunset
+                { start: '#00b09b', end: '#96c93d' }, // Green Gradient
+                { start: '#8e2de2', end: '#4a00e0' }, // Vibrant Purple
+                { start: '#fc4a1a', end: '#f7b733' }, // Orange to Yellow
+                { start: '#00c6fb', end: '#005bea' }, // Sky Blue
+                { start: '#5f2c82', end: '#49a09d' }, // Purple to Teal
+                { start: '#4facfe', end: '#00f2fe' }, // Electric Blue
+                { start: '#667eea', end: '#764ba2' }, // Indigo to Purple
+                { start: '#ff758c', end: '#ff7eb3' }, // Coral to Pink
+                { start: '#06beb6', end: '#48b1bf' }, // Teal to Blue
+                { start: '#eb3349', end: '#f45c43' }  // Red to Orange
+            ];
+
+            // Vẽ biểu đồ cột
+            renderBarChart(labels, data, colorPairs);
+
+            // Vẽ biểu đồ đường
+            renderTrendChart(labels, data);
+
+            // Thêm hiệu ứng animation cho các thẻ
+            document.querySelectorAll('.stat-card').forEach((box, index) => {
+                box.style.animation = `fadeIn 0.5s ease ${index * 0.1}s forwards`;
+                box.style.opacity = 0;
+            });
+
+            // Thêm hiệu ứng hover cho biểu đồ
+            document.querySelectorAll('.chart-container').forEach(container => {
+                container.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    // Tạo hiệu ứng ánh sáng theo vị trí chuột
+                    this.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%), white`;
+                });
+
+                container.addEventListener('mouseleave', function() {
+                    this.style.background = '#ffffff';
+                });
+            });
+        }
+
+        // Vẽ biểu đồ cột
+        function renderBarChart(labels, data, colorPairs) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+
+            // Tạo gradient cho từng cột
+            const backgroundColors = [];
+            const borderColors = [];
+            const hoverBackgroundColors = [];
+            const hoverBorderColors = [];
+
+            for (let i = 0; i < 12; i++) {
+                const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, colorPairs[i].start);
+                gradient.addColorStop(1, colorPairs[i].end);
+                backgroundColors.push(gradient);
+                borderColors.push(colorPairs[i].start);
+
+                // Tạo gradient ngược cho hover effect
+                const hoverGradient = ctx.createLinearGradient(0, 0, 0, 300);
+                hoverGradient.addColorStop(0, colorPairs[i].end);
+                hoverGradient.addColorStop(1, colorPairs[i].start);
+                hoverBackgroundColors.push(hoverGradient);
+                hoverBorderColors.push(lightenColor(colorPairs[i].start, 30));
+            }
+
+            const barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doanh thu tháng',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        hoverBackgroundColor: hoverBackgroundColors,
+                        hoverBorderColor: hoverBorderColors,
+                        hoverBorderWidth: 2,
+                        barPercentage: 0.8,
+                        categoryPercentage: 0.9,
+                        // Thêm hiệu ứng transition
+                        transition: {
+                            duration: 0.4
+                        }
+                    }]
+                },
+                options: getCommonChartOptions('Biểu đồ cột doanh thu')
+            });
+
+            // Thông báo biểu đồ đã được tạo
+            document.dispatchEvent(new CustomEvent('chartCreated', {
+                detail: { chart: barChart }
+            }));
+        }
+
+        // Vẽ biểu đồ đường doanh thu tích lũy
+        function renderTrendChart(labels, data) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+
+            // Tính toán dữ liệu tích lũy
+            const cumulativeData = [];
+            let cumulative = 0;
+
+            for (let i = 0; i < data.length; i++) {
+                cumulative += data[i];
+                cumulativeData.push(cumulative);
+            }
+
+            // Tạo màu gradient cho line chart - màu xanh lá đến xanh dương
+            const lineGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            lineGradient.addColorStop(0, '#00c6fb');
+            lineGradient.addColorStop(0.5, '#005bea');
+            lineGradient.addColorStop(1, '#4cc9f0');
+
+            // Tạo màu gradient cho area fill - màu xanh dương mờ dần
+            const areaGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            areaGradient.addColorStop(0, 'rgba(0, 198, 251, 0.7)');
+            areaGradient.addColorStop(0.5, 'rgba(0, 91, 234, 0.4)');
+            areaGradient.addColorStop(1, 'rgba(76, 201, 240, 0.0)');
+
+            const lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doanh thu tích lũy',
+                        data: cumulativeData,
+                        borderColor: lineGradient,
+                        backgroundColor: areaGradient,
+                        pointBackgroundColor: '#00c6fb',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#005bea',
+                        pointRadius: 7,
+                        pointHoverRadius: 10,
+                        borderWidth: 4,
+                        fill: true,
+                        tension: 0.3, // Đường cong mượt mà nhưng không quá cong
+                        borderJoinStyle: 'round',
+                        borderCapStyle: 'round',
+                        // Thêm hiệu ứng shadow cho đường
+                        shadowColor: 'rgba(0, 198, 251, 0.5)',
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 4,
+                        // Thêm hiệu ứng animation
+                        animation: {
+                            delay: function(context) {
+                                return context.dataIndex * 50;
+                            }
+                        }
+                    }]
+                },
+                options: {
+                    ...getCommonChartOptions('Biểu đồ doanh thu tích lũy'),
+                    plugins: {
+                        ...getCommonChartOptions('').plugins,
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 16,
+                                    family: "'Segoe UI', 'Roboto', sans-serif",
+                                    weight: 'bold'
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                color: '#333'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#005bea',
+                            bodyColor: '#333',
+                            titleFont: {
+                                size: 16,
+                                weight: 'bold',
+                                family: "'Segoe UI', 'Roboto', sans-serif"
+                            },
+                            bodyFont: {
+                                size: 14,
+                                family: "'Segoe UI', 'Roboto', sans-serif"
+                            },
+                            padding: 15,
+                            cornerRadius: 10,
+                            displayColors: true,
+                            borderColor: '#ddd',
+                            borderWidth: 1,
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.3
+                        },
+                        point: {
+                            radius: 7,
+                            hoverRadius: 10,
+                            backgroundColor: '#00c6fb',
+                            borderColor: '#fff',
+                            borderWidth: 2,
+                            hoverBorderWidth: 3
+                        }
+                    }
+                }
+            });
+
+            // Thông báo biểu đồ đã được tạo
+            document.dispatchEvent(new CustomEvent('chartCreated', {
+                detail: { chart: lineChart }
+            }));
+        }
+
+        // Gọi hàm vẽ biểu đồ khi trang đã tải xong
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCharts();
+        });
+    </script>
+}

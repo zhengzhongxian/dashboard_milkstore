@@ -1,0 +1,398 @@
+/* Dashboard Header Styles */
+.dashboard-header {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #4cc9f0;
+}
+
+.dashboard-title-container {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-icon {
+  font-size: 1.8rem;
+  color: #4cc9f0;
+  margin-right: 1rem;
+  background: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(76, 201, 240, 0.3);
+}
+
+.dashboard-title-content {
+  flex: 1;
+}
+
+.dashboard-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: #2d3748;
+  font-family: "Segoe UI", "Roboto", sans-serif;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.dashboard-subtitle {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 0;
+  font-family: "Segoe UI", "Roboto", sans-serif;
+  font-weight: 400;
+}
+
+/* Statistic Cards Styles */
+.equal-height-cards {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px; /* Giảm khoảng cách dưới */
+}
+
+.equal-height-cards > div {
+  display: flex;
+  margin-bottom: 15px; /* Giảm khoảng cách giữa các hàng */
+  padding: 0 7px; /* Thêm padding ngang để điều chỉnh khoảng cách giữa các cột */
+}
+
+.stat-card {
+  width: 100%;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 120px; /* Giảm chiều cao tối thiểu */
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card-inner {
+  padding: 15px;
+  z-index: 2;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+  font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+.stat-label {
+  font-size: 0.95rem;
+  margin: 0;
+  font-family: "Segoe UI", "Roboto", sans-serif;
+  font-weight: 500;
+}
+
+.stat-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 24px;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.stat-card:hover .stat-icon {
+  opacity: 0.5;
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* Background Colors for Stat Cards */
+.bg-info {
+  background: linear-gradient(135deg, #4cc9f0, #4895ef) !important;
+  color: white;
+}
+
+.bg-success {
+  background: linear-gradient(135deg, #4cc9f0, #4361ee) !important;
+  color: white;
+}
+
+.bg-warning {
+  background: linear-gradient(135deg, #f72585, #b5179e) !important;
+  color: white;
+}
+
+.bg-danger {
+  background: linear-gradient(135deg, #7209b7, #3a0ca3) !important;
+  color: white;
+}
+
+/* Chart Container Styles */
+.chart-container {
+  position: relative;
+  width: 100%;
+  min-height: 400px; /* Giảm chiều cao tối thiểu */
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  overflow: hidden; /* Đảm bảo nội dung không tràn ra ngoài */
+}
+
+.chart-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  text-align: center;
+  font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+.chart-container:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+/* Hover effect for chart bars */
+canvas {
+  transition: all 0.3s ease;
+  max-width: 100%; /* Đảm bảo canvas không vượt quá container */
+  height: auto !important; /* Cho phép chiều cao tự điều chỉnh */
+}
+
+/* Đảm bảo biểu đồ responsive */
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Statistic Title Styles */
+.statistic-title {
+  font-family: "Segoe UI", "Roboto", sans-serif;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  position: relative;
+  padding-left: 10px;
+  justify-content: flex-start;
+}
+
+.statistic-icon {
+  font-size: 2rem;
+  color: #5b70e2;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.statistic-main {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.statistic-sub {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #5b70e2;
+  position: relative;
+  margin-left: 5px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover effect for chart bars */
+.chart-container canvas {
+  transition: all 0.3s ease;
+}
+
+.chart-container:hover canvas {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+}
+
+@media (max-width: 768px) {
+  .statistic-title {
+    font-size: 1.5rem;
+  }
+
+  .chart-container {
+    min-height: 250px;
+    height: auto;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .chart-title {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-header {
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.4rem;
+    margin-right: 0.8rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .stat-card {
+    min-height: 100px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+  }
+
+  .stat-icon {
+    font-size: 20px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .equal-height-cards > div {
+    margin-bottom: 10px;
+  }
+}
+
+/* Thêm media query cho màn hình nhỏ hơn */
+@media (max-width: 576px) {
+  .dashboard-header {
+    padding: 0.7rem;
+  }
+
+  .dashboard-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .stat-card-inner {
+    padding: 12px;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .chart-container {
+    min-height: 180px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .chart-title {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+
+  /* Điều chỉnh kích thước font cho các nhãn trong biểu đồ */
+  canvas {
+    font-size: 10px;
+  }
+}
+
+/* Xử lý màn hình rất nhỏ */
+@media (max-width: 400px) {
+  .dashboard-header {
+    padding: 0.6rem;
+  }
+
+  .dashboard-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    margin-right: 0.6rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.1rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .stat-card {
+    min-height: 90px;
+  }
+
+  .stat-card-inner {
+    padding: 10px;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+    margin-bottom: 3px;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .chart-container {
+    min-height: 150px;
+    padding: 10px;
+  }
+
+  .chart-title {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+  }
+
+  /* Ẩn một số phần tử không cần thiết trên màn hình rất nhỏ */
+  .statistic-icon {
+    display: none;
+  }
+}

@@ -1,0 +1,645 @@
+﻿@model Dashboard_MilkStore.Models.Product.ProductResponse
+@{
+    ViewData["Title"] = "Quản lý Sản phẩm Sữa";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-cup-hot fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Kho Sữa</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Quản lý sản phẩm và tồn kho</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Create", "Product")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 add-button fireworks-btn">
+            <i class="bi bi-plus-circle me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Thêm Sản phẩm</span>
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Product Table -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="search-container mb-3 p-3 border-bottom">
+                <div class="dataTables_filter">
+                    <input type="search" class="form-control form-control-sm rounded-pill" placeholder="Tìm kiếm sản phẩm..." aria-controls="productsTable">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="productsTable" class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="bg-primary text-white">
+                            <th class="px-4" style="width: 120px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-upc-scan me-2"></i>
+                                    <span>Mã SP</span>
+                                </div>
+                            </th>
+                            <th style="width: 150px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-image me-2"></i>
+                                    <span>Hình ảnh</span>
+                                </div>
+                            </th>
+                            <th style="width: 250px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-box-seam me-2"></i>
+                                    <span>Tên Sản phẩm</span>
+                                </div>
+                            </th>
+                            <th style="width: 150px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-tags me-2"></i>
+                                    <span>Thương hiệu</span>
+                                </div>
+                            </th>
+                            <th class="d-none d-lg-table-cell" style="width: 200px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-card-text me-2"></i>
+                                    <span>Mô tả</span>
+                                </div>
+                            </th>
+                            <th style="width: 150px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-currency-dollar me-2"></i>
+                                    <span>Giá gốc</span>
+                                </div>
+                            </th>
+                            <th style="width: 150px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-tag me-2"></i>
+                                    <span>Giá khuyến mãi</span>
+                                </div>
+                            </th>
+                            <th style="width: 120px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-percent me-2"></i>
+                                    <span>Giảm giá</span>
+                                </div>
+                            </th>
+                            <th style="width: 120px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-boxes me-2"></i>
+                                    <span>Tồn kho</span>
+                                </div>
+                            </th>
+                            <th style="width: 120px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-power me-2"></i>
+                                    <span>Trạng thái</span>
+                                </div>
+                            </th>
+                            <th class="pe-4" style="width: 150px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-gear me-2"></i>
+                                    <span>Thao tác</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Items != null)
+                        {
+                            @foreach (var product in Model.Items)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">#@product.ProductId</td>
+                                    <td>
+                                        <div class="product-image-container">
+                                            @if (product.ImageDTOs != null && product.ImageDTOs.Any())
+                                            {
+                                                var firstImage = product.ImageDTOs.Where(i => i.Order == "1").FirstOrDefault();
+                                                if (firstImage != null && !string.IsNullOrEmpty(firstImage.ImageData))
+                                                {
+                                                    <img src="@firstImage.ImageData"
+                                                         alt="@product.ProductName"
+                                                         class="product-image" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="no-image">
+                                                        <i class="bi bi-image text-muted"></i>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="no-image">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <div class="fw-medium">@product.ProductName</div>
+                                                <small class="text-muted d-block d-lg-none text-truncate" style="max-width: 150px;">
+                                                    <i class="bi bi-card-text me-1"></i>@product.Description
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill bg-light text-dark">
+                                            <i class="bi bi-tag-fill me-1 text-warning"></i>@product.Brand
+                                        </span>
+                                    </td>
+                                    <td class="d-none d-lg-table-cell text-muted text-truncate" style="max-width: 200px;">
+                                        @product.Description
+                                    </td>
+                                    <td class="text-end fw-bold" style="color: #64748b;">
+                                        @(product.PriceDefault?.ToString("N0"))đ
+                                    </td>
+                                    <td class="text-end fw-bold" style="color: #00a86b;">
+                                        @if (product.PriceActive.HasValue)
+                                        {
+                                            @(product.PriceActive.Value.ToString("N0"))
+                                            <span>đ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (product.PriceActive.HasValue && product.PriceDefault.HasValue)
+                                        {
+                                            var discountPercent = ((product.PriceDefault.Value - product.PriceActive.Value) / product.PriceDefault.Value * 100);
+                                            if (discountPercent > 0)
+                                            {
+                                                <span class="badge bg-danger bg-opacity-10 text-danger">
+                                                    <i class="bi bi-arrow-down me-1"></i>@(discountPercent.ToString("N1"))%
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill @GetStockBadgeClass(product.StockQuantity)">
+                                            <i class="bi @GetStockIcon(product.StockQuantity) me-1"></i>
+                                            @product.StockQuantity
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill @(product.StatusName == "Active" ? "bg-success bg-opacity-10 text-success" : "bg-danger bg-opacity-10 text-danger")">
+                                            <i class="bi @(product.StatusName == "Active" ? "bi-check-circle" : "bi-x-circle") me-1"></i>
+                                            @product.StatusName
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a href="@Url.Action("Edit", "Product", new { id = product.ProductId })" class="btn btn-sm btn-outline-primary rounded-pill fireworks-btn" title="Sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", "Product", new { id = product.ProductId })" class="btn btn-sm btn-outline-danger rounded-pill fireworks-btn" title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-info rounded-pill btn-quick-view fireworks-btn"
+                                                    title="Xem nhanh"
+                                                    data-product-id="@product.ProductId">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy sản phẩm
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model?.Metadata != null)
+            {
+                <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                    <div class="text-muted">
+                        <i class="bi bi-list-check me-1"></i>
+                        Hiển thị @((Model.Metadata.PageNumber - 1) * Model.Metadata.PageSize + 1) đến
+                        @Math.Min(Model.Metadata.PageNumber * Model.Metadata.PageSize, Model.Metadata.TotalCount) trong
+                        @Model.Metadata.TotalCount sản phẩm
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(Model.Metadata.HasPrevious ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("Index", new { pageNumber = Model.Metadata.PageNumber - 1, pageSize = Model.Metadata.PageSize })">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= Model.Metadata.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
+                                    <a class="page-link border-0" href="@Url.Action("Index", new { pageNumber = i, pageSize = Model.Metadata.PageSize })">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.Metadata.HasNext ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("Index", new { pageNumber = Model.Metadata.PageNumber + 1, pageSize = Model.Metadata.PageSize })">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStockBadgeClass(int stock)
+    {
+        if (stock > 20) return "bg-success bg-opacity-10 text-success";
+        if (stock > 10) return "bg-info bg-opacity-10 text-info";
+        if (stock > 0) return "bg-warning bg-opacity-10 text-warning";
+        return "bg-danger bg-opacity-10 text-danger";
+    }
+
+    public string GetStockIcon(int stock)
+    {
+        if (stock > 20) return "bi-check-circle-fill";
+        if (stock > 10) return "bi-exclamation-circle-fill";
+        if (stock > 0) return "bi-exclamation-triangle-fill";
+        return "bi-x-circle-fill";
+    }
+}
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .add-button {
+            transition: all 0.2s ease;
+        }
+
+        .add-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+
+        /* Search container styles */
+        .search-container {
+            background: white;
+            padding: 1rem;
+        }
+
+        .search-container .form-control {
+            max-width: 300px;
+            margin-left: auto;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .search-container .form-control:focus {
+            background-color: white;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --header-text: #ffffff;
+            --row-hover: rgba(99, 102, 241, 0.04);
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-text: #22c55e;
+            --warning-bg: rgba(234, 179, 8, 0.1);
+            --warning-text: #eab308;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --danger-text: #ef4444;
+            --info-bg: rgba(6, 182, 212, 0.1);
+            --info-text: #06b6d4;
+            --neutral-text: #64748b;
+            --border-color: rgba(148, 163, 184, 0.1);
+        }
+
+        body {
+            background-color: #f8fafc;
+        }
+
+        .card {
+            border-radius: 16px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .table {
+            margin-bottom: 0;
+            font-size: 0.925rem;
+        }
+
+        .table thead tr {
+            background: var(--primary-gradient);
+        }
+
+        .table thead th {
+            padding: 1rem;
+            font-weight: 500;
+            border-bottom: none;
+            white-space: nowrap;
+            color: var(--header-text);
+        }
+
+        .table thead th i {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .table tbody td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--row-hover);
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            font-size: 0.8rem;
+            border-radius: 9999px;
+        }
+
+        .bg-success-soft {
+            background-color: var(--success-bg) !important;
+            color: var(--success-text);
+        }
+
+        .bg-warning-soft {
+            background-color: var(--warning-bg) !important;
+            color: var(--warning-text);
+        }
+
+        .bg-danger-soft {
+            background-color: var(--danger-bg) !important;
+            color: var(--danger-text);
+        }
+
+        .bg-info-soft {
+            background-color: var(--info-bg) !important;
+            color: var(--info-text);
+        }
+
+        /* Buttons */
+        .btn-outline-primary {
+            color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-outline-danger {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .btn-outline-info {
+            color: #06b6d4;
+            border-color: #06b6d4;
+        }
+
+        .btn-outline-info:hover {
+            background-color: #06b6d4;
+            border-color: #06b6d4;
+        }
+
+        /* Text colors */
+        .text-primary {
+            color: #6366f1 !important;
+        }
+
+        .text-success {
+            color: var(--success-text) !important;
+        }
+
+        .text-warning {
+            color: var(--warning-text) !important;
+        }
+
+        .text-danger {
+            color: var(--danger-text) !important;
+        }
+
+        .text-muted {
+            color: var(--neutral-text) !important;
+        }
+
+        /* Custom styles */
+        .product-icon {
+            background: var(--info-bg);
+            color: var(--info-text);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        /* Pagination redesign */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background-color: #f1f5f9;
+            color: #6366f1;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .page-link i {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        /* Đơn giản hóa CSS cho bảng */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #productsTable {
+            width: 100%;
+            min-width: 1200px;
+            margin: 0;
+        }
+
+        /* Style cho thanh cuộn */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Product Image Styles */
+        .product-image-container {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-image:hover {
+            transform: scale(1.1);
+        }
+
+        .no-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+        }
+
+        .no-image i {
+            font-size: 2rem;
+            color: #94a3b8;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var table = $('#productsTable').DataTable({
+                "paging": false,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+                "dom": "<'row'<'col-sm-12'tr>>",
+                "language": {
+                    "zeroRecords": "Không tìm thấy sản phẩm phù hợp"
+                }
+            });
+
+            // Bind custom search input
+            $('.search-container input').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+
+            $('.btn-quick-view').click(function (e) {
+                e.preventDefault();
+                var productId = $(this).data('product-id');
+
+                $.get(`/Product/QuickView/${productId}`, function (data) {
+                    $('#quickViewContainer').html(data);
+                    $('#productModal-' + productId).modal('show');
+                }).fail(function (error) {
+                    console.error('Error loading product details:', error);
+                    alert('Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.');
+                });
+            });
+        });
+    </script>
+}
+
+<div id="quickViewContainer"></div>

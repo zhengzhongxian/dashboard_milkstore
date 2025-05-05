@@ -1,0 +1,398 @@
+@model Dashboard_MilkStore.Models.Product.Product
+
+<div class="modal fade" id="productModal-@Model.ProductId" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                <h5 class="modal-title text-white" id="productModalLabel">
+                    <i class="bi bi-box-seam me-2"></i>Chi tiết sản phẩm
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="row g-3">
+                    <!-- Product Images -->
+                    <div class="col-12">
+                        <div id="productCarousel-@Model.ProductId" class="carousel slide" data-bs-ride="carousel">
+                            <!-- The slideshow/carousel -->
+                            <div class="carousel-inner rounded-3">
+                                @{
+                                    var orderedImages = Model.ImageDTOs.OrderBy(i => int.Parse(i.Order)).ToList();
+                                    for (var i = 0; i < orderedImages.Count; i++)
+                                    {
+                                        var image = orderedImages[i];
+                                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                                            <img src="@image.ImageData" class="d-block w-100" alt="Product Image @(i + 1)">
+                                        </div>
+                                    }
+                                }
+                            </div>
+
+                            <!-- Left and right controls/icons -->
+                            @if (Model.ImageDTOs.Count() > 1)
+                            {
+                                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel-@Model.ProductId" data-bs-slide="prev">
+                                    <div class="carousel-nav-button">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </div>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel-@Model.ProductId" data-bs-slide="next">
+                                    <div class="carousel-nav-button">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </div>
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Thumbnail Navigation -->
+                        @if (Model.ImageDTOs.Count() > 1)
+                        {
+                            <div class="carousel-thumbnails mt-2">
+                                @for (var i = 0; i < orderedImages.Count; i++)
+                                {
+                                    var image = orderedImages[i];
+                                    <div class="thumbnail" 
+                                         data-bs-target="#productCarousel-@Model.ProductId"
+                                         data-bs-slide-to="@i">
+                                        <img src="@image.ImageData" alt="Thumbnail @(i + 1)">
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-12">
+                        <div class="product-details">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0">@Model.ProductName</h5>
+                                <span class="badge bg-success">@Model.StatusName</span>
+                            </div>
+                            
+                            <div class="price-section mb-3 p-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Giá bán:</span>
+                                    <h5 class="text-primary mb-0">
+                                        @(Model.PriceActive?.ToString("N0") ?? "0") đ
+                                    </h5>
+                                </div>
+                                @if (Model.PriceActive != Model.PriceDefault)
+                                {
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="text-muted">Giá gốc:</span>
+                                        <span class="text-decoration-line-through text-muted">
+                                            @(Model.PriceDefault?.ToString("N0") ?? "0") đ
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="info-grid mb-3">
+                                <div class="info-item">
+                                    <i class="bi bi-upc-scan text-primary"></i>
+                                    <span class="text-muted">Mã:</span>
+                                    <span>@Model.Bar</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="bi bi-box text-primary"></i>
+                                    <span class="text-muted">Tồn:</span>
+                                    <span>@Model.StockQuantity @Model.Unit</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="bi bi-tag text-primary"></i>
+                                    <span class="text-muted">Thương hiệu:</span>
+                                    <span>@Model.Brand</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="bi bi-qr-code text-primary"></i>
+                                    <span class="text-muted">SKU:</span>
+                                    <span>@Model.SKU</span>
+                                </div>
+                            </div>
+
+                            @if (Model.Dimensions.Any())
+                            {
+                                <div class="dimensions-section mb-3">
+                                    <h6 class="mb-2">
+                                        <i class="bi bi-rulers me-1"></i>Kích thước
+                                    </h6>
+                                    @foreach (var dim in Model.Dimensions)
+                                    {
+                                        <div class="dimension-grid">
+                                            <div class="dimension-item">
+                                                <span class="text-muted">KL:</span>
+                                                <span>@dim.WeightValue kg</span>
+                                            </div>
+                                            <div class="dimension-item">
+                                                <span class="text-muted">Cao:</span>
+                                                <span>@dim.HeightValue cm</span>
+                                            </div>
+                                            <div class="dimension-item">
+                                                <span class="text-muted">Rộng:</span>
+                                                <span>@dim.WidthValue cm</span>
+                                            </div>
+                                            <div class="dimension-item">
+                                                <span class="text-muted">Dài:</span>
+                                                <span>@dim.LengthValue cm</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.Description))
+                            {
+                                <div class="description-section">
+                                    <h6 class="mb-2">
+                                        <i class="bi bi-card-text me-1"></i>Mô tả
+                                    </h6>
+                                    <p class="text-muted small mb-0">@Model.Description</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Đóng
+                </button>
+                <a href="@Url.Action("Edit", "Product", new { id = Model.ProductId })" class="btn btn-sm btn-primary rounded-pill">
+                    <i class="bi bi-pencil-square me-1"></i>Chỉnh sửa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-dialog {
+        max-width: 600px;
+        margin: 1rem auto;
+    }
+
+    .carousel-item img {
+        width: 100%;
+        height: 250px;
+        object-fit: contain;
+        background-color: #f8f9fa;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 40px;
+        height: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .carousel:hover .carousel-control-prev,
+    .carousel:hover .carousel-control-next {
+        opacity: 1;
+    }
+
+    .carousel-nav-button {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .carousel-nav-button i {
+        color: #6366f1;
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .carousel-control-prev:hover .carousel-nav-button,
+    .carousel-control-next:hover .carousel-nav-button {
+        background: #6366f1;
+        transform: scale(1.1);
+    }
+
+    .carousel-control-prev:hover .carousel-nav-button i,
+    .carousel-control-next:hover .carousel-nav-button i {
+        color: white;
+        transform: scale(1.2);
+    }
+
+    .carousel-control-prev {
+        left: -20px;
+    }
+
+    .carousel-control-next {
+        right: -20px;
+    }
+
+    .carousel:hover .carousel-control-prev {
+        left: 10px;
+    }
+
+    .carousel:hover .carousel-control-next {
+        right: 10px;
+    }
+
+    .carousel-thumbnails {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 5px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        justify-content: center;
+    }
+
+    .carousel-thumbnails::-webkit-scrollbar {
+        display: none;
+    }
+
+    .carousel-thumbnails .thumbnail {
+        flex: 0 0 50px;
+        height: 50px;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+
+    .carousel-thumbnails .thumbnail:hover,
+    .carousel-thumbnails .thumbnail.active {
+        opacity: 1;
+        border: 2px solid #6366f1;
+    }
+
+    .carousel-thumbnails .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .price-section {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .info-item {
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-item i {
+        font-size: 1rem;
+    }
+
+    .dimension-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .dimension-item {
+        font-size: 0.875rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .description-section {
+        border-top: 1px solid #e9ecef;
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+
+    @@media (max-width: 576px) {
+        .modal-dialog {
+            margin: 0.5rem;
+            max-width: calc(100% - 1rem);
+        }
+
+        .carousel-item img {
+            height: 200px;
+        }
+
+        .info-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .dimension-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .carousel-thumbnails .thumbnail {
+            flex: 0 0 40px;
+            height: 40px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 32px;
+            height: 32px;
+        }
+
+        .carousel-nav-button {
+            width: 32px;
+            height: 32px;
+        }
+
+        .carousel-nav-button i {
+            font-size: 1rem;
+        }
+
+        .carousel:hover .carousel-control-prev {
+            left: 5px;
+        }
+
+        .carousel:hover .carousel-control-next {
+            right: 5px;
+        }
+    }
+
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .btn-close:focus {
+        box-shadow: none;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Xử lý active state cho thumbnails
+        $('#productCarousel-@Model.ProductId').on('slide.bs.carousel', function (e) {
+            $('.carousel-thumbnails .thumbnail').removeClass('active');
+            $('.carousel-thumbnails .thumbnail').eq(e.to).addClass('active');
+        });
+
+        // Set active cho thumbnail đầu tiên
+        $('.carousel-thumbnails .thumbnail').first().addClass('active');
+    });
+</script> 

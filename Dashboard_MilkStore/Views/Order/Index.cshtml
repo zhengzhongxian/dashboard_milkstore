@@ -1,0 +1,429 @@
+@model Dashboard_MilkStore.Models.Common.PaginatedResult<Dashboard_MilkStore.Models.Order.OrderViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+    var orderStatuses = ViewBag.OrderStatuses as List<Dashboard_MilkStore.Models.Order.OrderStatusViewModel> ?? new List<Dashboard_MilkStore.Models.Order.OrderStatusViewModel>();
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-box-seam fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Quản lý đơn hàng</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Theo dõi và quản lý đơn hàng</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden form for sorting and pagination -->
+    <form id="sortForm" method="get" class="d-none">
+        <input type="hidden" name="sortBy" value="@ViewBag.CurrentSortBy" id="sortByField">
+        <input type="hidden" name="sortAscending" value="@ViewBag.CurrentSortAscending" id="sortAscendingField">
+        <input type="hidden" name="pageNumber" value="1"> <!-- Reset to page 1 when filtering -->
+        <input type="hidden" name="pageSize" value="@ViewBag.CurrentPageSize">
+        <input type="hidden" name="searchTerm" id="hiddenSearchTerm" value="@ViewBag.CurrentSearchTerm">
+        <input type="hidden" name="statusId" value="@ViewBag.CurrentStatusId">
+        <input type="hidden" name="startDate" value="@ViewBag.CurrentStartDate">
+        <input type="hidden" name="endDate" value="@ViewBag.CurrentEndDate">
+    </form>
+
+    @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+    {
+        <div class="alert alert-danger rounded-3 shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(TempData["SuccessMessage"] as string))
+    {
+        <div class="alert alert-success rounded-3 shadow-sm">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(TempData["InfoMessage"] as string))
+    {
+        <div class="alert alert-info rounded-3 shadow-sm">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            @TempData["InfoMessage"]
+        </div>
+    }
+
+    <!-- Order Table -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="search-container mb-3 p-3 border-bottom">
+                <div class="dataTables_filter">
+                    <input type="search" class="form-control form-control-sm rounded-pill" id="tableSearch"
+                           placeholder="Tìm kiếm đơn hàng..." value="@ViewBag.CurrentSearchTerm">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="ordersTable" class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" class="text-white">
+                            <th class="px-4 text-center" style="width: 220px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-key me-2"></i>
+                                    <span>OrderID</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 150px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-upc-scan me-2"></i>
+                                    <span>Mã đơn hàng</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 150px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-calendar-date me-2"></i>
+                                    <span>Ngày đặt</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 250px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-person me-2"></i>
+                                    <span>Khách hàng</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 150px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-cash-stack me-2"></i>
+                                    <span>Tổng tiền</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 150px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-tag me-2"></i>
+                                    <span>Trạng thái</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 120px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-gear me-2"></i>
+                                    <span>Thao tác</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Items != null && Model.Items.Any())
+                        {
+                            foreach (var order in Model.Items)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">#@order.OrderId</td>
+                                    <td>@order.OrderNumber</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-calendar-date text-muted me-2"></i>
+                                            <span>@(order.OrderDate?.ToString("yyyy-MM-dd") ?? "-")</span>
+                                        </div>
+                                        <small class="text-muted">@(order.OrderDate?.ToString("HH:mm") ?? "")</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-person-circle text-muted me-2"></i>
+                                            <span class="text-truncate" style="max-width: 200px;" title="@(order.CustomerId ?? "-")">@(order.CustomerId ?? "-")</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill price-badge">
+                                            <span class="fw-bold">@(order.TotalPrice?.ToString("N0") ?? "-") đ</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        @{
+                                            string badgeClass = "bg-secondary bg-opacity-10 text-secondary";
+                                            string statusText = "Chưa xác định";
+                                            string statusIcon = "bi-question-circle";
+
+                                            var status = orderStatuses.FirstOrDefault(s => s.StatusId == order.StatusId);
+                                            if (status != null)
+                                            {
+                                                statusText = status.Name;
+
+                                                switch (order.StatusId)
+                                                {
+                                                    case "PENDING":
+                                                        badgeClass = "bg-info bg-opacity-10 text-info";
+                                                        statusIcon = "bi-hourglass-split";
+                                                        break;
+                                                    case "CONFIRMED":
+                                                        badgeClass = "bg-primary bg-opacity-10 text-primary";
+                                                        statusIcon = "bi-check-circle";
+                                                        break;
+                                                    case "PROCESSING":
+                                                        badgeClass = "bg-warning bg-opacity-10 text-warning";
+                                                        statusIcon = "bi-gear";
+                                                        break;
+                                                    case "SHIPPING":
+                                                        badgeClass = "bg-info bg-opacity-10 text-info";
+                                                        statusIcon = "bi-truck";
+                                                        break;
+                                                    case "COMPLETED":
+                                                        badgeClass = "bg-success bg-opacity-10 text-success";
+                                                        statusIcon = "bi-check-circle-fill";
+                                                        break;
+                                                    case "CANCELLED":
+                                                        badgeClass = "bg-danger bg-opacity-10 text-danger";
+                                                        statusIcon = "bi-x-circle-fill";
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                        <span class="badge rounded-pill @badgeClass">
+                                            <i class="bi @statusIcon me-1"></i>
+                                            @statusText
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a href="@Url.Action("Details", new { id = order.OrderId })" class="btn btn-sm btn-outline-info rounded-pill fireworks-btn" title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy đơn hàng
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model?.Metadata != null && Model.Metadata.TotalPages > 1)
+            {
+                <div class="pagination-container p-3 border-top d-flex justify-content-between align-items-center">
+                    <div class="pagination-info small text-muted">
+                        Hiển thị @Model.Metadata.FirstItemOnPage đến @(Model.Metadata.FirstItemOnPage + Model.Items.Count - 1)
+                        trong tổng số @Model.Metadata.TotalCount đơn hàng
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(Model.Metadata.HasPrevious ? "" : "disabled")">
+                                <a class="page-link rounded-start" href="@Url.Action("Index", new {
+                                    pageNumber = Model.Metadata.PageNumber - 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    sortBy = ViewBag.CurrentSortBy,
+                                    sortAscending = ViewBag.CurrentSortAscending,
+                                    statusId = ViewBag.CurrentStatusId,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    startDate = ViewBag.CurrentStartDate,
+                                    endDate = ViewBag.CurrentEndDate
+                                })" aria-label="Previous">
+                                    <i class="bi bi-chevron-left small"></i>
+                                </a>
+                            </li>
+
+                            @for (int i = 1; i <= Model.Metadata.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new {
+                                        pageNumber = i,
+                                        pageSize = ViewBag.CurrentPageSize,
+                                        sortBy = ViewBag.CurrentSortBy,
+                                        sortAscending = ViewBag.CurrentSortAscending,
+                                        statusId = ViewBag.CurrentStatusId,
+                                        searchTerm = ViewBag.CurrentSearchTerm,
+                                        startDate = ViewBag.CurrentStartDate,
+                                        endDate = ViewBag.CurrentEndDate
+                                    })">@i</a>
+                                </li>
+                            }
+
+                            <li class="page-item @(Model.Metadata.HasNext ? "" : "disabled")">
+                                <a class="page-link rounded-end" href="@Url.Action("Index", new {
+                                    pageNumber = Model.Metadata.PageNumber + 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    sortBy = ViewBag.CurrentSortBy,
+                                    sortAscending = ViewBag.CurrentSortAscending,
+                                    statusId = ViewBag.CurrentStatusId,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    startDate = ViewBag.CurrentStartDate,
+                                    endDate = ViewBag.CurrentEndDate
+                                })" aria-label="Next">
+                                    <i class="bi bi-chevron-right small"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        /* Search container styles */
+        .search-container {
+            background: white;
+            padding: 1rem;
+        }
+
+        .search-container .form-control {
+            max-width: 300px;
+            margin-left: auto;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .search-container .form-control:focus {
+            background-color: white;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #ordersTable {
+            width: 100%;
+            min-width: 1100px;
+            margin: 0;
+        }
+
+        #ordersTable thead tr {
+            height: 50px;
+        }
+
+        #ordersTable thead th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        #ordersTable thead th div {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #ordersTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #ordersTable tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.04);
+        }
+
+        .price-badge {
+            transition: all 0.3s ease;
+        }
+
+        #ordersTable tbody tr:hover .price-badge {
+            box-shadow: 0 3px 6px rgba(22, 163, 74, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Pagination styles */
+        .pagination-container {
+            background-color: #f8fafc;
+        }
+
+        .pagination .page-link {
+            color: #4f46e5;
+            border-color: #e2e8f0;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #94a3b8;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#ordersTable').DataTable({
+                "paging": false,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+                "dom": "<'row'<'col-sm-12'tr>>",
+                "language": {
+                    "zeroRecords": "Không tìm thấy đơn hàng phù hợp"
+                }
+            });
+
+            // Bind custom search input
+            $('#tableSearch').on('keyup', function() {
+                table.search(this.value).draw();
+
+                // Update hidden search field for server-side filtering
+                $('#hiddenSearchTerm').val(this.value);
+            });
+
+            // Function to update sort
+            window.updateSort = function(field) {
+                const currentSortBy = '@ViewBag.CurrentSortBy';
+                const currentSortAscending = '@ViewBag.CurrentSortAscending' === 'True';
+
+                let newSortAscending = true;
+
+                if (field === currentSortBy) {
+                    // Toggle sort direction if clicking on the same field
+                    newSortAscending = !currentSortAscending;
+                }
+
+                document.getElementById('sortByField').value = field;
+                document.getElementById('sortAscendingField').value = newSortAscending;
+
+                // Submit the form
+                document.querySelector('form').submit();
+            }
+        });
+    </script>
+}

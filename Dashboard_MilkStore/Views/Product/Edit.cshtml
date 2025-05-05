@@ -1,0 +1,1446 @@
+@model Dashboard_MilkStore.Models.Product.ProductEditViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+}
+
+<link rel="stylesheet" href="~/css/product-management.css" />
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center header-custom">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-pencil-square fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Chỉnh sửa sản phẩm</h5>
+                <p class="text-white-50 mb-0 small">Cập nhật thông tin sản phẩm #@Model.ProductId</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Product")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button fireworks-btn">
+            <i class="bi bi-arrow-left me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Quay lại</span>
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <form id="editProductForm" class="row g-4" enctype="multipart/form-data">
+                <input type="hidden" id="productId" value="@Model.ProductId" />
+
+                <!-- Images Section -->
+                <div class="col-12">
+                    <label class="form-label">Hình ảnh sản phẩm</label>
+                    <div class="image-gallery">
+                        <div class="row g-3">
+                            @if (Model.Images != null && Model.Images.Any())
+                            {
+                                foreach (var image in Model.Images.OrderBy(i => i.Order))
+                                {
+                                    <div class="col-6 col-md-4 col-lg-3" id="image-@image.ImageId">
+                                        <div class="card h-100">
+                                            <div class="position-relative">
+                                                <img src="@image.ImageData"
+                                                     class="card-img-top"
+                                                     alt="Product Image"
+                                                     style="height: 200px; object-fit: cover;">
+                                                <div class="position-absolute top-0 end-0 m-2">
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-danger rounded-circle delete-image"
+                                                            data-image-id="@image.ImageId">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text">Thứ tự</span>
+                                                    <input type="number"
+                                                           class="form-control display-order"
+                                                           value="@image.Order"
+                                                           data-image-id="@image.ImageId"
+                                                           min="1">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            <!-- Upload new images -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card h-100 border-dashed">
+                                    <div class="card-body d-flex align-items-center justify-content-center">
+                                        <div class="text-center">
+                                            <input type="file"
+                                                   class="d-none"
+                                                   id="newImages"
+                                                   name="NewImages"
+                                                   multiple
+                                                   accept="image/*">
+                                            <label for="newImages" class="btn btn-outline-primary mb-2">
+                                                <i class="bi bi-cloud-upload me-2"></i>Thêm ảnh
+                                            </label>
+                                            <div class="text-muted small">Kéo thả hoặc click để chọn</div>
+                                            <div class="text-danger small mt-1">Kích thước tối đa: 5MB</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Name -->
+                <div class="col-md-6">
+                    <label asp-for="ProductName" class="form-label"></label>
+                    <input asp-for="ProductName" class="form-control" />
+                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                </div>
+
+                <!-- Brand -->
+                <div class="col-md-6">
+                    <label asp-for="Brand1" class="form-label"></label>
+                    <select asp-for="Brand1" asp-items="Model.Brands" class="form-select">
+                        <option value="">-- Chọn thương hiệu --</option>
+                    </select>
+                    <span asp-validation-for="Brand1" class="text-danger"></span>
+                </div>
+
+                <!-- SKU -->
+                <div class="col-md-6">
+                    <label asp-for="Sku" class="form-label"></label>
+                    <input asp-for="Sku" class="form-control" />
+                    <span asp-validation-for="Sku" class="text-danger"></span>
+                </div>
+
+                <!-- Bar Code -->
+                <div class="col-md-6">
+                    <label asp-for="Bar" class="form-label"></label>
+                    <input asp-for="Bar" class="form-control" />
+                    <span asp-validation-for="Bar" class="text-danger"></span>
+                </div>
+
+                <!-- Stock Quantity -->
+                <div class="col-md-6">
+                    <label asp-for="StockQuantity" class="form-label"></label>
+                    <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                </div>
+
+                <!-- Unit -->
+                <div class="col-md-6">
+                    <label asp-for="Unit1" class="form-label"></label>
+                    <select asp-for="Unit1" asp-items="Model.Units" class="form-select">
+                        <option value="">-- Chọn đơn vị --</option>
+                    </select>
+                    <span asp-validation-for="Unit1" class="text-danger"></span>
+                </div>
+
+                <!-- Description -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <!-- Price Section -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-header bg-transparent border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Danh sách giá</h5>
+                                <button type="button" class="btn btn-primary btn-sm rounded-pill" onclick="showAddPriceModal()">
+                                    <i class="bi bi-plus-circle me-2"></i>Thêm giá mới
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="priceTable">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Giá (VNĐ)</th>
+                                            <th>Mặc định</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Prices != null && Model.Prices.Any())
+                                        {
+                                            var priceIndex = 1;
+                                            foreach (var price in Model.Prices)
+                                            {
+                                                <tr>
+                                                    <td>@(priceIndex++)</td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <input type="number"
+                                                                   class="form-control form-control-sm"
+                                                                   style="width: 120px;"
+                                                                   value="@price.Price.ToString().Replace(",", ".")"
+                                                                   onchange="updatePrice('@price.Ppsid', this.value)"
+                                                                   step="0.01"
+                                                                   min="0">
+                                                            <span class="text-muted">(@price.Price.ToString("N0") VNĐ)</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-check form-switch">
+                                                            <input type="checkbox"
+                                                                   class="form-check-input"
+                                                                   @(price.IsDefault ? "checked" : "")
+                                                                   onchange="updateDefaultPrice('@price.Ppsid', this.checked)">
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-check form-switch">
+                                                            <input type="checkbox"
+                                                                   class="form-check-input"
+                                                                   @(price.IsActive ? "checked" : "")
+                                                                   onchange="updatePriceStatus('@price.Ppsid', this.checked)">
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button"
+                                                                class="btn btn-outline-danger btn-sm"
+                                                                onclick="deletePrice('@price.Ppsid')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="5" class="text-center">Chưa có giá nào được thiết lập</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dimensions Section -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-header bg-transparent border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Kích thước sản phẩm</h5>
+                                <button type="button" class="btn btn-primary btn-sm rounded-pill" onclick="showAddDimensionModal()">
+                                    <i class="bi bi-plus-circle me-2"></i>Thêm kích thước
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Chiều dài (cm)</th>
+                                            <th>Chiều rộng (cm)</th>
+                                            <th>Chiều cao (cm)</th>
+                                            <th>Cân nặng (kg)</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dimensionsTableBody">
+                                        @if (Model.Dimensions != null && Model.Dimensions.Any())
+                                        {
+                                            var dimensionIndex = 1;
+                                            foreach (var dimension in Model.Dimensions)
+                                            {
+                                                <tr id="dimension-@dimension.DimensionId">
+                                                    <td>@(dimensionIndex++)</td>
+                                                    <td>
+                                                        <input type="text"
+                                                               class="form-control form-control-sm"
+                                                               style="width: 100px;"
+                                                               value="@(dimension.LengthValue?.ToString("0.00")?.Replace(".", ","))"
+                                                               onchange="updateDimension('@dimension.DimensionId', 'length', this.value)"
+                                                               min="0">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text"
+                                                               class="form-control form-control-sm"
+                                                               style="width: 100px;"
+                                                               value="@(dimension.WidthValue?.ToString("0.00")?.Replace(".", ","))"
+                                                               onchange="updateDimension('@dimension.DimensionId', 'width', this.value)"
+                                                               min="0">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text"
+                                                               class="form-control form-control-sm"
+                                                               style="width: 100px;"
+                                                               value="@(dimension.HeightValue?.ToString("0.00")?.Replace(".", ","))"
+                                                               onchange="updateDimension('@dimension.DimensionId', 'height', this.value)"
+                                                               min="0">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text"
+                                                               class="form-control form-control-sm"
+                                                               style="width: 100px;"
+                                                               value="@(dimension.WeightValue?.ToString("0.00")?.Replace(".", ","))"
+                                                               onchange="updateDimension('@dimension.DimensionId', 'weight', this.value)"
+                                                               min="0">
+                                                    </td>
+                                                    <td>
+                                                        <button type="button"
+                                                                class="btn btn-outline-danger btn-sm"
+                                                                onclick="deleteDimension('@dimension.DimensionId')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="5" class="text-center">Chưa có kích thước nào được thiết lập</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6">
+                    <label asp-for="StatusId" class="form-label"></label>
+                    <select asp-for="StatusId" asp-items="Model.Statuses" class="form-select">
+                        <option value="">-- Chọn trạng thái --</option>
+                    </select>
+                    <span asp-validation-for="StatusId" class="text-danger"></span>
+                </div>
+
+                <!-- Active Status -->
+                <div class="col-md-6">
+                    <label asp-for="IsActive" class="form-label d-block"></label>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" asp-for="IsActive">
+                        <label class="form-check-label" asp-for="IsActive">Đang hoạt động</label>
+                    </div>
+                </div>
+
+                <!-- Metadata -->
+                @if (Model.CreatedAt.HasValue)
+                {
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="bi bi-clock-history me-1"></i>
+                            Ngày tạo: @Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                        </small>
+                    </div>
+                }
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            Cập nhật lần cuối: @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                        </small>
+                    </div>
+                }
+
+                <div class="col-12 mt-4">
+                    <hr />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("Index", "Product")" class="btn btn-light rounded-pill px-4">
+                            <i class="bi bi-x me-2"></i>Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">
+                            <i class="bi bi-check2 me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Dimension Modal -->
+<div class="modal fade" id="dimensionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dimensionModalTitle">Thêm kích thước mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="dimensionForm">
+                    <input type="hidden" id="dimensionId">
+                    <div class="mb-3">
+                        <label for="lengthValue" class="form-label">Chiều dài (cm)</label>
+                        <input type="number" class="form-control" id="lengthValue" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="widthValue" class="form-label">Chiều rộng (cm)</label>
+                        <input type="number" class="form-control" id="widthValue" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="heightValue" class="form-label">Chiều cao (cm)</label>
+                        <input type="number" class="form-control" id="heightValue" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="weightValue" class="form-label">Cân nặng (kg)</label>
+                        <input type="number" class="form-control" id="weightValue" step="0.01" min="0">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="addDimensionToTable()">
+                    <i class="bi bi-check2 me-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Price Modal -->
+<div class="modal fade"
+     id="priceModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="priceModalTitle"
+     aria-modal="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="priceModalTitle">Thêm giá mới</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="priceForm">
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Giá (VNĐ)</label>
+                        <input type="text"
+                               class="form-control"
+                               id="price"
+                               required
+                               min="0"
+                               aria-required="true">
+                    </div>
+                    <div class="mb-3 d-flex align-items-center justify-content-between border rounded-3 px-3 py-2">
+                        <label class="form-check-label mb-0" for="isDefault">Đặt làm giá mặc định</label>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="isDefault"
+                                   role="switch"
+                                   aria-checked="false">
+                        </div>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center justify-content-between border rounded-3 px-3 py-2">
+                        <label class="form-check-label mb-0" for="isActive">Kích hoạt</label>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="isActive"
+                                   checked
+                                   role="switch"
+                                   aria-checked="true">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Hủy
+                </button>
+                <button type="button"
+                        class="btn btn-primary rounded-pill px-4"
+                        onclick="addPriceToTable()">
+                    <i class="bi bi-check2 me-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let imageOrder = @(Model.Images?.Count() ?? 0) + 1;
+            let deletedImages = [];
+            let updatedOrders = {};
+
+            // Image preview for new uploads
+            $('#newImages').on('change', function(e) {
+                const files = e.target.files;
+                if (files) {
+                    const uploadCard = $('.border-dashed').parent();
+
+                    Array.from(files).forEach(file => {
+                        // Kiểm tra kích thước file trước khi tạo preview
+                        const fileSizeInMB = file.size / (1024 * 1024);
+                        if (fileSizeInMB > 5) {
+                            Swal.fire({
+                                title: 'Ảnh quá lớn!',
+                                text: `Ảnh "${file.name}" có kích thước ${fileSizeInMB.toFixed(2)}MB, vượt quá giới hạn 5MB.`,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const newImageCard = `
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="card h-100">
+                                        <div class="position-relative">
+                                            <img src="${e.target.result}"
+                                                 class="card-img-top"
+                                                 alt="New Image"
+                                                 style="height: 200px; object-fit: cover;">
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-danger rounded-circle remove-new-image">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="position-absolute bottom-0 start-0 m-2">
+                                                <span class="badge bg-info">${fileSizeInMB.toFixed(2)}MB</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Thứ tự</span>
+                                                <input type="number"
+                                                       class="form-control"
+                                                       value="${imageOrder}"
+                                                       min="1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            uploadCard.before(newImageCard);
+                            imageOrder++;
+                        }
+                        reader.readAsDataURL(file);
+                    });
+                }
+            });
+
+            // Remove new image preview (ảnh tạm thời chưa lưu)
+            $(document).on('click', '.remove-new-image', function() {
+                Swal.fire({
+                    title: 'Xác nhận xóa?',
+                    text: 'Bạn có chắc muốn xóa ảnh tạm này?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(this).closest('.col-6').remove();
+                        Swal.fire('Đã xóa!', 'Ảnh tạm đã được xóa.', 'success');
+                    }
+                });
+            });
+
+            // Hàm để đánh dấu xóa ảnh
+            function markImageForDeletion(imageId, imageElement) {
+                // Thêm ID ảnh vào danh sách ảnh cần xóa
+                deletedImages.push(imageId);
+
+                // Thêm lớp "marked-for-deletion" để đánh dấu trực quan
+                imageElement.addClass('marked-for-deletion');
+
+                // Thêm hiệu ứng mờ dần và thông báo
+                imageElement.find('.card').css('opacity', '0.5');
+                imageElement.find('.card').append('<div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"><span class="badge bg-danger">Đã đánh dấu xóa</span></div>');
+
+                // Thêm nút khôi phục ở góc trên bên phải
+                imageElement.find('.position-relative').append('<div class="position-absolute top-0 end-0 m-2"><button type="button" class="btn btn-sm btn-success rounded-circle restore-image" data-image-id="' + imageId + '" title="Khôi phục ảnh"><i class="bi bi-arrow-counterclockwise"></i></button></div>');
+
+                // Gắn sự kiện click cho nút khôi phục
+                imageElement.find('.restore-image').on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    restoreImage(imageId, imageElement);
+                });
+
+                // Ẩn nút xóa
+                imageElement.find('.delete-image').parent().hide();
+
+                // Hiển thị thông báo
+                Swal.fire({
+                    title: 'Đã đánh dấu xóa!',
+                    text: 'Ảnh sẽ bị xóa khi bạn nhấn "Lưu thay đổi". Bạn có thể khôi phục bằng cách nhấn vào nút khôi phục.',
+                    icon: 'info'
+                });
+            }
+
+            // Hàm để khôi phục ảnh đã đánh dấu xóa
+            function restoreImage(imageId, imageElement) {
+                // Xóa ID ảnh khỏi danh sách ảnh cần xóa
+                const index = deletedImages.indexOf(imageId);
+                if (index > -1) {
+                    deletedImages.splice(index, 1);
+                }
+
+                // Khôi phục giao diện
+                imageElement.removeClass('marked-for-deletion');
+                imageElement.find('.card').css('opacity', '1');
+                imageElement.find('.card .position-absolute.top-0.start-0').remove();
+                imageElement.find('.restore-image').parent().remove();
+
+                // Hiển thị lại nút xóa
+                const deleteButton = imageElement.find('.delete-image');
+                deleteButton.parent().show();
+
+                // Gắn lại sự kiện click cho nút xóa
+                deleteButton.off('click').on('click', function(e) {
+                    handleDeleteButtonClick(e, $(this));
+                });
+
+                // Hiển thị thông báo
+                Swal.fire('Đã khôi phục!', 'Ảnh đã được khôi phục và sẽ không bị xóa.', 'success');
+            }
+
+            // Hàm xử lý sự kiện click của nút xóa
+            function handleDeleteButtonClick(e, button) {
+                e.preventDefault();
+                const imageId = button.data('image-id');
+                const imageElement = $(`#image-${imageId}`);
+                const imageUrl = imageElement.find('img').attr('src');
+
+                Swal.fire({
+                    title: 'Xác nhận đánh dấu xóa?',
+                    text: 'Ảnh sẽ biến mất khỏi giao diện và chỉ bị xóa thật sự khi bạn nhấn "Lưu thay đổi".',
+                    imageUrl: imageUrl,
+                    imageWidth: 200,
+                    imageHeight: 200,
+                    imageAlt: 'Ảnh sẽ bị xóa',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đánh dấu xóa',
+                    cancelButtonText: 'Hủy',
+                    confirmButtonColor: '#d33',
+                    footer: '<span class="text-muted">Bạn có thể hủy thao tác này bằng cách tải lại trang mà không lưu</span>'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        markImageForDeletion(imageId, imageElement);
+                    }
+                });
+            }
+
+            // Gắn sự kiện click cho tất cả các nút xóa
+            $('.delete-image').on('click', function(e) {
+                handleDeleteButtonClick(e, $(this));
+            });
+
+            // Update display order
+            $('.display-order').on('change', function() {
+                const imageId = $(this).data('image-id');
+                const newOrder = $(this).val();
+                updatedOrders[imageId] = newOrder;
+            });
+
+            // Form submission
+            $('#editProductForm').on('submit', function(e) {
+                e.preventDefault();
+                if (!$(this).valid()) return;
+
+                const productId = $('#productId').val();
+
+                // First, save the product basic information
+                const patchData = {
+                    productName: $('#ProductName').val(),
+                    brand1: $('#Brand1').val(),
+                    sku: $('#Sku').val(),
+                    bar: $('#Bar').val(),
+                    stockquantity: parseInt($('#StockQuantity').val()),
+                    unit1: $('#Unit1').val(),
+                    description: $('#Description').val(),
+                    statusId: $('#StatusId').val(),
+                    isActive: $('#IsActive').is(':checked') ? 1 : 0
+                };
+
+                // Lọc bỏ các giá trị null hoặc undefined
+                Object.keys(patchData).forEach(key => {
+                    if (patchData[key] === null || patchData[key] === undefined || patchData[key] === '') {
+                        delete patchData[key];
+                    }
+                });
+
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    text: 'Vui lòng đợi trong giây lát',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Send request to update product basic info
+                $.ajax({
+                    url: '@Url.Action("UpdateProduct", "Product", new { id = Model.ProductId })',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(patchData),
+                    success: function(response) {
+                        if (response.success) {
+                            // Now process image changes
+                            processImageChanges(productId);
+                        } else {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: response.message || 'Có lỗi xảy ra khi cập nhật sản phẩm',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Kiểm tra nếu có lỗi "The JSON value could not be converted to System.Boolean"
+                        if (xhr.responseText && xhr.responseText.includes("The JSON value could not be converted to System.Boolean")) {
+                            // Vẫn tiếp tục xử lý ảnh vì dữ liệu cơ bản đã được cập nhật
+                            processImageChanges(productId);
+                        } else {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Có lỗi xảy ra khi cập nhật sản phẩm: ' + (xhr.responseJSON?.message || error),
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Function to process image changes
+            function processImageChanges(productId) {
+                // Prepare data for image changes
+                const imageChanges = {
+                    deletedImageIds: deletedImages,
+                    newImages: [],
+                    updatedOrders: []
+                };
+
+                // Process new images
+                const newImageElements = $('.image-gallery .col-6:not(.border-dashed)').filter(function() {
+                    return !$(this).attr('id') || !$(this).attr('id').startsWith('image-');
+                });
+
+                newImageElements.each(function() {
+                    const imgSrc = $(this).find('img').attr('src');
+                    const order = $(this).find('input[type="number"]').val() || '0';
+
+                    // Kiểm tra xem ảnh có hợp lệ không
+                    if (!imgSrc) {
+                        console.error("Image source is empty");
+                        return;
+                    }
+
+                    // Kiểm tra kích thước ảnh (nếu là base64)
+                    if (imgSrc.startsWith('data:image')) {
+                        // Ước tính kích thước ảnh base64 (4/3 của độ dài chuỗi sau phần header)
+                        const base64Data = imgSrc.split(',')[1];
+                        if (base64Data) {
+                            const sizeInBytes = Math.ceil((base64Data.length * 3) / 4);
+                            const sizeInMB = sizeInBytes / (1024 * 1024);
+
+                            if (sizeInMB > 5) {
+                                Swal.fire('Cảnh báo', `Ảnh có kích thước ${sizeInMB.toFixed(2)}MB, quá lớn để tải lên. Vui lòng chọn ảnh nhỏ hơn 5MB.`, 'error');
+                                return; // Không thêm ảnh quá lớn vào danh sách
+                            }
+
+                            console.log(`Adding image: size=${sizeInMB.toFixed(2)}MB, order=${order}`);
+                        }
+                    }
+
+                    imageChanges.newImages.push({
+                        imageData: imgSrc,
+                        order: order
+                    });
+                });
+
+                // Process updated orders
+                for (let imageId in updatedOrders) {
+                    imageChanges.updatedOrders.push({
+                        imageId: imageId,
+                        order: updatedOrders[imageId]
+                    });
+                }
+
+                // If there are no image changes, redirect to index
+                if (imageChanges.deletedImageIds.length === 0 &&
+                    imageChanges.newImages.length === 0 &&
+                    imageChanges.updatedOrders.length === 0) {
+
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Cập nhật sản phẩm thành công',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        window.location.href = '@Url.Action("Index", "Product")';
+                    });
+                    return;
+                }
+
+                // Send request to process image changes
+                $.ajax({
+                    url: '@Url.Action("SaveImageChanges", "Product")?productId=' + productId,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(imageChanges),
+                    success: function(response) {
+                        Swal.fire({
+                            title: response.success ? 'Thành công!' : 'Cảnh báo!',
+                            text: response.message || 'Cập nhật sản phẩm thành công',
+                            icon: response.success ? 'success' : 'warning',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            window.location.href = '@Url.Action("Index", "Product")';
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX error:", xhr.responseText);
+
+                        // Hiển thị thông báo lỗi chi tiết hơn
+                        let errorMessage = 'Có lỗi xảy ra khi cập nhật hình ảnh';
+
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseText) {
+                            try {
+                                const errorObj = JSON.parse(xhr.responseText);
+                                if (errorObj.message) {
+                                    errorMessage = errorObj.message;
+                                }
+                            } catch (e) {
+                                // Nếu không phải JSON, hiển thị lỗi gốc
+                                errorMessage += ': ' + error;
+                            }
+                        } else {
+                            errorMessage += ': ' + error;
+                        }
+
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: errorMessage,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            // Không chuyển hướng ngay, cho phép người dùng thử lại
+                            // window.location.href = '@Url.Action("Index", "Product")';
+                        });
+                    }
+                });
+            }
+        });
+
+        // Price management functions
+        function showAddPriceModal() {
+            $('#price').val('');
+            $('#isDefault').prop('checked', false);
+            $('#isActive').prop('checked', true);
+            $('#priceModal').modal('show');
+        }
+
+        function addPriceToTable() {
+            const price = $('#price').val();
+            const isDefault = $('#isDefault').is(':checked');
+            const isActive = $('#isActive').is(':checked');
+
+            if (!price) {
+                Swal.fire('Lỗi!', 'Vui lòng nhập giá', 'error');
+                return;
+            }
+
+            // Tính index mới
+            const currentIndex = $('#priceTable tbody tr').length;
+            const newIndex = currentIndex === 1 && $('#priceTable tbody tr td').text().includes('Chưa có giá') ? 1 : currentIndex + 1;
+
+            const newRow = `
+                <tr class="table-warning">
+                    <td>${newIndex}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="number"
+                                   class="form-control form-control-sm"
+                                   style="width: 120px;"
+                                   value="${price.replace(',', '.')}"
+                                   onchange="updatePrice('temp-${Date.now()}', this.value)"
+                                   step="0.01"
+                                   min="0">
+                            <span class="text-muted">
+                                (${Number(price.replace(',', '.')).toLocaleString('vi-VN')} VNĐ)
+                                <span class="badge bg-warning text-dark ms-1">Tạm thời</span>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   ${isDefault ? 'checked' : ''}
+                                   onchange="updateDefaultPrice('temp-${Date.now()}', this.checked)">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   ${isActive ? 'checked' : ''}
+                                   onchange="updatePriceStatus('temp-${Date.now()}', this.checked)">
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="deletePrice('temp-${Date.now()}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            // Thêm row mới vào bảng
+            if ($('#priceTable tbody tr td').length === 1 && $('#priceTable tbody tr td').text().includes('Chưa có giá')) {
+                $('#priceTable tbody').empty();
+            }
+            $('#priceTable tbody').append(newRow);
+
+            // Đóng modal
+            $('#priceModal').modal('hide');
+
+            // Reset form
+            $('#priceForm')[0].reset();
+            $('#isActive').prop('checked', true);
+        }
+
+        function deletePrice(ppsid) {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: 'Bạn có chắc muốn xóa giá này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/api/ProductPrice/' + ppsid,
+                        type: 'DELETE',
+                        success: function(response) {
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                Swal.fire('Lỗi!', response.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa giá', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function updateDefaultPrice(ppsid, isDefault) {
+            const productId = $('#productId').val();
+            $.ajax({
+                url: '/api/ProductPrice/' + ppsid + '/set-default',
+                type: 'PUT',
+                data: JSON.stringify({ productId: productId, isDefault: isDefault }),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (!response.success) {
+                        Swal.fire('Lỗi!', response.message, 'error');
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật giá mặc định', 'error');
+                    location.reload();
+                }
+            });
+        }
+
+        function updatePriceStatus(ppsid, isActive) {
+            $.ajax({
+                url: '/api/ProductPrice/' + ppsid + '/set-status',
+                type: 'PUT',
+                data: JSON.stringify({ isActive: isActive }),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (!response.success) {
+                        Swal.fire('Lỗi!', response.message, 'error');
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật trạng thái', 'error');
+                    location.reload();
+                }
+            });
+        }
+
+        function showAddDimensionModal() {
+            $('#dimensionId').val('');
+            $('#lengthValue').val('');
+            $('#widthValue').val('');
+            $('#heightValue').val('');
+            $('#weightValue').val('');
+            $('#dimensionModalTitle').text('Thêm kích thước mới');
+            $('#dimensionModal').modal('show');
+        }
+
+        function editDimension(dimensionId, lengthValue, widthValue, heightValue, weightValue) {
+            $('#dimensionId').val(dimensionId);
+            $('#lengthValue').val(lengthValue);
+            $('#widthValue').val(widthValue);
+            $('#heightValue').val(heightValue);
+            $('#weightValue').val(weightValue);
+            $('#dimensionModalTitle').text('Chỉnh sửa kích thước');
+            $('#dimensionModal').modal('show');
+        }
+
+        function saveDimension() {
+            const dimensionId = $('#dimensionId').val();
+            const lengthValue = $('#lengthValue').val();
+            const widthValue = $('#widthValue').val();
+            const heightValue = $('#heightValue').val();
+            const weightValue = $('#weightValue').val();
+
+            const data = {
+                dimensionId: dimensionId,
+                lengthValue: lengthValue,
+                widthValue: widthValue,
+                heightValue: heightValue,
+                weightValue: weightValue
+            };
+
+            $.ajax({
+                url: dimensionId ? '/api/ProductDimension/' + dimensionId : '/api/ProductDimension',
+                type: dimensionId ? 'PUT' : 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#dimensionModal').modal('hide');
+                        location.reload();
+                    } else {
+                        Swal.fire('Lỗi!', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi lưu kích thước', 'error');
+                }
+            });
+        }
+
+        function deleteDimension(dimensionId) {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: 'Bạn có chắc muốn xóa kích thước này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/api/ProductDimension/' + dimensionId,
+                        type: 'DELETE',
+                        success: function(response) {
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                Swal.fire('Lỗi!', response.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa kích thước', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        // Price management functions
+        function updatePrice(ppsid, price) {
+            const productId = $('#productId').val();
+            const numericPrice = parseFloat(price.replace(',', '.'));
+
+            if (isNaN(numericPrice)) {
+                Swal.fire('Lỗi!', 'Giá không hợp lệ', 'error');
+                return;
+            }
+
+            $.ajax({
+                url: '/api/ProductPrice/' + ppsid,
+                type: 'PUT',
+                data: JSON.stringify({
+                    productId: productId,
+                    price: numericPrice
+                }),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (!response.success) {
+                        Swal.fire('Lỗi!', response.message, 'error');
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật giá', 'error');
+                    location.reload();
+                }
+            });
+        }
+
+        // Update the updateDimension function
+        function updateDimension(dimensionId, field, value) {
+            // Chuyển đổi dấu phẩy thành dấu chấm để parse
+            const numericValue = parseFloat(value.replace(',', '.'));
+
+            if (isNaN(numericValue)) {
+                Swal.fire('Lỗi!', 'Giá trị không hợp lệ', 'error');
+                return;
+            }
+
+            const data = {
+                dimensionId: dimensionId
+            };
+
+            switch(field) {
+                case 'length':
+                    data.lengthValue = numericValue;
+                    break;
+                case 'width':
+                    data.widthValue = numericValue;
+                    break;
+                case 'height':
+                    data.heightValue = numericValue;
+                    break;
+                case 'weight':
+                    data.weightValue = numericValue;
+                    break;
+            }
+
+            $.ajax({
+                url: '/api/ProductDimension/' + dimensionId,
+                type: 'PUT',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (!response.success) {
+                        Swal.fire('Lỗi!', response.message, 'error');
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật kích thước', 'error');
+                    location.reload();
+                }
+            });
+        }
+
+        function addDimensionToTable() {
+            const lengthValue = $('#lengthValue').val();
+            const widthValue = $('#widthValue').val();
+            const heightValue = $('#heightValue').val();
+            const weightValue = $('#weightValue').val();
+
+            if (!lengthValue && !widthValue && !heightValue && !weightValue) {
+                Swal.fire('Lỗi!', 'Vui lòng nhập ít nhất một kích thước', 'error');
+                return;
+            }
+
+            // Tính index mới
+            const currentIndex = $('#dimensionsTableBody tr').length;
+            const newIndex = currentIndex === 1 && $('#dimensionsTableBody tr td').text().includes('Chưa có kích thước') ? 1 : currentIndex + 1;
+
+            const newRow = `
+                <tr id="dimension-temp-${Date.now()}" class="table-warning">
+                    <td>${newIndex}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${lengthValue}"
+                                   onchange="updateDimension('temp-${Date.now()}', 'length', this.value)"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${widthValue}"
+                                   onchange="updateDimension('temp-${Date.now()}', 'width', this.value)"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${heightValue}"
+                                   onchange="updateDimension('temp-${Date.now()}', 'height', this.value)"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${weightValue}"
+                                   onchange="updateDimension('temp-${Date.now()}', 'weight', this.value)"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="deleteDimension('temp-${Date.now()}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            // Thêm row mới vào bảng
+            if ($('#dimensionsTableBody tr td').length === 1 && $('#dimensionsTableBody tr td').text().includes('Chưa có kích thước')) {
+                $('#dimensionsTableBody').empty();
+            }
+            $('#dimensionsTableBody').append(newRow);
+
+            // Đóng modal
+            $('#dimensionModal').modal('hide');
+
+            // Reset form
+            $('#dimensionForm')[0].reset();
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        .form-label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            border-color: #e5e7eb;
+            padding: 0.625rem 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+            margin-top: 0.25em;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .border-dashed {
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            min-height: 200px;
+        }
+
+        .border-dashed:hover {
+            border-color: #6366f1;
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .image-gallery .card {
+            transition: all 0.2s;
+        }
+
+        .image-gallery .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+        }
+
+        .image-gallery .btn-sm {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+
+        /* Price table styles */
+        .table {
+            font-size: 0.875rem;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #4b5563;
+            background-color: #f9fafb;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-outline-primary {
+            color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #6366f1;
+            color: #fff;
+        }
+
+        .btn-outline-danger {
+            color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #dc2626;
+            color: #fff;
+        }
+
+        /* Styles for marked-for-deletion images */
+        .marked-for-deletion .card {
+            position: relative;
+            border: 2px dashed #dc3545 !important;
+            transition: all 0.3s ease;
+        }
+
+        .marked-for-deletion .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(220, 53, 69, 0.1);
+            z-index: 1;
+        }
+
+        .marked-for-deletion .badge.bg-danger {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        /* Styles for restore button */
+        .restore-image {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+            transition: all 0.2s ease;
+        }
+
+        .restore-image:hover {
+            transform: scale(1.1);
+            background-color: #218838;
+        }
+
+        .restore-image i {
+            font-size: 1rem;
+        }
+
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .back-button {
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+    </style>
+}
