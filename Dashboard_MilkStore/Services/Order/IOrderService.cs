@@ -10,5 +10,6 @@ namespace Dashboard_MilkStore.Services.Order
         Task<List<OrderViewModel>> GetAllOrdersAsync();
         Task<OrderViewModel> GetOrderByIdAsync(string id);
         Task<ServiceResponse<PaginatedResult<OrderViewModel>>> GetPaginatedOrdersAsync(OrderQueryViewModel query);
+        Task<ServiceResponse<OrderViewModel>> UpdateOrderStatusAsync(string orderId, string statusId);
     }
 }

@@ -237,6 +237,174 @@ canvas {
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
 }
 
+/* Chart Slideshow Styles */
+.chart-slideshow {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.chart-slide {
+  display: none;
+  width: 100%;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
+}
+
+.chart-slide.active {
+  display: block;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+/* Đảm bảo kích thước đồng nhất giữa các slide */
+.chart-container {
+  min-height: 400px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Đảm bảo canvas có kích thước đồng nhất */
+.chart-container canvas {
+  max-height: 400px;
+  width: 100% !important;
+  height: auto !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.back-to-revenue {
+  transition: all 0.3s ease;
+  border-radius: 20px;
+  padding: 5px 15px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.back-to-revenue:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.back-to-revenue i {
+  margin-right: 5px;
+}
+
+/* Chart Content Layout */
+.chart-content {
+  height: 100%;
+  width: 100%;
+}
+
+.chart-area {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.product-details {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Product Sales Chart Styles */
+.product-sales-info {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.product-list {
+  list-style: none;
+  padding: 0;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.product-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 10px;
+  background-color: #f0f0f0;
+}
+
+.product-image-small {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-right: 8px;
+  background-color: #f0f0f0;
+}
+
+.product-details {
+  flex: 1;
+}
+
+.product-name {
+  font-weight: 600;
+  margin-bottom: 3px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.product-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.product-quantity,
+.product-sales {
+  display: flex;
+  align-items: center;
+}
+
+.product-quantity i,
+.product-sales i {
+  margin-right: 5px;
+  font-size: 0.9rem;
+}
+
+.product-sales {
+  color: #28a745;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .statistic-title {
     font-size: 1.5rem;

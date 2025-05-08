@@ -28,58 +28,120 @@ namespace Dashboard_MilkStore.Middleware
                 return;
             }
 
-            // Check if user is authenticated
+            // Kiểm tra access token trong session
             var token = context.Session.GetString("Token");
-            
-            // If no token, redirect to login
-            if (string.IsNullOrEmpty(token))
+            var refreshToken = context.Request.Cookies["RefreshToken"];
+
+            // Nếu không có access token nhưng có refresh token, kiểm tra refresh token và thử làm mới token
+            if (string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(refreshToken))
             {
-                _logger.LogInformation("No token found, redirecting to login");
+                // Kiểm tra refresh token có hết hạn không
+                if (authService.IsRefreshTokenExpired(refreshToken))
+                {
+                    _logger.LogWarning("Refresh token expired, redirecting to login");
+                    context.Response.Cookies.Delete("RefreshToken"); // Xóa refresh token hết hạn
+                    context.Response.Redirect("/Account/Login");
+                    return;
+                }
+
+                _logger.LogInformation("No access token but refresh token exists, attempting to refresh");
+                var response = await authService.RefreshTokenAsync(refreshToken);
+
+                if (response.Success && !string.IsNullOrEmpty(response.AccessToken))
+                {
+                    // Cập nhật access token mới vào session
+                    context.Session.SetString("Token", response.AccessToken);
+
+                    // Cập nhật refresh token mới nếu có
+                    if (!string.IsNullOrEmpty(response.RefreshToken))
+                    {
+                        context.Response.Cookies.Append("RefreshToken", response.RefreshToken, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            Expires = DateTime.Now.AddDays(7)
+                        });
+                    }
+
+                    _logger.LogInformation("Token refreshed successfully from refresh token");
+                    token = response.AccessToken; // Cập nhật token để sử dụng trong request hiện tại
+                }
+                else
+                {
+                    // Nếu làm mới thất bại, chuyển hướng đến trang đăng nhập
+                    _logger.LogWarning("Token refresh failed, redirecting to login");
+                    context.Response.Redirect("/Account/Login");
+                    return;
+                }
+            }
+            // Nếu không có cả access token và refresh token, chuyển hướng đến trang đăng nhập
+            else if (string.IsNullOrEmpty(token))
+            {
+                _logger.LogInformation("No tokens found, redirecting to login");
                 context.Response.Redirect("/Account/Login");
                 return;
             }
 
-            // Check if token is expired
-            if (authService.IsTokenExpired(token))
+            // Kiểm tra access token có hết hạn không
+            if (!string.IsNullOrEmpty(token) && authService.IsTokenExpired(token))
             {
-                _logger.LogInformation("Token expired, attempting to refresh");
-                
-                // Try to refresh token
-                var refreshToken = context.Request.Cookies["RefreshToken"];
+                _logger.LogInformation("Access token expired, attempting to refresh");
+
+                // Nếu có refresh token, kiểm tra refresh token và thử làm mới access token
                 if (!string.IsNullOrEmpty(refreshToken))
                 {
-                    var response = await authService.RefreshTokenAsync(refreshToken);
-                    
-                    if (response.Success && !string.IsNullOrEmpty(response.AccessToken))
+                    // Kiểm tra refresh token có hết hạn không
+                    if (authService.IsRefreshTokenExpired(refreshToken))
                     {
-                        // Update token in session
-                        context.Session.SetString("Token", response.AccessToken);
-                        
-                        // Update refresh token if provided
-                        if (!string.IsNullOrEmpty(response.RefreshToken))
-                        {
-                            context.Response.Cookies.Append("RefreshToken", response.RefreshToken, new CookieOptions
-                            {
-                                HttpOnly = true,
-                                Secure = true,
-                                SameSite = SameSiteMode.Strict,
-                                Expires = DateTime.Now.AddDays(7)
-                            });
-                        }
-                        
-                        _logger.LogInformation("Token refreshed successfully");
+                        _logger.LogWarning("Refresh token expired, redirecting to login");
+                        context.Response.Cookies.Delete("RefreshToken"); // Xóa refresh token hết hạn
+                        context.Response.Redirect("/Account/Login");
+                        return;
                     }
-                    else
+
+                    try
                     {
-                        // If refresh failed, redirect to login
-                        _logger.LogWarning("Token refresh failed, redirecting to login");
+                        var response = await authService.RefreshTokenAsync(refreshToken);
+
+                        if (response.Success && !string.IsNullOrEmpty(response.AccessToken))
+                        {
+                            // Cập nhật access token mới vào session
+                            context.Session.SetString("Token", response.AccessToken);
+
+                            // Cập nhật refresh token mới nếu có
+                            if (!string.IsNullOrEmpty(response.RefreshToken))
+                            {
+                                context.Response.Cookies.Append("RefreshToken", response.RefreshToken, new CookieOptions
+                                {
+                                    HttpOnly = true,
+                                    Secure = true,
+                                    SameSite = SameSiteMode.Strict,
+                                    Expires = DateTime.Now.AddDays(7)
+                                });
+                            }
+
+                            _logger.LogInformation("Token refreshed successfully");
+                        }
+                        else
+                        {
+                            // Nếu làm mới thất bại, chuyển hướng đến trang đăng nhập
+                            _logger.LogWarning("Token refresh failed: {0}", response.Message);
+                            context.Response.Redirect("/Account/Login");
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Xử lý lỗi khi làm mới token
+                        _logger.LogError(ex, "Error refreshing token");
                         context.Response.Redirect("/Account/Login");
                         return;
                     }
                 }
                 else
                 {
-                    // No refresh token, redirect to login
+                    // Không có refresh token, chuyển hướng đến trang đăng nhập
                     _logger.LogWarning("No refresh token found, redirecting to login");
                     context.Response.Redirect("/Account/Login");
                     return;

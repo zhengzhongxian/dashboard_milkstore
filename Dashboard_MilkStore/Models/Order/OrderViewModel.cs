@@ -13,7 +13,8 @@ namespace Dashboard_MilkStore.Models.Order
         public decimal? ShippingFee { get; set; }
         public string ShippingCode { get; set; }
         public decimal? TotalPrice { get; set; }
-        public string PaymentMethod { get; set; }
+        public string? PaymentMethod { get; set; }
+        public string? PaymentMethodName { get; set; }
         public string Notes { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string StatusId { get; set; }
@@ -27,6 +28,7 @@ namespace Dashboard_MilkStore.Models.Order
         public string OrderDetailId { get; set; }
         public string ProductId { get; set; }
         public string ProductName { get; set; }
+        public string? Img { get; set; }
         public decimal? ProductPrice { get; set; }
         public int? Quantity { get; set; }
         public decimal? SubTotal { get; set; }

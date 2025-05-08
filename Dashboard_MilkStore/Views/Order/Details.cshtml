@@ -6,17 +6,334 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/order-detail.css" />
+    <style>
+        /* Cải thiện thiết kế chung */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border-bottom: none;
+            padding: 10px 20px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: auto;
+            min-height: 50px;
+        }
+
+        .card-header h3, .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Thiết kế bảng */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+            padding: 12px 15px;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border-color: #4338ca;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-bordered th, .table-bordered td {
+            border-color: #e9ecef;
+        }
+
+        /* Thiết kế hình ảnh sản phẩm */
+        .product-thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        /* Modal cho hình ảnh phóng to */
+        .img-modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-modal-content {
+            max-width: 80%;
+            max-height: 80vh;
+            margin: auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .img-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .no-image {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            color: #6c757d;
+            font-size: 14px;
+            text-align: center;
+            border: 1px dashed #dee2e6;
+        }
+
+        /* Thiết kế badge trạng thái */
+        .status-badge {
+            padding: 8px 12px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-badge i {
+            font-size: 0.9rem;
+        }
+
+        /* Thiết kế giá tiền */
+        .price-display {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .total-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        /* Thiết kế nút */
+        .btn-back {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 6px 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-back:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        .btn-back i {
+            font-size: 0.8rem;
+        }
+
+        /* Nút cập nhật trạng thái */
+        .update-status-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .update-status-btn:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
+        }
+
+        .update-status-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Modal cập nhật trạng thái */
+        .status-modal-header {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border-bottom: none;
+            padding: 15px 20px;
+        }
+
+        .order-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 15px;
+            border-left: 4px solid #6366f1;
+        }
+
+        .order-number {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .order-number strong {
+            color: #4f46e5;
+        }
+
+        .order-date {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .status-select {
+            border-color: #d1d5db;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.2s;
+        }
+
+        .status-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+
+        .status-alert {
+            background-color: #e0e7ff;
+            border-left: 4px solid #6366f1;
+            color: #4338ca;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-cancel {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-update:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-update:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .product-thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+
+            .no-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .update-status-btn {
+                padding: 4px 10px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
 }
 
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Chi tiết đơn hàng - @Model.OrderNumber</h3>
-            <div class="card-tools">
-                <a href="@Url.Action("Index")" class="btn btn-sm btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </a>
-            </div>
+            <h3 class="card-title">
+                <i class="bi bi-box-seam"></i>
+                Chi tiết đơn hàng #@Model.OrderNumber
+            </h3>
+            <a href="@Url.Action("Index")" class="btn btn-back">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
         </div>
         <div class="card-body">
             @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
@@ -37,7 +354,10 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Thông tin đơn hàng</h5>
+                            <h5 class="card-title">
+                                <i class="bi bi-info-circle"></i>
+                                Thông tin đơn hàng
+                            </h5>
                         </div>
                         <div class="card-body">
                             <table class="table table-bordered">
@@ -57,32 +377,47 @@
                                     <th>Trạng thái</th>
                                     <td>
                                         @{
-                                            string badgeClass = "badge-secondary";
+                                            string badgeClass = "bg-secondary";
                                             string statusText = Model.StatusName ?? "Chưa xác định";
+                                            string statusIcon = "bi-question-circle";
 
                                             switch (Model.StatusId)
                                             {
                                                 case "PENDING":
-                                                    badgeClass = "badge-info";
+                                                    badgeClass = "bg-info bg-opacity-10 text-info";
+                                                    statusIcon = "bi-hourglass-split";
                                                     break;
                                                 case "CONFIRMED":
-                                                    badgeClass = "badge-primary";
+                                                    badgeClass = "bg-primary bg-opacity-10 text-primary";
+                                                    statusIcon = "bi-check-circle";
                                                     break;
                                                 case "PROCESSING":
-                                                    badgeClass = "badge-warning";
+                                                    badgeClass = "bg-warning bg-opacity-10 text-warning";
+                                                    statusIcon = "bi-gear";
                                                     break;
                                                 case "SHIPPING":
-                                                    badgeClass = "badge-warning";
+                                                    badgeClass = "bg-info bg-opacity-10 text-info";
+                                                    statusIcon = "bi-truck";
                                                     break;
                                                 case "COMPLETED":
-                                                    badgeClass = "badge-success";
+                                                    badgeClass = "bg-success bg-opacity-10 text-success";
+                                                    statusIcon = "bi-check-circle-fill";
                                                     break;
                                                 case "CANCELLED":
-                                                    badgeClass = "badge-danger";
+                                                    badgeClass = "bg-danger bg-opacity-10 text-danger";
+                                                    statusIcon = "bi-x-circle-fill";
                                                     break;
                                             }
                                         }
-                                        <span class="badge @badgeClass">@statusText</span>
+                                        <div class="d-flex align-items-center">
+                                            <span class="status-badge @badgeClass me-3">
+                                                <i class="bi @statusIcon"></i>
+                                                @statusText
+                                            </span>
+                                            <button type="button" class="btn btn-sm update-status-btn" data-bs-toggle="modal" data-bs-target="#updateStatusModal">
+                                                <i class="bi bi-pencil-square"></i> Cập nhật
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -91,11 +426,11 @@
                                 </tr>
                                 <tr>
                                     <th>Tổng tiền</th>
-                                    <td>@(Model.TotalPrice?.ToString("N0") ?? "-") đ</td>
+                                    <td><span class="price-display">@(Model.TotalPrice?.ToString("N0") ?? "-") đ</span></td>
                                 </tr>
                                 <tr>
                                     <th>Phương thức thanh toán</th>
-                                    <td>@(Model.PaymentMethod ?? "-")</td>
+                                    <td>@(Model.PaymentMethodName ?? Model.PaymentMethod ?? "-")</td>
                                 </tr>
                                 <tr>
                                     <th>Ngày tạo</th>
@@ -108,7 +443,10 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Thông tin giao hàng</h5>
+                            <h5 class="card-title">
+                                <i class="bi bi-truck"></i>
+                                Thông tin giao hàng
+                            </h5>
                         </div>
                         <div class="card-body">
                             <table class="table table-bordered">
@@ -118,7 +456,7 @@
                                 </tr>
                                 <tr>
                                     <th>Phí giao hàng</th>
-                                    <td>@(Model.ShippingFee?.ToString("N0") ?? "-") đ</td>
+                                    <td><span class="price-display">@(Model.ShippingFee?.ToString("N0") ?? "-") đ</span></td>
                                 </tr>
                                 <tr>
                                     <th>Mã vận đơn</th>
@@ -136,7 +474,10 @@
 
             <div class="card mt-4">
                 <div class="card-header">
-                    <h5 class="card-title">Chi tiết đơn hàng</h5>
+                    <h5 class="card-title">
+                        <i class="bi bi-list-check"></i>
+                        Chi tiết đơn hàng
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -144,6 +485,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>Mã sản phẩm</th>
+                                    <th>Hình ảnh</th>
                                     <th>Tên sản phẩm</th>
                                     <th>Đơn giá</th>
                                     <th>Số lượng</th>
@@ -157,17 +499,30 @@
                                     {
                                         <tr>
                                             <td>@item.ProductId</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(item.Img))
+                                                {
+                                                    <img src="@item.Img" alt="@item.ProductName" class="product-thumbnail" onclick="openImageModal('@item.Img', '@item.ProductName')" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="no-image">
+                                                        <i class="bi bi-image me-1"></i>
+                                                        Không có ảnh
+                                                    </div>
+                                                }
+                                            </td>
                                             <td>@(item.ProductName ?? "-")</td>
-                                            <td>@(item.ProductPrice?.ToString("N0") ?? "-") đ</td>
-                                            <td>@item.Quantity</td>
-                                            <td>@(item.SubTotal?.ToString("N0") ?? "-") đ</td>
+                                            <td><span class="price-display">@(item.ProductPrice?.ToString("N0") ?? "-") đ</span></td>
+                                            <td><span class="badge bg-secondary rounded-pill">@item.Quantity</span></td>
+                                            <td><span class="price-display">@(item.SubTotal?.ToString("N0") ?? "-") đ</span></td>
                                         </tr>
                                     }
                                 }
                                 else
                                 {
                                     <tr>
-                                        <td colspan="5" class="text-center">Không có sản phẩm nào</td>
+                                        <td colspan="6" class="text-center">Không có sản phẩm nào</td>
                                     </tr>
                                 }
                             </tbody>
@@ -175,16 +530,16 @@
                             {
                                 <tfoot>
                                     <tr>
-                                        <th colspan="4" class="text-right">Tổng tiền sản phẩm:</th>
-                                        <td>@(Model.OrderDetails.Sum(x => x.SubTotal)?.ToString("N0") ?? "-") đ</td>
+                                        <th colspan="5" class="text-right">Tổng tiền sản phẩm:</th>
+                                        <td><span class="price-display">@(Model.OrderDetails.Sum(x => x.SubTotal)?.ToString("N0") ?? "-") đ</span></td>
                                     </tr>
                                     <tr>
-                                        <th colspan="4" class="text-right">Phí giao hàng:</th>
-                                        <td>@(Model.ShippingFee?.ToString("N0") ?? "-") đ</td>
+                                        <th colspan="5" class="text-right">Phí giao hàng:</th>
+                                        <td><span class="price-display">@(Model.ShippingFee?.ToString("N0") ?? "-") đ</span></td>
                                     </tr>
                                     <tr>
-                                        <th colspan="4" class="text-right">Tổng cộng:</th>
-                                        <td><strong>@(Model.TotalPrice?.ToString("N0") ?? "-") đ</strong></td>
+                                        <th colspan="5" class="text-right">Tổng cộng:</th>
+                                        <td><span class="total-price">@(Model.TotalPrice?.ToString("N0") ?? "-") đ</span></td>
                                     </tr>
                                 </tfoot>
                             }
@@ -195,4 +550,101 @@
         </div>
     </div>
 </div>
-    
+
+<!-- Modal cho hình ảnh phóng to -->
+<div id="imageModal" class="img-modal">
+    <span class="img-modal-close" onclick="closeImageModal()">&times;</span>
+    <img id="modalImage" class="img-modal-content">
+</div>
+
+<!-- Modal cập nhật trạng thái đơn hàng -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header status-modal-header">
+                <h5 class="modal-title" id="updateStatusModalLabel">
+                    <i class="bi bi-arrow-repeat me-2"></i>
+                    Cập nhật trạng thái đơn hàng
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="UpdateStatus" asp-controller="Order" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+                    <div class="order-info mb-3">
+                        <div class="order-number">Đơn hàng: <strong>#@Model.OrderNumber</strong></div>
+                        <div class="order-date">Ngày đặt: @(Model.OrderDate?.ToString("yyyy-MM-dd HH:mm") ?? "-")</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="statusId" class="form-label">Chọn trạng thái mới</label>
+                        <select class="form-select status-select" id="statusId" name="statusId" required>
+                            <option value="">-- Chọn trạng thái --</option>
+                            @if (ViewBag.OrderStatuses != null)
+                            {
+                                foreach (var status in ViewBag.OrderStatuses)
+                                {
+                                    @if (status.StatusId == Model.StatusId)
+                                    {
+                                        <option value="@status.StatusId" selected>@status.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@status.StatusId">@status.Name</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="alert status-alert">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        Lưu ý: Việc thay đổi trạng thái đơn hàng sẽ được ghi nhận và không thể hoàn tác.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Hủy
+                    </button>
+                    <button type="submit" class="btn btn-update">
+                        <i class="bi bi-check-circle me-1"></i> Cập nhật
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Mở modal hình ảnh
+        function openImageModal(imgSrc, imgAlt) {
+            var modal = document.getElementById("imageModal");
+            var modalImg = document.getElementById("modalImage");
+
+            modal.style.display = "flex";
+            modalImg.src = imgSrc;
+            modalImg.alt = imgAlt;
+
+            // Thêm sự kiện click để đóng modal khi click bên ngoài ảnh
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeImageModal();
+                }
+            };
+
+            // Thêm sự kiện phím Escape để đóng modal
+            document.addEventListener('keydown', function(event) {
+                if (event.key === "Escape") {
+                    closeImageModal();
+                }
+            });
+        }
+
+        // Đóng modal hình ảnh
+        function closeImageModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+    </script>
+}

@@ -143,33 +143,52 @@ namespace Dashboard_MilkStore.CoreHelpers
                 Console.WriteLine("PostAsync: No token provided and no HttpContext available");
             }
 
-            var json = JsonSerializer.Serialize(data);
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            System.Diagnostics.Debug.WriteLine($"PostAsync: Serialized data: {json}");
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
             try
             {
+                System.Diagnostics.Debug.WriteLine($"PostAsync: Sending request to {url}");
                 var response = await _httpClient.PostAsync(url, content);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 // Ghi log để debug
-                Console.WriteLine($"POST response from {url}: Status={response.StatusCode}, Content={responseContent}");
+                System.Diagnostics.Debug.WriteLine($"PostAsync: Response from {url}: Status={response.StatusCode}, Content={responseContent}");
 
                 // Ngay cả khi response không thành công, vẫn cố gắng deserialize
                 if (!string.IsNullOrEmpty(responseContent))
                 {
-                    return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+                    try
                     {
-                        PropertyNameCaseInsensitive = true
-                    });
+                        var result = JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                        Console.WriteLine($"PostAsync: Successfully deserialized response to {typeof(T).Name}");
+                        return result;
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($"PostAsync: JSON deserialization error: {ex.Message}");
+                        Console.WriteLine($"PostAsync: Response content that failed to deserialize: {responseContent}");
+                        throw;
+                    }
                 }
 
                 // Nếu không deserialize được, đảm bảo response thành công
+                Console.WriteLine($"PostAsync: Empty response content, checking status code");
                 response.EnsureSuccessStatusCode();
                 return default;
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"HTTP error in PostAsync: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
                 throw;
             }
             catch (JsonException ex)
@@ -180,6 +199,11 @@ namespace Dashboard_MilkStore.CoreHelpers
             catch (Exception ex)
             {
                 Console.WriteLine($"Unexpected error in PostAsync: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
                 throw;
             }
         }
@@ -240,56 +264,87 @@ namespace Dashboard_MilkStore.CoreHelpers
 
         public async Task<T?> PutAsync<T>(string url, object data, string? token = null)
         {
-            if (!string.IsNullOrEmpty(token))
+            try
             {
-                // Không sử dụng AuthenticationHeaderValue mà thêm trực tiếp vào header
-                Console.WriteLine("PutAsync: Using provided token");
-                if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                if (!string.IsNullOrEmpty(token))
                 {
-                    _httpClient.DefaultRequestHeaders.Remove("Authorization");
-                }
-                _httpClient.DefaultRequestHeaders.Add("Authorization", token);
-
-                // In ra header để kiểm tra
-                Console.WriteLine($"PutAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
-            }
-            else if (_httpContextAccessor?.HttpContext != null)
-            {
-                // Tự động lấy token từ session nếu có
-                var sessionToken = _httpContextAccessor.HttpContext.Session.GetString("Token");
-                if (!string.IsNullOrEmpty(sessionToken))
-                {
-                    Console.WriteLine("PutAsync: Using token from session");
+                    // Không sử dụng AuthenticationHeaderValue mà thêm trực tiếp vào header
+                    Console.WriteLine("PutAsync: Using provided token");
                     if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
                     {
                         _httpClient.DefaultRequestHeaders.Remove("Authorization");
                     }
-                    _httpClient.DefaultRequestHeaders.Add("Authorization", sessionToken);
+                    _httpClient.DefaultRequestHeaders.Add("Authorization", token);
 
                     // In ra header để kiểm tra
                     Console.WriteLine($"PutAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
                 }
+                else if (_httpContextAccessor?.HttpContext != null)
+                {
+                    // Tự động lấy token từ session nếu có
+                    var sessionToken = _httpContextAccessor.HttpContext.Session.GetString("Token");
+                    if (!string.IsNullOrEmpty(sessionToken))
+                    {
+                        Console.WriteLine("PutAsync: Using token from session");
+                        if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                        {
+                            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                        }
+                        _httpClient.DefaultRequestHeaders.Add("Authorization", sessionToken);
+
+                        // In ra header để kiểm tra
+                        Console.WriteLine($"PutAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("PutAsync: No token found in session");
+                    }
+                }
                 else
                 {
-                    Console.WriteLine("PutAsync: No token found in session");
+                    Console.WriteLine("PutAsync: No token provided and no HttpContext available");
                 }
+
+                var json = data != null ? JsonSerializer.Serialize(data) : "";
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                Console.WriteLine($"PutAsync: Sending request to {url}");
+                var response = await _httpClient.PutAsync(url, content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"PutAsync: Response status code: {response.StatusCode}");
+                Console.WriteLine($"PutAsync: Response content: {responseContent}");
+
+                // Không gọi EnsureSuccessStatusCode để tránh ném ngoại lệ
+                // Thay vào đó, chúng ta sẽ cố gắng deserialize phản hồi
+                if (!string.IsNullOrEmpty(responseContent))
+                {
+                    try
+                    {
+                        return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($"PutAsync: JSON deserialization error: {ex.Message}");
+                        Console.WriteLine($"PutAsync: Response content that failed to deserialize: {responseContent}");
+                        return default;
+                    }
+                }
+
+                return default;
             }
-            else
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("PutAsync: No token provided and no HttpContext available");
+                Console.WriteLine($"HTTP error in PutAsync: {ex.Message}");
+                throw;
             }
-
-            var json = JsonSerializer.Serialize(data);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PutAsync(url, content);
-            response.EnsureSuccessStatusCode();
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+            catch (Exception ex)
             {
-                PropertyNameCaseInsensitive = true
-            });
+                Console.WriteLine($"Unexpected error in PutAsync: {ex.Message}");
+                throw;
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "4YJdl1MhH4lxmU/9DzjV3cdhE1RvfDDRw82KI495aXs=",
+  "Hash": "6HM4CVM1gE4lyfI4a0Sm1PNkfucnWFm0IvhlS8aUfuk=",
   "Source": "Dashboard_MilkStore",
   "BasePath": "_content/Dashboard_MilkStore",
   "Mode": "Default",
@@ -80,12 +80,12 @@
       "OriginalItemSpec": "wwwroot\\css\\order-detail.css"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management.css",
+      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management-1.css",
       "SourceId": "Dashboard_MilkStore",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\",
       "BasePath": "_content/Dashboard_MilkStore",
-      "RelativePath": "css/product-management#[.{fingerprint}]?.css",
+      "RelativePath": "css/product-management-1#[.{fingerprint}]?.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -94,11 +94,11 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "37g8kc9deg",
-      "Integrity": "/xcV4BzhVd9KOtgp3kUzQZYXyB4Fvi6ArMXS8mKdnmM=",
+      "Fingerprint": "hpoevg5ro0",
+      "Integrity": "lUPD6IivsQkXmVgYevWQfWsrZqPRadU28aysx/5ucD8=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\product-management.css"
+      "OriginalItemSpec": "wwwroot\\css\\product-management-1.css"
     },
     {
       "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\site.css",
@@ -136,8 +136,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "vj5ezociuv",
-      "Integrity": "m7aJXpD8zTkjGxeoZok0Ez/a1jRlzk+WcBRKmN0fr3E=",
+      "Fingerprint": "i43qahkwvy",
+      "Integrity": "rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\statistics.css"
@@ -241,8 +241,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "mpicd7sexe",
-      "Integrity": "Ri3JQvPCXZfvtgdFoHt9B/B575tcnNWNolP9yW020CI=",
+      "Fingerprint": "858hhdgnxm",
+      "Integrity": "fAj837razelrewijwTO8t9M+/1Qvkw1rQ6waY2K1W3o=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\button-fireworks.js"
@@ -1506,6 +1506,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\sounds\\fireworks-sound.mp3",
+      "SourceId": "Dashboard_MilkStore",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\",
+      "BasePath": "_content/Dashboard_MilkStore",
+      "RelativePath": "sounds/fireworks-sound#[.{fingerprint}]?.mp3",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "uj5ue5s7xh",
+      "Integrity": "mvlPQvCvYFQt+rRlNVzFmKBaYHEl4YvF1OXCLZLbwGk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\sounds\\fireworks-sound.mp3"
     }
   ],
   "Endpoints": [
@@ -1592,8 +1613,8 @@
       ]
     },
     {
-      "Route": "css/product-management.37g8kc9deg.css",
-      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management.css",
+      "Route": "css/product-management-1.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management-1.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1602,7 +1623,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "6797"
+          "Value": "7569"
         },
         {
           "Name": "Content-Type",
@@ -1610,56 +1631,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"/xcV4BzhVd9KOtgp3kUzQZYXyB4Fvi6ArMXS8mKdnmM=\""
+          "Value": "\"lUPD6IivsQkXmVgYevWQfWsrZqPRadU28aysx/5ucD8=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 06:43:43 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "37g8kc9deg"
-        },
-        {
-          "Name": "label",
-          "Value": "css/product-management.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-/xcV4BzhVd9KOtgp3kUzQZYXyB4Fvi6ArMXS8mKdnmM="
-        }
-      ]
-    },
-    {
-      "Route": "css/product-management.css",
-      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "6797"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"/xcV4BzhVd9KOtgp3kUzQZYXyB4Fvi6ArMXS8mKdnmM=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 06:43:43 GMT"
+          "Value": "Tue, 06 May 2025 07:18:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1669,7 +1645,52 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-/xcV4BzhVd9KOtgp3kUzQZYXyB4Fvi6ArMXS8mKdnmM="
+          "Value": "sha256-lUPD6IivsQkXmVgYevWQfWsrZqPRadU28aysx/5ucD8="
+        }
+      ]
+    },
+    {
+      "Route": "css/product-management-1.hpoevg5ro0.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management-1.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7569"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"lUPD6IivsQkXmVgYevWQfWsrZqPRadU28aysx/5ucD8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 06 May 2025 07:18:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "hpoevg5ro0"
+        },
+        {
+          "Name": "label",
+          "Value": "css/product-management-1.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-lUPD6IivsQkXmVgYevWQfWsrZqPRadU28aysx/5ucD8="
         }
       ]
     },
@@ -1766,7 +1787,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "7058"
+          "Value": "9794"
         },
         {
           "Name": "Content-Type",
@@ -1774,11 +1795,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"m7aJXpD8zTkjGxeoZok0Ez/a1jRlzk+WcBRKmN0fr3E=\""
+          "Value": "\"rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 01:39:25 GMT"
+          "Value": "Wed, 07 May 2025 05:17:03 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1788,12 +1809,12 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-m7aJXpD8zTkjGxeoZok0Ez/a1jRlzk+WcBRKmN0fr3E="
+          "Value": "sha256-rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc="
         }
       ]
     },
     {
-      "Route": "css/statistics.vj5ezociuv.css",
+      "Route": "css/statistics.i43qahkwvy.css",
       "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -1803,7 +1824,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "7058"
+          "Value": "9794"
         },
         {
           "Name": "Content-Type",
@@ -1811,11 +1832,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"m7aJXpD8zTkjGxeoZok0Ez/a1jRlzk+WcBRKmN0fr3E=\""
+          "Value": "\"rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 01:39:25 GMT"
+          "Value": "Wed, 07 May 2025 05:17:03 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1825,7 +1846,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "vj5ezociuv"
+          "Value": "i43qahkwvy"
         },
         {
           "Name": "label",
@@ -1833,7 +1854,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-m7aJXpD8zTkjGxeoZok0Ez/a1jRlzk+WcBRKmN0fr3E="
+          "Value": "sha256-rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc="
         }
       ]
     },
@@ -2330,6 +2351,51 @@
       ]
     },
     {
+      "Route": "js/button-fireworks.858hhdgnxm.js",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\js\\button-fireworks.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "40600"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"fAj837razelrewijwTO8t9M+/1Qvkw1rQ6waY2K1W3o=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 08 May 2025 12:45:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "858hhdgnxm"
+        },
+        {
+          "Name": "label",
+          "Value": "js/button-fireworks.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-fAj837razelrewijwTO8t9M+/1Qvkw1rQ6waY2K1W3o="
+        }
+      ]
+    },
+    {
       "Route": "js/button-fireworks.js",
       "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\js\\button-fireworks.js",
       "Selectors": [],
@@ -2340,7 +2406,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "31941"
+          "Value": "40600"
         },
         {
           "Name": "Content-Type",
@@ -2348,11 +2414,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"Ri3JQvPCXZfvtgdFoHt9B/B575tcnNWNolP9yW020CI=\""
+          "Value": "\"fAj837razelrewijwTO8t9M+/1Qvkw1rQ6waY2K1W3o=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 08:10:28 GMT"
+          "Value": "Thu, 08 May 2025 12:45:03 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2362,52 +2428,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-Ri3JQvPCXZfvtgdFoHt9B/B575tcnNWNolP9yW020CI="
-        }
-      ]
-    },
-    {
-      "Route": "js/button-fireworks.mpicd7sexe.js",
-      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\js\\button-fireworks.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "31941"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"Ri3JQvPCXZfvtgdFoHt9B/B575tcnNWNolP9yW020CI=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 08:10:28 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "mpicd7sexe"
-        },
-        {
-          "Name": "label",
-          "Value": "js/button-fireworks.js"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-Ri3JQvPCXZfvtgdFoHt9B/B575tcnNWNolP9yW020CI="
+          "Value": "sha256-fAj837razelrewijwTO8t9M+/1Qvkw1rQ6waY2K1W3o="
         }
       ]
     },
@@ -7328,6 +7349,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-16aFlqtpsG9RyieKZUUUjkJpqTgcJtWXwT312I4Iz1s="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/fireworks-sound.mp3",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\sounds\\fireworks-sound.mp3",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/mpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mvlPQvCvYFQt+rRlNVzFmKBaYHEl4YvF1OXCLZLbwGk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 08 May 2025 12:16:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-mvlPQvCvYFQt+rRlNVzFmKBaYHEl4YvF1OXCLZLbwGk="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/fireworks-sound.uj5ue5s7xh.mp3",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\sounds\\fireworks-sound.mp3",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/mpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mvlPQvCvYFQt+rRlNVzFmKBaYHEl4YvF1OXCLZLbwGk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 08 May 2025 12:16:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "uj5ue5s7xh"
+        },
+        {
+          "Name": "label",
+          "Value": "sounds/fireworks-sound.mp3"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-mvlPQvCvYFQt+rRlNVzFmKBaYHEl4YvF1OXCLZLbwGk="
         }
       ]
     }

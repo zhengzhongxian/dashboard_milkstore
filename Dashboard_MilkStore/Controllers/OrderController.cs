@@ -14,7 +14,7 @@ namespace Dashboard_MilkStore.Controllers
         private readonly ILogger<OrderController> _logger;
 
         public OrderController(
-            IOrderService orderService, 
+            IOrderService orderService,
             IOrderStatusService orderStatusService,
             ILogger<OrderController> logger)
         {
@@ -24,13 +24,13 @@ namespace Dashboard_MilkStore.Controllers
         }
 
         public async Task<IActionResult> Index(
-            int pageNumber = 1, 
-            int pageSize = 10, 
-            string sortBy = "OrderDate", 
-            bool sortAscending = false, 
-            string statusId = null, 
-            string searchTerm = null, 
-            DateTime? startDate = null, 
+            int pageNumber = 1,
+            int pageSize = 10,
+            string sortBy = "OrderDate",
+            bool sortAscending = false,
+            string statusId = null,
+            string searchTerm = null,
+            DateTime? startDate = null,
             DateTime? endDate = null)
         {
             try
@@ -120,6 +120,9 @@ namespace Dashboard_MilkStore.Controllers
                     {
                         order.StatusName = status.Name;
                     }
+
+                    // Truyền danh sách trạng thái đơn hàng vào ViewBag để hiển thị trong dropdown
+                    ViewBag.OrderStatuses = statusResponse.Data;
                 }
 
                 return View(order);
@@ -129,6 +132,48 @@ namespace Dashboard_MilkStore.Controllers
                 _logger.LogError(ex, "Error in Order Details action");
                 TempData["ErrorMessage"] = $"Error loading order details: {ex.Message}";
                 return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(string orderId, string statusId)
+        {
+            try
+            {
+                // Check if user is logged in
+                if (HttpContext.Session.GetString("Token") == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                if (string.IsNullOrEmpty(orderId))
+                {
+                    return BadRequest("Order ID is required");
+                }
+
+                if (string.IsNullOrEmpty(statusId))
+                {
+                    return BadRequest("Status ID is required");
+                }
+
+                var result = await _orderService.UpdateOrderStatusAsync(orderId, statusId);
+
+                if (result.Success)
+                {
+                    TempData["SuccessMessage"] = "Cập nhật trạng thái đơn hàng thành công";
+                    return RedirectToAction(nameof(Details), new { id = orderId });
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = result.Message ?? "Không thể cập nhật trạng thái đơn hàng";
+                    return RedirectToAction(nameof(Details), new { id = orderId });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in UpdateStatus action");
+                TempData["ErrorMessage"] = $"Lỗi khi cập nhật trạng thái đơn hàng: {ex.Message}";
+                return RedirectToAction(nameof(Details), new { id = orderId });
             }
         }
     }

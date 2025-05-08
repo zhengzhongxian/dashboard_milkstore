@@ -50,5 +50,37 @@ namespace Dashboard_MilkStore.Services.Statistics
                 };
             }
         }
+
+        public async Task<ProductSalesResponse> GetProductSalesForMonthAsync(int month, int year)
+        {
+            try
+            {
+                var url = $"{_baseUrl}/api/Statistics/product-sales/{year}/{month}";
+                Console.WriteLine($"Calling API: {url}");
+
+                // Không cần truyền token, CallAPI sẽ tự động lấy từ session
+                var response = await _callAPI.GetAsync<ProductSalesResponse>(url);
+
+                if (response == null)
+                {
+                    return new ProductSalesResponse
+                    {
+                        Success = false,
+                        Message = "Failed to get product sales. No response from server."
+                    };
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in GetProductSalesForMonthAsync: {ex.Message}");
+                return new ProductSalesResponse
+                {
+                    Success = false,
+                    Message = $"Error getting product sales: {ex.Message}"
+                };
+            }
+        }
     }
 }

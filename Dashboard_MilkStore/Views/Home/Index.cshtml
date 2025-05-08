@@ -77,12 +77,12 @@
         </div>
     </div>
 
-    <!-- Revenue Charts -->
+    <!-- Revenue Charts - Slideshow Container -->
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="statistic-title">
+                    <div class="statistic-title" id="chart-header">
                         <div class="statistic-icon">
                             <i class="fas fa-chart-bar"></i>
                         </div>
@@ -91,9 +91,47 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container">
-                        <h4 class="chart-title">Biểu đồ cột doanh thu</h4>
-                        <canvas id="revenueChart"></canvas>
+                    <!-- Slideshow Container -->
+                    <div class="chart-slideshow">
+                        <!-- Slide 1: Revenue Chart -->
+                        <div class="chart-slide active" id="revenueChartSlide">
+                            <div class="chart-container">
+                                <h4 class="chart-title">Biểu đồ cột doanh thu</h4>
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Product Sales Chart (Initially Hidden) -->
+                        <div class="chart-slide" id="productSalesSlide">
+                            <div class="chart-container">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="chart-title" style="color: #ff6b6b; font-weight: 700; margin-bottom: 0;">
+                                        Biểu đồ doanh số sản phẩm tháng <span id="selectedMonthYear" style="color: #ff6b6b;"></span>
+                                    </h4>
+                                    <button class="btn btn-sm btn-outline-primary back-to-revenue" onclick="showRevenueChart()">
+                                        <i class="fas fa-arrow-left"></i> Quay lại biểu đồ doanh thu
+                                    </button>
+                                </div>
+                                <div class="chart-content d-flex flex-column">
+                                    <div class="chart-area">
+                                        <canvas id="productSalesChart"></canvas>
+                                    </div>
+                                    <div class="product-details mt-3">
+                                        <div class="product-sales-info">
+                                            <h5 class="text-center mb-3">Thông tin chi tiết</h5>
+                                            <div id="productSalesInfo" class="product-list">
+                                                <div class="text-center">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                    <p class="mt-2">Đang tải dữ liệu...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -385,13 +423,263 @@
                         }
                     }]
                 },
-                options: getCommonChartOptions('Biểu đồ cột doanh thu')
+                options: {
+                    ...getCommonChartOptions('Biểu đồ cột doanh thu'),
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const month = index + 1; // Tháng bắt đầu từ 1
+                            const monthName = labels[index];
+
+                            // Hiển thị biểu đồ sản phẩm cho tháng được chọn
+                            loadProductSalesForMonth(month, currentYear, monthName);
+                        }
+                    }
+                }
             });
 
             // Thông báo biểu đồ đã được tạo
             document.dispatchEvent(new CustomEvent('chartCreated', {
                 detail: { chart: barChart }
             }));
+        }
+
+        // Biến để lưu trữ biểu đồ sản phẩm
+        let productSalesChart = null;
+
+        // Hàm để chuyển đổi giữa các slide
+        function showSlide(slideId) {
+            // Ẩn tất cả các slide
+            document.querySelectorAll('.chart-slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+
+            // Hiển thị slide được chọn
+            document.getElementById(slideId).classList.add('active');
+        }
+
+        // Hàm để hiển thị biểu đồ doanh thu
+        function showRevenueChart() {
+            showSlide('revenueChartSlide');
+
+            // Cập nhật tiêu đề
+            document.getElementById('chart-header').innerHTML = `
+                <div class="statistic-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="statistic-main">Doanh thu theo tháng năm</span>
+                <span class="statistic-sub">${currentYear}</span>
+            `;
+        }
+
+        // Hàm để hiển thị biểu đồ sản phẩm
+        function showProductSalesChart() {
+            showSlide('productSalesSlide');
+        }
+
+        // Hàm để tải dữ liệu doanh số sản phẩm theo tháng
+        function loadProductSalesForMonth(month, year, monthName) {
+            // Hiển thị thông tin tháng được chọn
+            document.getElementById('selectedMonthYear').textContent = `${monthName}`;
+
+            // Chuyển đổi sang slide biểu đồ sản phẩm
+            showProductSalesChart();
+
+            // Cập nhật tiêu đề
+            document.getElementById('chart-header').innerHTML = `
+                <div class="statistic-icon" style="color: #ff6b6b;">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <span class="statistic-main">Doanh số sản phẩm tháng</span>
+                <span class="statistic-sub" style="color: #ff6b6b;">${monthName} ${year}</span>
+            `;
+
+            // Hiển thị loading
+            document.getElementById('productSalesInfo').innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Đang tải dữ liệu...</p>
+                </div>
+            `;
+
+            // Gọi API để lấy dữ liệu
+            fetch(`/Home/GetProductSalesForMonth?month=${month}&year=${year}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        renderProductSalesChart(data.data);
+                        renderProductSalesList(data.data);
+                    } else {
+                        document.getElementById('productSalesInfo').innerHTML = `
+                            <div class="alert alert-danger">
+                                ${data.message || 'Không thể tải dữ liệu doanh số sản phẩm'}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching product sales data:', error);
+                    document.getElementById('productSalesInfo').innerHTML = `
+                        <div class="alert alert-danger">
+                            Lỗi khi tải dữ liệu: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+
+        // Hàm để vẽ biểu đồ tròn doanh số sản phẩm
+        function renderProductSalesChart(data) {
+            const ctx = document.getElementById('productSalesChart').getContext('2d');
+
+            // Hủy biểu đồ cũ nếu có
+            if (productSalesChart) {
+                productSalesChart.destroy();
+            }
+
+            // Lấy tối đa 10 sản phẩm có doanh số cao nhất
+            const topProducts = data.products.slice(0, 10);
+
+            // Chuẩn bị dữ liệu cho biểu đồ
+            const labels = topProducts.map(p => p.productName);
+            const salesData = topProducts.map(p => p.totalSales);
+
+            // Tạo mảng màu ngẫu nhiên
+            const backgroundColors = [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                '#FF9F40', '#8AC249', '#EA5545', '#F46A9B', '#EF9B20'
+            ];
+
+            // Tạo biểu đồ tròn
+            productSalesChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: salesData,
+                        backgroundColor: backgroundColors,
+                        borderColor: 'white',
+                        borderWidth: 2,
+                        hoverBackgroundColor: backgroundColors.map(color => lightenColor(color, 10)),
+                        hoverBorderColor: 'white',
+                        hoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2, // Giữ tỷ lệ giống biểu đồ cột
+                    plugins: {
+                        legend: {
+                            position: 'bottom', // Đặt chú thích ở dưới để tiết kiệm không gian ngang
+                            labels: {
+                                font: {
+                                    size: 11,
+                                    family: "'Segoe UI', 'Roboto', sans-serif"
+                                },
+                                padding: 10,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 10 // Giảm kích thước ô màu
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#333',
+                            bodyColor: '#333',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold',
+                                family: "'Segoe UI', 'Roboto', sans-serif"
+                            },
+                            bodyFont: {
+                                size: 13,
+                                family: "'Segoe UI', 'Roboto', sans-serif"
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            borderColor: '#ddd',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const percentage = ((value / data.totalSales) * 100).toFixed(1);
+                                    return `${label}: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Hàm để hiển thị danh sách sản phẩm
+        function renderProductSalesList(data) {
+            const container = document.getElementById('productSalesInfo');
+
+            if (!data.products || data.products.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        Không có dữ liệu doanh số sản phẩm cho tháng này
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            // Hiển thị tổng doanh số và số lượng - phiên bản gọn hơn
+            html += `
+                <div class="alert alert-success mb-2 p-2">
+                    <div class="d-flex justify-content-between align-items-center small">
+                        <div>
+                            <i class="fas fa-money-bill-wave me-1"></i> Tổng doanh số:
+                            <strong>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.totalSales)}</strong>
+                        </div>
+                        <div>
+                            <i class="fas fa-box me-1"></i> SL: <strong>${data.totalQuantity}</strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Hiển thị danh sách sản phẩm
+            data.products.forEach(product => {
+                const imageUrl = product.imageUrl || '/images/no-image.png';
+
+                html += `
+                    <div class="product-item py-1 px-2 mb-1">
+                        <img src="${imageUrl}" alt="${product.productName}" class="product-image-small">
+                        <div class="product-details">
+                            <div class="product-name small">${product.productName}</div>
+                            <div class="product-stats small">
+                                <div class="product-quantity">
+                                    <i class="fas fa-cubes fa-xs"></i> ${product.quantity}
+                                </div>
+                                <div class="product-sales">
+                                    <i class="fas fa-money-bill-wave fa-xs"></i> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.totalSales)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
         }
 
         // Vẽ biểu đồ đường doanh thu tích lũy

@@ -1,4 +1,4 @@
-using Dashboard_MilkStore.Models.Brands;
+    using Dashboard_MilkStore.Models.Brands;
 using Dashboard_MilkStore.Models.Common;
 using Dashboard_MilkStore.Models.Product;
 using Dashboard_MilkStore.Models.Units;
@@ -15,12 +15,18 @@ namespace Dashboard_MilkStore.Services.Product
         Task<List<Dimension>> GetDimensions(string productId);
         Task<List<UnitDTO>> GetUnits();
         Task<ServiceResponse<bool>> UpdateProductAsync(string id, Dictionary<string, object> patchValues);
+        Task<ServiceResponse<Models.Product.Product>> CreateProductAsync(CreateProductDTO createDto, string? token = null);
 
         // Image operations
         Task<ServiceResponse<ImageDTO>> AddImageAsync(CreateImageDTO createDto, string? token = null);
         Task<ServiceResponse<bool>> DeleteImageAsync(string imageId, string? token = null);
         Task<ServiceResponse<bool>> UpdateImageAsync(string imageId, UpdateImageDTO updateDto, string? token = null);
         Task<ServiceResponse<bool>> UpdateImageOrderAsync(string imageId, UpdateImageOrderDTO updateDto, string? token = null);
+
+        // Dimension operations
+        Task<ServiceResponse<Dimension>> AddDimensionAsync(CreateDimensionDTO createDto, string? token = null);
+        Task<ServiceResponse<bool>> UpdateDimensionAsync(string dimensionId, Dictionary<string, object> patchValues, string? token = null);
+        Task<ServiceResponse<bool>> DeleteDimensionAsync(string dimensionId, string? token = null);
         Task<ServiceResponse<List<ImageDTO>>> GetImagesByProductIdAsync(string productId, string? token = null);
     }
 }

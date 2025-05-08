@@ -9,8 +9,8 @@
       "PackagePath": "staticwebassets\\css\\order-detail.css"
     },
     {
-      "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management.css",
-      "PackagePath": "staticwebassets\\css\\product-management.css"
+      "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\product-management-1.css",
+      "PackagePath": "staticwebassets\\css\\product-management-1.css"
     },
     {
       "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\site.css",
@@ -279,6 +279,10 @@
     {
       "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\sounds\\fireworks-sound.mp3",
+      "PackagePath": "staticwebassets\\sounds\\fireworks-sound.mp3"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Dashboard_MilkStore.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

@@ -8,6 +8,8 @@ class FullscreenFireworks {
     this.particles = [];
     this.isActive = false;
     this.animationId = null;
+    this.audio = null; // Biến để lưu trữ âm thanh nền
+    this.explosionAudios = []; // Mảng để lưu trữ tất cả các âm thanh nổ
     this.init();
   }
 
@@ -118,6 +120,10 @@ class FullscreenFireworks {
     // Reset arrays
     this.fireworks = [];
     this.particles = [];
+    this.showThanksText = false;
+
+    // Phát âm thanh pháo hoa
+    this.playFireworksSound();
 
     // Start animation
     this.isActive = true;
@@ -182,6 +188,27 @@ class FullscreenFireworks {
       }
     }, 300); // Tăng thời gian chờ giữa các lần bắn để đều hơn
 
+    // Hiển thị chữ "Thanks for listening" trong 2 giây cuối
+    setTimeout(() => {
+      this.showThanksText = true;
+
+      // Tạo hiệu ứng pháo hoa đặc biệt xung quanh chữ
+      for (let i = 0; i < 15; i++) {
+        // Tăng số lượng pháo hoa
+        setTimeout(() => {
+          if (this.isActive) {
+            // Bắn pháo hoa ở vị trí xung quanh chữ
+            const centerX = this.canvas.width / 2;
+            const centerY = this.canvas.height / 2;
+            const offsetX = (Math.random() - 0.5) * 350; // Tăng phạm vi
+            const offsetY = (Math.random() - 0.5) * 200; // Tăng phạm vi
+
+            this.launchSpecialFirework(centerX + offsetX, centerY + offsetY);
+          }
+        }, i * 130); // Tăng thời gian giữa các pháo hoa
+      }
+    }, 10000); // Hiển thị trong 2 giây cuối (từ giây thứ 10 đến giây thứ 12)
+
     // Kéo dài thời gian hiệu ứng
     this.autoStopTimeout = setTimeout(() => {
       this.stopFireworks(true); // true = tự động dừng
@@ -210,6 +237,9 @@ class FullscreenFireworks {
       this.animationId = null;
     }
 
+    // Dừng âm thanh nếu đang phát
+    this.stopFireworksSound();
+
     // Xóa tất cả pháo hoa và hạt
     this.fireworks = [];
     this.particles = [];
@@ -231,6 +261,112 @@ class FullscreenFireworks {
 
     // Log thông tin để debug
     console.log("Fireworks stopped, auto stop:", isAutoStop);
+  }
+
+  // Phương thức để phát âm thanh pháo hoa nền
+  playFireworksSound() {
+    // Không phát âm thanh nền nữa
+    console.log("Không phát âm thanh nền");
+
+    // Chỉ để trống phương thức này để không phát âm thanh nền
+    // Chúng ta sẽ chỉ phát âm thanh nổ pháo hoa
+  }
+
+  // Phương thức để phát âm thanh nổ cho một quả pháo hoa cụ thể
+  playFireworkExplosionSound() {
+    // Mảng các URL âm thanh nổ bom mạnh mẽ
+    const explosionSounds = [
+      // "https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3", // Tiếng nổ bom mạnh
+      "https://assets.mixkit.co/active_storage/sfx/1662/1662-preview.mp3", // Tiếng nổ lớn với dư âm
+      // "https://assets.mixkit.co/active_storage/sfx/2770/2770-preview.mp3", // Tiếng nổ bom với sóng xung kích
+      "https://assets.mixkit.co/active_storage/sfx/2771/2771-preview.mp3", // Tiếng nổ bom cực mạnh
+    ];
+
+    // Chọn ngẫu nhiên một âm thanh nổ
+    const randomSound =
+      explosionSounds[Math.floor(Math.random() * explosionSounds.length)];
+
+    // Tạo đối tượng âm thanh mới cho tiếng nổ
+    const explosionAudio = new Audio(randomSound);
+
+    // Thiết lập âm lượng cao hơn
+    explosionAudio.volume = 1.0; // Âm lượng tối đa
+
+    // Thêm sự kiện để xóa audio khi phát xong
+    explosionAudio.onended = () => {
+      // Xóa audio khỏi mảng khi phát xong
+      const index = this.explosionAudios.indexOf(explosionAudio);
+      if (index !== -1) {
+        this.explosionAudios.splice(index, 1);
+      }
+    };
+
+    // Lưu audio vào mảng để có thể dừng sau này
+    this.explosionAudios.push(explosionAudio);
+
+    // Phát âm thanh nổ
+    explosionAudio.play().catch((error) => {
+      console.log("Không thể phát âm thanh nổ pháo hoa:", error);
+      // Xóa audio khỏi mảng nếu không thể phát
+      const index = this.explosionAudios.indexOf(explosionAudio);
+      if (index !== -1) {
+        this.explosionAudios.splice(index, 1);
+      }
+    });
+  }
+
+  // Phương thức để dừng tất cả âm thanh pháo hoa
+  stopFireworksSound() {
+    // Dừng âm thanh nền
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+      this.audio.src = ""; // Xóa nguồn âm thanh
+      this.audio = null; // Xóa tham chiếu để giải phóng bộ nhớ
+    }
+
+    // Dừng tất cả các âm thanh nổ đã lưu trong mảng
+    if (this.explosionAudios && this.explosionAudios.length > 0) {
+      console.log("Dừng", this.explosionAudios.length, "âm thanh nổ");
+      this.explosionAudios.forEach((audio) => {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.src = ""; // Xóa nguồn âm thanh
+          audio.onended = null; // Xóa sự kiện onended
+        } catch (e) {
+          console.log("Không thể dừng âm thanh nổ:", e);
+        }
+      });
+      // Xóa tất cả các âm thanh khỏi mảng
+      this.explosionAudios = [];
+    }
+
+    // Tìm và dừng tất cả các thẻ audio đang phát (phòng trường hợp có audio không được lưu trong mảng)
+    const audioElements = document.querySelectorAll("audio");
+    audioElements.forEach((audio) => {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.src = ""; // Xóa nguồn âm thanh
+        audio.onended = null; // Xóa sự kiện onended
+        if (audio.parentNode) {
+          audio.parentNode.removeChild(audio); // Xóa phần tử audio khỏi DOM
+        }
+      } catch (e) {
+        console.log("Không thể dừng audio:", e);
+      }
+    });
+
+    // Xóa tất cả các sự kiện âm thanh
+    try {
+      window.removeEventListener("click", this.playFireworkExplosionSound);
+    } catch (e) {
+      console.log("Không thể xóa sự kiện âm thanh:", e);
+    }
+
+    // Thêm log để debug
+    console.log("Đã dừng tất cả âm thanh pháo hoa");
   }
 
   launchFirework() {
@@ -285,12 +421,42 @@ class FullscreenFireworks {
     }
   }
 
+  // Phương thức để bắn pháo hoa đặc biệt từ vị trí cụ thể
+  launchSpecialFirework(targetX, targetY) {
+    // Tạo vị trí bắt đầu ngẫu nhiên ở dưới cùng của màn hình
+    const startX = Math.random() * this.canvas.width;
+    const startY = this.canvas.height;
+
+    // Tạo màu sắc rực rỡ
+    const color = this.getRandomColor();
+
+    // Tạo hiệu ứng pháo hoa
+    this.fireworks.push({
+      x: startX,
+      y: startY,
+      targetX: targetX,
+      targetY: targetY,
+      speed: 15, // Tốc độ nhanh hơn cho pháo hoa đặc biệt
+      angle: Math.atan2(targetY - startY, targetX - startX),
+      color: color,
+      size: 3 + Math.random() * 2, // Kích thước lớn hơn
+      trail: [],
+      // Luôn có hiệu ứng lấp lánh cho đuôi pháo hoa đặc biệt
+      glitter: true,
+      // Đánh dấu là pháo hoa đặc biệt
+      isSpecial: true,
+    });
+  }
+
   explodeFirework(firework) {
     // Tăng số lượng hạt để nổ diện rộng hơn
     const particleCount = 100 + Math.floor(Math.random() * 50);
 
     // Quyết định loại pháo hoa - tăng tỷ lệ pháo hoa nhiều màu
     const fireworkType = Math.floor(Math.random() * 6);
+
+    // Phát âm thanh nổ pháo hoa
+    this.playFireworkExplosionSound();
 
     // Tạo hiệu ứng lấp lánh tại điểm nổ (giảm số lượng hạt)
     this.createSparkleEffect(firework);
@@ -829,6 +995,11 @@ class FullscreenFireworks {
       }
     }
 
+    // Vẽ chữ "Thanks for listening" nếu đang trong 1 giây cuối
+    if (this.showThanksText) {
+      this.drawThanksText();
+    }
+
     // Continue animation
     if (
       this.isActive ||
@@ -839,6 +1010,69 @@ class FullscreenFireworks {
         this.animate(timestamp)
       );
     }
+  }
+
+  // Phương thức để vẽ chữ "Thanks for listening"
+  drawThanksText() {
+    const centerX = this.canvas.width / 2;
+    const centerY = this.canvas.height / 2;
+
+    // Thiết lập font chữ - tăng kích thước lên 72px
+    this.ctx.font = "bold 72px Arial, sans-serif";
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+
+    // Tạo hiệu ứng đổ bóng cho chữ - tăng độ mờ
+    this.ctx.shadowBlur = 20;
+    this.ctx.shadowColor = "#FFFFFF";
+
+    // Vẽ viền chữ - tăng độ dày viền
+    this.ctx.strokeStyle = "#FFFFFF";
+    this.ctx.lineWidth = 4;
+    this.ctx.strokeText("Thanks for listening", centerX, centerY);
+
+    // Tạo gradient màu cho chữ - tăng phạm vi gradient
+    const gradient = this.ctx.createLinearGradient(
+      centerX - 300,
+      centerY,
+      centerX + 300,
+      centerY
+    );
+    gradient.addColorStop(0, "#FF3EA5"); // Hồng đậm
+    gradient.addColorStop(0.25, "#00FFFF"); // Cyan sáng
+    gradient.addColorStop(0.5, "#FFF700"); // Vàng rực
+    gradient.addColorStop(0.75, "#36FF00"); // Xanh lá cây neon
+    gradient.addColorStop(1, "#8C52FF"); // Tím đậm
+
+    // Vẽ chữ với gradient
+    this.ctx.fillStyle = gradient;
+    this.ctx.fillText("Thanks for listening", centerX, centerY);
+
+    // Reset shadow
+    this.ctx.shadowBlur = 0;
+
+    // Tạo hiệu ứng lấp lánh xung quanh chữ - tăng số lượng và kích thước
+    for (let i = 0; i < 20; i++) {
+      const sparkleX = centerX + (Math.random() - 0.5) * 500;
+      const sparkleY = centerY + (Math.random() - 0.5) * 150;
+      const sparkleSize = Math.random() * 5 + 3;
+
+      this.ctx.fillStyle = "#FFFFFF";
+      this.ctx.beginPath();
+      this.ctx.arc(sparkleX, sparkleY, sparkleSize, 0, Math.PI * 2);
+      this.ctx.closePath();
+      this.ctx.fill();
+    }
+
+    // Thêm hiệu ứng ánh sáng xung quanh chữ
+    this.ctx.shadowBlur = 30;
+    this.ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+    this.ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    this.ctx.beginPath();
+    this.ctx.arc(centerX, centerY, 200, 0, Math.PI * 2);
+    this.ctx.closePath();
+    this.ctx.fill();
+    this.ctx.shadowBlur = 0;
   }
 
   getRandomColor() {

@@ -1,0 +1,858 @@
+@model Dashboard_MilkStore.Models.Product.ProductCreateViewModel
+
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+}
+
+<link rel="stylesheet" href="~/css/product-management-1.css" />
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center header-custom">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-plus-circle fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Thêm sản phẩm mới</h5>
+                <p class="text-white-50 mb-0 small">Nhập thông tin sản phẩm mới</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Product")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button fireworks-btn">
+            <i class="bi bi-arrow-left me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Quay lại</span>
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <form id="createProductForm" asp-action="Create" method="post" class="row g-4">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Images Section -->
+                <div class="col-12">
+                    <label class="form-label">Hình ảnh sản phẩm</label>
+                    <div class="image-gallery">
+                        <div class="row g-3">
+                            <!-- Upload new images -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card h-100 border-dashed">
+                                    <div class="card-body d-flex align-items-center justify-content-center">
+                                        <div class="text-center">
+                                            <input type="file"
+                                                   class="d-none"
+                                                   id="newImages"
+                                                   name="NewImages"
+                                                   multiple
+                                                   accept="image/*">
+                                            <label for="newImages" class="btn btn-outline-primary mb-2">
+                                                <i class="bi bi-cloud-upload me-2"></i>Thêm ảnh
+                                            </label>
+                                            <div class="text-muted small">Kéo thả hoặc click để chọn</div>
+                                            <div class="text-danger small mt-1">Kích thước tối đa: 5MB</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Name -->
+                <div class="col-md-6">
+                    <label asp-for="ProductName" class="form-label"></label>
+                    <input asp-for="ProductName" class="form-control" />
+                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                </div>
+
+                <!-- Brand -->
+                <div class="col-md-6">
+                    <label asp-for="Brand1" class="form-label"></label>
+                    <select asp-for="Brand1" asp-items="Model.Brands" class="form-select">
+                        <option value="">-- Chọn thương hiệu --</option>
+                    </select>
+                    <span asp-validation-for="Brand1" class="text-danger"></span>
+                </div>
+
+                <!-- SKU -->
+                <div class="col-md-6">
+                    <label asp-for="Sku" class="form-label"></label>
+                    <input asp-for="Sku" class="form-control" />
+                    <span asp-validation-for="Sku" class="text-danger"></span>
+                </div>
+
+                <!-- Bar Code -->
+                <div class="col-md-6">
+                    <label asp-for="Bar" class="form-label"></label>
+                    <input asp-for="Bar" class="form-control" />
+                    <span asp-validation-for="Bar" class="text-danger"></span>
+                </div>
+
+                <!-- Stock Quantity -->
+                <div class="col-md-6">
+                    <label asp-for="StockQuantity" class="form-label"></label>
+                    <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                </div>
+
+                <!-- Unit -->
+                <div class="col-md-6">
+                    <label asp-for="Unit1" class="form-label"></label>
+                    <select asp-for="Unit1" asp-items="Model.Units" class="form-select">
+                        <option value="">-- Chọn đơn vị --</option>
+                    </select>
+                    <span asp-validation-for="Unit1" class="text-danger"></span>
+                </div>
+
+                <!-- Description -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <!-- Price Section -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-header bg-transparent border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Danh sách giá</h5>
+                                <button type="button" class="btn btn-primary btn-sm rounded-pill" onclick="showAddPriceModal()">
+                                    <i class="bi bi-plus-circle me-2"></i>Thêm giá mới
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="priceTable">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Giá (VNĐ)</th>
+                                            <th>Mặc định</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="5" class="text-center">Chưa có giá nào được thiết lập</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dimensions Section -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-header bg-transparent border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Kích thước sản phẩm</h5>
+                                <button type="button" class="btn btn-primary btn-sm rounded-pill" onclick="showAddDimensionModal()">
+                                    <i class="bi bi-plus-circle me-2"></i>Thêm kích thước
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Chiều dài (cm)</th>
+                                            <th>Chiều rộng (cm)</th>
+                                            <th>Chiều cao (cm)</th>
+                                            <th>Cân nặng (kg)</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dimensionsTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Chưa có kích thước nào được thiết lập</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6">
+                    <label asp-for="StatusId" class="form-label"></label>
+                    <select asp-for="StatusId" asp-items="Model.Statuses" class="form-select">
+                        <option value="">-- Chọn trạng thái --</option>
+                    </select>
+                    <span asp-validation-for="StatusId" class="text-danger"></span>
+                </div>
+
+                <!-- Active Status -->
+                <div class="col-md-6">
+                    <label asp-for="IsActive" class="form-label d-block"></label>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" asp-for="IsActive">
+                        <label class="form-check-label" asp-for="IsActive">Đang hoạt động</label>
+                    </div>
+                </div>
+
+                <!-- Hidden fields for images, prices, and dimensions -->
+                <div id="hiddenFields">
+                    <!-- Will be populated dynamically by JavaScript -->
+                </div>
+
+                <div class="col-12 mt-4">
+                    <hr />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("Index", "Product")" class="btn btn-light rounded-pill px-4">
+                            <i class="bi bi-x me-2"></i>Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="submitButton">
+                            <i class="bi bi-check2 me-2"></i>Tạo sản phẩm
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Dimension Modal -->
+<div class="modal fade" id="dimensionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dimensionModalTitle">Thêm kích thước mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="dimensionForm">
+                    <input type="hidden" id="dimensionId">
+                    <div class="mb-3">
+                        <label for="lengthValue" class="form-label">Chiều dài (cm)</label>
+                        <input type="number" class="form-control" id="lengthValue" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="widthValue" class="form-label">Chiều rộng (cm)</label>
+                        <input type="number" class="form-control" id="widthValue" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="heightValue" class="form-label">Chiều cao (cm)</label>
+                        <input type="number" class="form-control" id="heightValue" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="weightValue" class="form-label">Cân nặng (kg)</label>
+                        <input type="number" class="form-control" id="weightValue" step="0.01" min="0">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="addDimensionToTable()">
+                    <i class="bi bi-check2 me-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Price Modal -->
+<div class="modal fade"
+     id="priceModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="priceModalTitle"
+     aria-modal="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="priceModalTitle">Thêm giá mới</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="priceForm">
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Giá (VNĐ)</label>
+                        <input type="text"
+                               class="form-control"
+                               id="price"
+                               required
+                               min="0"
+                               aria-required="true">
+                    </div>
+                    <div class="mb-3 d-flex align-items-center justify-content-between border rounded-3 px-3 py-2">
+                        <label class="form-check-label mb-0" for="isDefault">Đặt làm giá mặc định</label>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="isDefault"
+                                   role="switch"
+                                   aria-checked="false">
+                        </div>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center justify-content-between border rounded-3 px-3 py-2">
+                        <label class="form-check-label mb-0" for="isActive">Kích hoạt</label>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="isActive"
+                                   checked
+                                   role="switch"
+                                   aria-checked="true">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Hủy
+                </button>
+                <button type="button"
+                        class="btn btn-primary rounded-pill px-4"
+                        onclick="addPriceToTable()">
+                    <i class="bi bi-check2 me-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let imageOrder = 1;
+            let newImages = [];
+            let newPrices = [];
+            let newDimensions = [];
+
+            // Image preview for new uploads
+            $('#newImages').on('change', function(e) {
+                const files = e.target.files;
+                if (files) {
+                    const uploadCard = $('.border-dashed').parent();
+
+                    Array.from(files).forEach(file => {
+                        // Kiểm tra kích thước file trước khi tạo preview
+                        const fileSizeInMB = file.size / (1024 * 1024);
+                        if (fileSizeInMB > 5) {
+                            Swal.fire({
+                                title: 'Ảnh quá lớn!',
+                                text: `Ảnh "${file.name}" có kích thước ${fileSizeInMB.toFixed(2)}MB, vượt quá giới hạn 5MB.`,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const newImageCard = `
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="card h-100">
+                                        <div class="position-relative">
+                                            <img src="${e.target.result}"
+                                                 class="card-img-top"
+                                                 alt="New Image"
+                                                 style="height: 200px; object-fit: cover;">
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-danger rounded-circle remove-new-image">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="position-absolute bottom-0 start-0 m-2">
+                                                <span class="badge bg-info">${fileSizeInMB.toFixed(2)}MB</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">Thứ tự</span>
+                                                <input type="number"
+                                                       class="form-control"
+                                                       value="${imageOrder}"
+                                                       min="1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            uploadCard.before(newImageCard);
+                            imageOrder++;
+                        }
+                        reader.readAsDataURL(file);
+                    });
+                }
+            });
+
+            // Remove new image preview
+            $(document).on('click', '.remove-new-image', function() {
+                Swal.fire({
+                    title: 'Xác nhận xóa?',
+                    text: 'Bạn có chắc muốn xóa ảnh tạm này?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(this).closest('.col-6').remove();
+                        Swal.fire('Đã xóa!', 'Ảnh tạm đã được xóa.', 'success');
+                    }
+                });
+            });
+
+            // Xử lý trước khi submit form
+            $('#submitButton').on('click', function(e) {
+                e.preventDefault();
+
+                // Kiểm tra form hợp lệ
+                if (!$('#createProductForm').valid()) {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Vui lòng kiểm tra lại thông tin sản phẩm',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
+
+                // Xóa tất cả các trường ẩn cũ
+                $('#hiddenFields').empty();
+
+                // Thêm các trường ẩn cho hình ảnh
+                const imageElements = $('.image-gallery .col-6:not(.border-dashed)');
+                imageElements.each(function(index) {
+                    const imgSrc = $(this).find('img').attr('src');
+                    const order = $(this).find('input[type="number"]').val() || (index + 1);
+
+                    if (imgSrc) {
+                        // Tạo một textarea ẩn để lưu dữ liệu hình ảnh (có thể rất dài)
+                        $('#hiddenFields').append(`<textarea style="display:none" name="Images[${index}].ImageData">${imgSrc}</textarea>`);
+                        $('#hiddenFields').append(`<input type="hidden" name="Images[${index}].Order" value="${order}">`);
+                    }
+                });
+
+                // Thêm các trường ẩn cho giá
+                const priceRows = $('#priceTable tbody tr').not(':has(td[colspan])');
+                priceRows.each(function(index) {
+                    const price = $(this).find('input[type="number"]').val();
+                    const isDefault = $(this).find('input[type="checkbox"]').eq(0).is(':checked');
+                    const isActive = $(this).find('input[type="checkbox"]').eq(1).is(':checked');
+
+                    if (price) {
+                        $('#hiddenFields').append(`<input type="hidden" name="Prices[${index}].Price" value="${price}">`);
+                        $('#hiddenFields').append(`<input type="hidden" name="Prices[${index}].IsDefault" value="${isDefault}">`);
+                        $('#hiddenFields').append(`<input type="hidden" name="Prices[${index}].IsActive" value="${isActive}">`);
+                    }
+                });
+
+                // Thêm các trường ẩn cho kích thước
+                const dimensionRows = $('#dimensionsTableBody tr').not(':has(td[colspan])');
+                dimensionRows.each(function(index) {
+                    const length = $(this).find('input[type="text"]').eq(0).val();
+                    const width = $(this).find('input[type="text"]').eq(1).val();
+                    const height = $(this).find('input[type="text"]').eq(2).val();
+                    const weight = $(this).find('input[type="text"]').eq(3).val();
+
+                    if (length || width || height || weight) {
+                        $('#hiddenFields').append(`<input type="hidden" name="Dimensions[${index}].LengthValue" value="${length}">`);
+                        $('#hiddenFields').append(`<input type="hidden" name="Dimensions[${index}].WidthValue" value="${width}">`);
+                        $('#hiddenFields').append(`<input type="hidden" name="Dimensions[${index}].HeightValue" value="${height}">`);
+                        $('#hiddenFields').append(`<input type="hidden" name="Dimensions[${index}].WeightValue" value="${weight}">`);
+                    }
+                });
+
+                // Hiển thị loading indicator
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    text: 'Vui lòng đợi trong giây lát',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Submit form
+                $('#createProductForm').submit();
+            });
+
+            // Form submission
+            $('#createProductForm').on('submit', function() {
+                // Form đã được xử lý ở trên, chỉ cần submit bình thường
+                return true;
+            });
+        });
+
+        // Price management functions
+        function showAddPriceModal() {
+            $('#price').val('');
+            $('#isDefault').prop('checked', false);
+            $('#isActive').prop('checked', true);
+            $('#priceModal').modal('show');
+        }
+
+        function addPriceToTable() {
+            const price = $('#price').val();
+            const isDefault = $('#isDefault').is(':checked');
+            const isActive = $('#isActive').is(':checked');
+
+            if (!price) {
+                Swal.fire('Lỗi!', 'Vui lòng nhập giá', 'error');
+                return;
+            }
+
+            // Tính index mới
+            const currentIndex = $('#priceTable tbody tr').length;
+            const newIndex = currentIndex === 1 && $('#priceTable tbody tr td').text().includes('Chưa có giá') ? 1 : currentIndex + 1;
+
+            const newRow = `
+                <tr class="table-warning">
+                    <td>${newIndex}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="number"
+                                   class="form-control form-control-sm"
+                                   style="width: 120px;"
+                                   value="${price.replace(',', '.')}"
+                                   step="0.01"
+                                   min="0">
+                            <span class="text-muted">
+                                (${Number(price.replace(',', '.')).toLocaleString('vi-VN')} VNĐ)
+                                <span class="badge bg-warning text-dark ms-1">Tạm thời</span>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   ${isDefault ? 'checked' : ''}>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   ${isActive ? 'checked' : ''}>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm remove-price">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            // Thêm row mới vào bảng
+            if ($('#priceTable tbody tr td').length === 1 && $('#priceTable tbody tr td').text().includes('Chưa có giá')) {
+                $('#priceTable tbody').empty();
+            }
+            $('#priceTable tbody').append(newRow);
+
+            // Đóng modal
+            $('#priceModal').modal('hide');
+
+            // Reset form
+            $('#priceForm')[0].reset();
+            $('#isActive').prop('checked', true);
+        }
+
+        // Remove price row
+        $(document).on('click', '.remove-price', function() {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: 'Bạn có chắc muốn xóa giá này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $(this).closest('tr').remove();
+                    // Nếu không còn giá nào, hiển thị thông báo
+                    if ($('#priceTable tbody tr').length === 0) {
+                        $('#priceTable tbody').html('<tr><td colspan="5" class="text-center">Chưa có giá nào được thiết lập</td></tr>');
+                    } else {
+                        // Cập nhật lại STT
+                        $('#priceTable tbody tr').each(function(index) {
+                            $(this).find('td').first().text(index + 1);
+                        });
+                    }
+                }
+            });
+        });
+
+        // Dimension management functions
+        function showAddDimensionModal() {
+            $('#dimensionId').val('');
+            $('#lengthValue').val('');
+            $('#widthValue').val('');
+            $('#heightValue').val('');
+            $('#weightValue').val('');
+            $('#dimensionModalTitle').text('Thêm kích thước mới');
+            $('#dimensionModal').modal('show');
+        }
+
+        function addDimensionToTable() {
+            const lengthValue = $('#lengthValue').val();
+            const widthValue = $('#widthValue').val();
+            const heightValue = $('#heightValue').val();
+            const weightValue = $('#weightValue').val();
+
+            if (!lengthValue && !widthValue && !heightValue && !weightValue) {
+                Swal.fire('Lỗi!', 'Vui lòng nhập ít nhất một kích thước', 'error');
+                return;
+            }
+
+            // Tính index mới
+            const currentIndex = $('#dimensionsTableBody tr').length;
+            const newIndex = currentIndex === 1 && $('#dimensionsTableBody tr td').text().includes('Chưa có kích thước') ? 1 : currentIndex + 1;
+
+            const newRow = `
+                <tr class="table-warning">
+                    <td>${newIndex}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${lengthValue}"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${widthValue}"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${heightValue}"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   style="width: 100px;"
+                                   value="${weightValue}"
+                                   min="0">
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm remove-dimension">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            // Thêm row mới vào bảng
+            if ($('#dimensionsTableBody tr td').length === 1 && $('#dimensionsTableBody tr td').text().includes('Chưa có kích thước')) {
+                $('#dimensionsTableBody').empty();
+            }
+            $('#dimensionsTableBody').append(newRow);
+
+            // Đóng modal
+            $('#dimensionModal').modal('hide');
+
+            // Reset form
+            $('#dimensionForm')[0].reset();
+        }
+
+        // Remove dimension row
+        $(document).on('click', '.remove-dimension', function() {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: 'Bạn có chắc muốn xóa kích thước này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $(this).closest('tr').remove();
+                    // Nếu không còn kích thước nào, hiển thị thông báo
+                    if ($('#dimensionsTableBody tr').length === 0) {
+                        $('#dimensionsTableBody').html('<tr><td colspan="6" class="text-center">Chưa có kích thước nào được thiết lập</td></tr>');
+                    } else {
+                        // Cập nhật lại STT
+                        $('#dimensionsTableBody tr').each(function(index) {
+                            $(this).find('td').first().text(index + 1);
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .form-label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            border-color: #e5e7eb;
+            padding: 0.625rem 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+            margin-top: 0.25em;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .border-dashed {
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            min-height: 200px;
+        }
+
+        .border-dashed:hover {
+            border-color: #6366f1;
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .image-gallery .card {
+            transition: all 0.2s;
+        }
+
+        .image-gallery .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+        }
+
+        .image-gallery .btn-sm {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+
+        /* Price table styles */
+        .table {
+            font-size: 0.875rem;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #4b5563;
+            background-color: #f9fafb;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-outline-primary {
+            color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #6366f1;
+            color: #fff;
+        }
+
+        .btn-outline-danger {
+            color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #dc2626;
+            color: #fff;
+        }
+
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .back-button {
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+    </style>
+}

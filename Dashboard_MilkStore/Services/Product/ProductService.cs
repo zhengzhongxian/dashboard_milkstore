@@ -486,6 +486,52 @@ namespace Dashboard_MilkStore.Services.Product
             }
         }
 
+        public async Task<ServiceResponse<Models.Product.Product>> CreateProductAsync(CreateProductDTO createDto, string? token = null)
+        {
+            try
+            {
+                // Log dữ liệu gửi đi để debug
+                var jsonData = System.Text.Json.JsonSerializer.Serialize(createDto, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                System.Diagnostics.Debug.WriteLine($"CreateProductAsync: Sending data to API: {jsonData}");
+
+                var url = $"{_baseUrl}/api/Product";
+                System.Diagnostics.Debug.WriteLine($"CreateProductAsync: Calling API at URL: {url}");
+
+                var response = await _callAPI.PostAsync<ServiceResponse<Models.Product.Product>>(url, createDto, token);
+
+                if (response == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("CreateProductAsync: Received null response from API");
+                    return new ServiceResponse<Models.Product.Product>
+                    {
+                        Success = false,
+                        Message = "Failed to create product. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                System.Diagnostics.Debug.WriteLine($"CreateProductAsync: API response - Success: {response.Success}, Message: {response.Message}, StatusCode: {response.StatusCode}");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"CreateProductAsync: Exception occurred: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"CreateProductAsync: Stack trace: {ex.StackTrace}");
+
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"CreateProductAsync: Inner exception: {ex.InnerException.Message}");
+                }
+
+                return new ServiceResponse<Models.Product.Product>
+                {
+                    Success = false,
+                    Message = $"Error creating product: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
         public async Task<ServiceResponse<List<ImageDTO>>> GetImagesByProductIdAsync(string productId, string? token = null)
         {
             try
@@ -511,6 +557,142 @@ namespace Dashboard_MilkStore.Services.Product
                 {
                     Success = false,
                     Message = $"Error getting images: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        // Dimension operations
+        public async Task<ServiceResponse<Dimension>> AddDimensionAsync(CreateDimensionDTO createDto, string? token = null)
+        {
+            try
+            {
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrEmpty(createDto.ProductId))
+                {
+                    return new ServiceResponse<Dimension>
+                    {
+                        Success = false,
+                        Message = "ProductId không được để trống",
+                        StatusCode = (int)HttpStatusCode.BadRequest
+                    };
+                }
+
+                var url = $"{_baseUrl}/api/Dimension";
+                var response = await _callAPI.PostAsync<ServiceResponse<Dimension>>(url, createDto, token);
+
+                if (response == null)
+                {
+                    return new ServiceResponse<Dimension>
+                    {
+                        Success = false,
+                        Message = "Failed to add dimension. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in AddDimensionAsync: {ex.Message}");
+                return new ServiceResponse<Dimension>
+                {
+                    Success = false,
+                    Message = $"Error adding dimension: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateDimensionAsync(string dimensionId, Dictionary<string, object> patchValues, string? token = null)
+        {
+            try
+            {
+                // Tạo một mảng các operations cho JsonPatchDocument
+                var operations = new List<Dictionary<string, object>>();
+
+                if (patchValues.ContainsKey("weightValue") && patchValues["weightValue"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/WeightValue" }, { "value", patchValues["weightValue"] } });
+                }
+
+                if (patchValues.ContainsKey("heightValue") && patchValues["heightValue"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/HeightValue" }, { "value", patchValues["heightValue"] } });
+                }
+
+                if (patchValues.ContainsKey("widthValue") && patchValues["widthValue"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/WidthValue" }, { "value", patchValues["widthValue"] } });
+                }
+
+                if (patchValues.ContainsKey("lengthValue") && patchValues["lengthValue"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/LengthValue" }, { "value", patchValues["lengthValue"] } });
+                }
+
+                if (patchValues.ContainsKey("metadata") && patchValues["metadata"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/Metadata" }, { "value", patchValues["metadata"] } });
+                }
+
+                // In ra dữ liệu gửi đi để debug
+                System.Diagnostics.Debug.WriteLine("Sending PATCH request to: " + $"{_baseUrl}/api/Dimension/{dimensionId}");
+                System.Diagnostics.Debug.WriteLine("Data: " + System.Text.Json.JsonSerializer.Serialize(operations));
+
+                // Sử dụng PATCH để cập nhật kích thước
+                var response = await _callAPI.PatchAsync<ServiceResponse<bool>>($"{_baseUrl}/api/Dimension/{dimensionId}", operations);
+                return response ?? new ServiceResponse<bool> { Success = false, Message = "Failed to update dimension" };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in UpdateDimensionAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error updating dimension: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteDimensionAsync(string dimensionId, string? token = null)
+        {
+            try
+            {
+                var url = $"{_baseUrl}/api/Dimension/{dimensionId}";
+
+                // Create a HttpClient instance
+                using (var httpClient = new HttpClient())
+                {
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    }
+
+                    var response = await httpClient.DeleteAsync(url);
+                    response.EnsureSuccessStatusCode();
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<bool>>(content,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    return result ?? new ServiceResponse<bool>
+                    {
+                        Success = true,
+                        Message = "Dimension deleted successfully",
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in DeleteDimensionAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error deleting dimension: {ex.Message}",
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }

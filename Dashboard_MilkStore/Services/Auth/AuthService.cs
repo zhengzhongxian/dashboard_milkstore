@@ -354,5 +354,27 @@ namespace Dashboard_MilkStore.Services.Auth
                 return true;
             }
         }
+
+        public bool IsRefreshTokenExpired(string refreshToken)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                if (!handler.CanReadToken(refreshToken))
+                {
+                    return true;
+                }
+
+                var jwtToken = handler.ReadJwtToken(refreshToken);
+                var expiry = jwtToken.ValidTo;
+
+                // Không cần buffer cho refresh token vì chúng ta chỉ kiểm tra khi nó thực sự hết hạn
+                return expiry < DateTime.UtcNow;
+            }
+            catch
+            {
+                return true;
+            }
+        }
     }
 }

@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("2855c2a6-759a-4e33-9d6f-29154829a071")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("Dashboard_MilkStore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3faea0b81f6cdb060ede297f60ceba8569bd5d45")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dashboard_MilkStore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dashboard_MilkStore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Chỉnh sửa sản phẩm";
 }
 
-<link rel="stylesheet" href="~/css/product-management.css" />
+<link rel="stylesheet" href="~/css/product-management-1.css" />
 
 <div class="container-fluid px-4">
     <!-- Header with gradient background -->
@@ -258,7 +258,7 @@
                                                     <td>@(dimensionIndex++)</td>
                                                     <td>
                                                         <input type="text"
-                                                               class="form-control form-control-sm"
+                                                               class="form-control form-control-sm dimension-length-@dimension.DimensionId"
                                                                style="width: 100px;"
                                                                value="@(dimension.LengthValue?.ToString("0.00")?.Replace(".", ","))"
                                                                onchange="updateDimension('@dimension.DimensionId', 'length', this.value)"
@@ -266,7 +266,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="text"
-                                                               class="form-control form-control-sm"
+                                                               class="form-control form-control-sm dimension-width-@dimension.DimensionId"
                                                                style="width: 100px;"
                                                                value="@(dimension.WidthValue?.ToString("0.00")?.Replace(".", ","))"
                                                                onchange="updateDimension('@dimension.DimensionId', 'width', this.value)"
@@ -274,7 +274,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="text"
-                                                               class="form-control form-control-sm"
+                                                               class="form-control form-control-sm dimension-height-@dimension.DimensionId"
                                                                style="width: 100px;"
                                                                value="@(dimension.HeightValue?.ToString("0.00")?.Replace(".", ","))"
                                                                onchange="updateDimension('@dimension.DimensionId', 'height', this.value)"
@@ -282,7 +282,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="text"
-                                                               class="form-control form-control-sm"
+                                                               class="form-control form-control-sm dimension-weight-@dimension.DimensionId"
                                                                style="width: 100px;"
                                                                value="@(dimension.WeightValue?.ToString("0.00")?.Replace(".", ","))"
                                                                onchange="updateDimension('@dimension.DimensionId', 'weight', this.value)"
@@ -479,6 +479,7 @@
         $(document).ready(function() {
             let imageOrder = @(Model.Images?.Count() ?? 0) + 1;
             let deletedImages = [];
+            window.deletedDimensions = []; // Thêm mảng để lưu các dimension bị xóa (global scope)
             let updatedOrders = {};
 
             // Image preview for new uploads
@@ -782,6 +783,263 @@
                     });
                 }
 
+                // Prepare data for dimension changes
+                const dimensionChanges = {
+                    deletedDimensionIds: deletedDimensions,
+                    newDimensions: [],
+                    updatedDimensions: []
+                };
+
+                // Process new dimensions (temporary dimensions)
+                const newDimensionElements = $('#dimensionsTableBody tr').filter(function() {
+                    const id = $(this).attr('id');
+                    return id && id.startsWith('dimension-temp-');
+                });
+
+                newDimensionElements.each(function() {
+                    const lengthValue = parseFloat($(this).find('input').eq(0).val()?.replace(',', '.')) || null;
+                    const widthValue = parseFloat($(this).find('input').eq(1).val()?.replace(',', '.')) || null;
+                    const heightValue = parseFloat($(this).find('input').eq(2).val()?.replace(',', '.')) || null;
+                    const weightValue = parseFloat($(this).find('input').eq(3).val()?.replace(',', '.')) || null;
+
+                    dimensionChanges.newDimensions.push({
+                        lengthValue: lengthValue,
+                        widthValue: widthValue,
+                        heightValue: heightValue,
+                        weightValue: weightValue
+                    });
+                });
+
+                // Process updated dimensions
+                console.log("Dimension changes object:", window.dimensionChanges);
+
+                // Lưu ý: dimensionChanges ở đây là biến local trong hàm processImageChanges
+                // Chúng ta cần sử dụng biến global dimensionChanges (đã khai báo ở ngoài)
+                for (let dimensionId in window.dimensionChanges) {
+                    // Bỏ qua các dimension tạm thời và dimension đã bị xóa
+                    if (dimensionId.startsWith('temp-') || window.deletedDimensions.includes(dimensionId)) {
+                        console.log(`Skipping dimension ${dimensionId} because it's temporary or marked for deletion`);
+                        continue;
+                    }
+
+                    console.log(`Processing updates for dimension ${dimensionId}:`, window.dimensionChanges[dimensionId]);
+
+                    // Kiểm tra xem có thay đổi nào không
+                    const changes = window.dimensionChanges[dimensionId];
+                    if (changes && Object.keys(changes).length > 0) {
+                        console.log(`Adding dimension ${dimensionId} to updatedDimensions list`);
+                        dimensionChanges.updatedDimensions.push({
+                            dimensionId: dimensionId,
+                            ...changes
+                        });
+                    } else {
+                        console.log(`No changes found for dimension ${dimensionId}`);
+                    }
+                }
+
+                console.log("Final dimensionChanges object:", dimensionChanges);
+
+                // Lấy token CSRF từ form
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                // If there are no image changes and no dimension changes, redirect to index
+                if (imageChanges.deletedImageIds.length === 0 &&
+                    imageChanges.newImages.length === 0 &&
+                    imageChanges.updatedOrders.length === 0 &&
+                    dimensionChanges.deletedDimensionIds.length === 0 &&
+                    dimensionChanges.newDimensions.length === 0) {
+
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Cập nhật sản phẩm thành công',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        window.location.href = '@Url.Action("Index", "Product")';
+                    });
+                    return;
+                }
+
+                // Process dimension changes first
+                processDimensionChanges(productId, dimensionChanges, token, function() {
+                    // After dimension changes are processed, process image changes
+                    processImageChangesOnly(productId, imageChanges);
+                });
+            }
+
+            // Function to process dimension changes
+            function processDimensionChanges(productId, dimensionChanges, token, callback) {
+                // If there are no dimension changes, call the callback immediately
+                if ((window.deletedDimensions.length === 0 || typeof window.deletedDimensions === 'undefined') && dimensionChanges.newDimensions.length === 0) {
+                    if (callback) callback();
+                    return;
+                }
+
+                // Process deleted dimensions
+                console.log("Processing deleted dimensions:", window.deletedDimensions);
+                const deletePromises = window.deletedDimensions.map(dimensionId => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: '@Url.Action("DeleteDimension", "Product")',
+                            type: 'POST',
+                            headers: {
+                                'RequestVerificationToken': token,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            data: JSON.stringify({ dimensionId: dimensionId }),
+                            contentType: 'application/json',
+                            success: function(response) {
+                                console.log(`Successfully deleted dimension ${dimensionId}:`, response);
+                                resolve(response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(`Error deleting dimension ${dimensionId}:`, {
+                                    status: status,
+                                    error: error,
+                                    responseText: xhr.responseText,
+                                    statusText: xhr.statusText,
+                                    statusCode: xhr.status
+                                });
+                                reject(xhr);
+                            }
+                        });
+                    });
+                });
+
+                // Process new dimensions
+                const addPromises = dimensionChanges.newDimensions.map(dimension => {
+                    return new Promise((resolve, reject) => {
+                        const data = {
+                            productId: productId,
+                            lengthValue: dimension.lengthValue,
+                            widthValue: dimension.widthValue,
+                            heightValue: dimension.heightValue,
+                            weightValue: dimension.weightValue
+                        };
+
+                        $.ajax({
+                            url: '@Url.Action("AddDimension", "Product")',
+                            type: 'POST',
+                            headers: {
+                                'RequestVerificationToken': token
+                            },
+                            data: JSON.stringify(data),
+                            contentType: 'application/json',
+                            success: function(response) {
+                                resolve(response);
+                            },
+                            error: function(xhr) {
+                                console.error("Error adding dimension:", xhr.responseText);
+                                reject(xhr);
+                            }
+                        });
+                    });
+                });
+
+                // Process updated dimensions
+                const updatePromises = dimensionChanges.updatedDimensions.map(dimension => {
+                    return new Promise((resolve, reject) => {
+                        // Tạo các thao tác PATCH theo định dạng JsonPatchDocument
+                        const patchOperations = [];
+
+                        // Thêm các thao tác PATCH cho từng trường được cập nhật
+                        if (dimension.lengthValue !== undefined) {
+                            patchOperations.push({
+                                op: "replace",
+                                path: "/LengthValue",
+                                value: dimension.lengthValue
+                            });
+                        }
+
+                        if (dimension.widthValue !== undefined) {
+                            patchOperations.push({
+                                op: "replace",
+                                path: "/WidthValue",
+                                value: dimension.widthValue
+                            });
+                        }
+
+                        if (dimension.heightValue !== undefined) {
+                            patchOperations.push({
+                                op: "replace",
+                                path: "/HeightValue",
+                                value: dimension.heightValue
+                            });
+                        }
+
+                        if (dimension.weightValue !== undefined) {
+                            patchOperations.push({
+                                op: "replace",
+                                path: "/WeightValue",
+                                value: dimension.weightValue
+                            });
+                        }
+
+                        console.log(`Updating dimension ${dimension.dimensionId} with patch operations:`, patchOperations);
+
+                        // Chuẩn bị dữ liệu để gửi
+                        const updateData = {
+                            dimensionId: dimension.dimensionId
+                        };
+
+                        // Chỉ thêm các trường có giá trị
+                        if (dimension.lengthValue !== undefined) updateData.lengthValue = dimension.lengthValue;
+                        if (dimension.widthValue !== undefined) updateData.widthValue = dimension.widthValue;
+                        if (dimension.heightValue !== undefined) updateData.heightValue = dimension.heightValue;
+                        if (dimension.weightValue !== undefined) updateData.weightValue = dimension.weightValue;
+
+                        console.log(`Sending update for dimension ${dimension.dimensionId} to ${window.location.origin + '@Url.Action("UpdateDimension", "Product")'}:`, updateData);
+
+                        // Gửi các thao tác PATCH đến API
+                        $.ajax({
+                            url: '@Url.Action("UpdateDimension", "Product")',
+                            type: 'POST',
+                            headers: {
+                                'RequestVerificationToken': token,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            data: JSON.stringify(updateData),
+                            contentType: 'application/json',
+                            success: function(response) {
+                                console.log(`Successfully updated dimension ${dimension.dimensionId}:`, response);
+                                resolve(response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(`Error updating dimension ${dimension.dimensionId}:`, {
+                                    status: status,
+                                    error: error,
+                                    responseText: xhr.responseText,
+                                    statusText: xhr.statusText,
+                                    statusCode: xhr.status,
+                                    url: '@Url.Action("UpdateDimension", "Product")',
+                                    data: updateData
+                                });
+                                reject(xhr);
+                            }
+                        });
+                    });
+                });
+
+                // Wait for all dimension operations to complete
+                Promise.all([...deletePromises, ...addPromises, ...updatePromises])
+                    .then(results => {
+                        console.log("All dimension operations completed:", results);
+                        if (callback) callback();
+                    })
+                    .catch(error => {
+                        console.error("Error processing dimensions:", error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra khi xử lý kích thước sản phẩm',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                        if (callback) callback();
+                    });
+            }
+
+            // Function to process image changes only
+            function processImageChangesOnly(productId, imageChanges) {
                 // If there are no image changes, redirect to index
                 if (imageChanges.deletedImageIds.length === 0 &&
                     imageChanges.newImages.length === 0 &&
@@ -1023,58 +1281,217 @@
             const widthValue = $('#widthValue').val();
             const heightValue = $('#heightValue').val();
             const weightValue = $('#weightValue').val();
+            const productId = $('#productId').val();
 
-            const data = {
-                dimensionId: dimensionId,
-                lengthValue: lengthValue,
-                widthValue: widthValue,
-                heightValue: heightValue,
-                weightValue: weightValue
-            };
+            // Lấy token CSRF từ form
+            const token = $('input[name="__RequestVerificationToken"]').val();
 
-            $.ajax({
-                url: dimensionId ? '/api/ProductDimension/' + dimensionId : '/api/ProductDimension',
-                type: dimensionId ? 'PUT' : 'POST',
-                data: JSON.stringify(data),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (response.success) {
-                        $('#dimensionModal').modal('hide');
-                        location.reload();
-                    } else {
-                        Swal.fire('Lỗi!', response.message, 'error');
+            if (dimensionId) {
+                // Update existing dimension
+                const data = {
+                    dimensionId: dimensionId,
+                    lengthValue: lengthValue ? parseFloat(lengthValue.replace(',', '.')) : null,
+                    widthValue: widthValue ? parseFloat(widthValue.replace(',', '.')) : null,
+                    heightValue: heightValue ? parseFloat(heightValue.replace(',', '.')) : null,
+                    weightValue: weightValue ? parseFloat(weightValue.replace(',', '.')) : null
+                };
+
+                $.ajax({
+                    url: '@Url.Action("UpdateDimension", "Product")',
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#dimensionModal').modal('hide');
+                            location.reload();
+                        } else {
+                            Swal.fire('Lỗi!', response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Error:", xhr.responseText);
+                        Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật kích thước', 'error');
                     }
-                },
-                error: function() {
-                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi lưu kích thước', 'error');
-                }
+                });
+            } else {
+                // Add new dimension
+                const data = {
+                    productId: productId,
+                    lengthValue: lengthValue ? parseFloat(lengthValue.replace(',', '.')) : null,
+                    widthValue: widthValue ? parseFloat(widthValue.replace(',', '.')) : null,
+                    heightValue: heightValue ? parseFloat(heightValue.replace(',', '.')) : null,
+                    weightValue: weightValue ? parseFloat(weightValue.replace(',', '.')) : null
+                };
+
+                $.ajax({
+                    url: '@Url.Action("AddDimension", "Product")',
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#dimensionModal').modal('hide');
+                            location.reload();
+                        } else {
+                            Swal.fire('Lỗi!', response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Error:", xhr.responseText);
+                        Swal.fire('Lỗi!', 'Có lỗi xảy ra khi thêm kích thước', 'error');
+                    }
+                });
+            }
+        }
+
+        // Hàm để đánh dấu xóa dimension
+        function markDimensionForDeletion(dimensionId, dimensionElement) {
+            // Đảm bảo rằng biến deletedDimensions đã được khởi tạo
+            if (typeof window.deletedDimensions === 'undefined') {
+                window.deletedDimensions = [];
+                console.log("Initialized window.deletedDimensions array");
+            }
+
+            // Thêm ID dimension vào danh sách dimension cần xóa
+            window.deletedDimensions.push(dimensionId);
+            console.log(`Added dimension ${dimensionId} to deletedDimensions array:`, window.deletedDimensions);
+
+            // Thêm lớp "marked-for-deletion" để đánh dấu trực quan
+            dimensionElement.addClass('marked-for-deletion');
+
+            // Thêm hiệu ứng mờ dần và thông báo
+            dimensionElement.css('opacity', '0.5');
+            dimensionElement.css('background-color', 'rgba(220, 53, 69, 0.1)');
+            dimensionElement.css('border-left', '3px solid #dc3545');
+
+            // Thêm nút khôi phục
+            const restoreButton = $('<button type="button" class="btn btn-sm btn-success restore-dimension" title="Khôi phục kích thước"><i class="bi bi-arrow-counterclockwise"></i></button>');
+            const actionCell = dimensionElement.find('td:last-child');
+            actionCell.find('.btn-outline-danger').hide();
+            actionCell.append(restoreButton);
+
+            // Gắn sự kiện click cho nút khôi phục
+            restoreButton.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                restoreDimension(dimensionId, dimensionElement);
+            });
+
+            // Hiển thị thông báo
+            Swal.fire({
+                title: 'Đã đánh dấu xóa!',
+                text: 'Kích thước sẽ bị xóa khi bạn nhấn "Lưu thay đổi". Bạn có thể khôi phục bằng cách nhấn vào nút khôi phục.',
+                icon: 'info'
             });
         }
 
+        // Hàm để khôi phục dimension đã đánh dấu xóa
+        function restoreDimension(dimensionId, dimensionElement) {
+            // Đảm bảo rằng biến deletedDimensions đã được khởi tạo
+            if (typeof window.deletedDimensions === 'undefined') {
+                window.deletedDimensions = [];
+                console.log("Initialized window.deletedDimensions array in restoreDimension");
+            }
+
+            // Xóa ID dimension khỏi danh sách dimension cần xóa
+            const index = window.deletedDimensions.indexOf(dimensionId);
+            if (index > -1) {
+                window.deletedDimensions.splice(index, 1);
+                console.log(`Removed dimension ${dimensionId} from deletedDimensions array:`, window.deletedDimensions);
+            }
+
+            // Khôi phục giao diện
+            dimensionElement.removeClass('marked-for-deletion');
+            dimensionElement.css('opacity', '1');
+            dimensionElement.css('background-color', '');
+            dimensionElement.css('border-left', '');
+
+            // Hiển thị lại nút xóa và xóa nút khôi phục
+            const actionCell = dimensionElement.find('td:last-child');
+            actionCell.find('.btn-outline-danger').show();
+            actionCell.find('.restore-dimension').remove();
+
+            // Hiển thị thông báo
+            Swal.fire('Đã khôi phục!', 'Kích thước đã được khôi phục và sẽ không bị xóa.', 'success');
+        }
+
         function deleteDimension(dimensionId) {
+            console.log(`Attempting to delete dimension with ID: ${dimensionId}`);
+
+            // Kiểm tra xem dimensionId có bắt đầu bằng 'temp-' không
+            if (dimensionId.startsWith('temp-')) {
+                console.log(`This is a temporary dimension, will be removed immediately`);
+
+                // Tìm phần tử dimension tạm thời
+                let tempElement = $(`#dimension-temp-${dimensionId.replace('temp-', '')}`);
+
+                // Nếu không tìm thấy, thử tìm với selector khác
+                if (tempElement.length === 0) {
+                    // Tìm tất cả các hàng có class table-warning (hàng tạm thời)
+                    const tempRows = $('.table-warning');
+                    console.log(`Found ${tempRows.length} temporary rows`);
+
+                    // Nếu chỉ có một hàng tạm thời, xóa nó
+                    if (tempRows.length === 1) {
+                        tempElement = tempRows;
+                        console.log(`Using the only temporary row as the element to delete`);
+                    } else {
+                        // Tìm hàng cuối cùng trong bảng
+                        tempElement = $('#dimensionsTableBody tr:last');
+                        console.log(`Using the last row in the table as the element to delete`);
+                    }
+                }
+
+                if (tempElement.length > 0) {
+                    console.log(`Found temporary dimension element:`, tempElement);
+
+                    // Xóa phần tử tạm thời khỏi DOM ngay lập tức không cần thông báo
+                    console.log(`Removing temporary dimension element`);
+                    tempElement.remove();
+
+                    // Xóa khỏi dimensionChanges nếu có
+                    if (window.dimensionChanges[dimensionId]) {
+                        delete window.dimensionChanges[dimensionId];
+                        console.log(`Removed dimension ${dimensionId} from dimensionChanges`);
+                    }
+                    return;
+                } else {
+                    console.error(`Could not find any temporary dimension element to delete`);
+                    return;
+                }
+            }
+
+            // Nếu không phải dimension tạm thời, tìm phần tử dimension
+            const dimensionElement = $(`#dimension-${dimensionId}`);
+
+            // Kiểm tra xem phần tử có tồn tại không
+            if (dimensionElement.length === 0) {
+                console.error(`Element with ID 'dimension-${dimensionId}' not found`);
+                return;
+            }
+
+            console.log(`Found dimension element:`, dimensionElement);
+
             Swal.fire({
-                title: 'Xác nhận xóa?',
-                text: 'Bạn có chắc muốn xóa kích thước này?',
+                title: 'Xác nhận đánh dấu xóa?',
+                text: 'Kích thước sẽ biến mất khỏi giao diện và chỉ bị xóa thật sự khi bạn nhấn "Lưu thay đổi".',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Xóa',
-                cancelButtonText: 'Hủy'
+                confirmButtonText: 'Đánh dấu xóa',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#d33',
+                footer: '<span class="text-muted">Bạn có thể hủy thao tác này bằng cách tải lại trang mà không lưu</span>'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.ajax({
-                        url: '/api/ProductDimension/' + dimensionId,
-                        type: 'DELETE',
-                        success: function(response) {
-                            if (response.success) {
-                                location.reload();
-                            } else {
-                                Swal.fire('Lỗi!', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa kích thước', 'error');
-                        }
-                    });
+                    console.log(`Marking dimension ${dimensionId} for deletion`);
+                    markDimensionForDeletion(dimensionId, dimensionElement);
                 }
             });
         }
@@ -1110,6 +1527,9 @@
             });
         }
 
+        // Lưu trữ các thay đổi dimension để gửi khi submit form
+        window.dimensionChanges = {};
+
         // Update the updateDimension function
         function updateDimension(dimensionId, field, value) {
             // Chuyển đổi dấu phẩy thành dấu chấm để parse
@@ -1120,42 +1540,30 @@
                 return;
             }
 
-            const data = {
-                dimensionId: dimensionId
-            };
+            // Lưu thay đổi vào object để gửi khi submit form
+            if (!window.dimensionChanges[dimensionId]) {
+                window.dimensionChanges[dimensionId] = {};
+            }
 
             switch(field) {
                 case 'length':
-                    data.lengthValue = numericValue;
+                    window.dimensionChanges[dimensionId].lengthValue = numericValue;
                     break;
                 case 'width':
-                    data.widthValue = numericValue;
+                    window.dimensionChanges[dimensionId].widthValue = numericValue;
                     break;
                 case 'height':
-                    data.heightValue = numericValue;
+                    window.dimensionChanges[dimensionId].heightValue = numericValue;
                     break;
                 case 'weight':
-                    data.weightValue = numericValue;
+                    window.dimensionChanges[dimensionId].weightValue = numericValue;
                     break;
             }
 
-            $.ajax({
-                url: '/api/ProductDimension/' + dimensionId,
-                type: 'PUT',
-                data: JSON.stringify(data),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (!response.success) {
-                        Swal.fire('Lỗi!', response.message, 'error');
-                        location.reload();
-                    }
-                },
-                error: function() {
-                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật kích thước', 'error');
-                    location.reload();
-                }
-            });
+            console.log(`Dimension ${dimensionId} updated (${field}: ${numericValue}). Will be saved when form is submitted.`);
         }
+
+        // Chú ý: Chúng ta đã loại bỏ hàm updateDimensionNow vì chỉ cập nhật khi nhấn nút "Lưu thay đổi"
 
         function addDimensionToTable() {
             const lengthValue = $('#lengthValue').val();
@@ -1172,8 +1580,11 @@
             const currentIndex = $('#dimensionsTableBody tr').length;
             const newIndex = currentIndex === 1 && $('#dimensionsTableBody tr td').text().includes('Chưa có kích thước') ? 1 : currentIndex + 1;
 
+            // Tạo ID tạm thời duy nhất
+            const tempId = Date.now();
+
             const newRow = `
-                <tr id="dimension-temp-${Date.now()}" class="table-warning">
+                <tr id="dimension-temp-${tempId}" class="table-warning">
                     <td>${newIndex}</td>
                     <td>
                         <div class="d-flex align-items-center gap-2">
@@ -1181,7 +1592,7 @@
                                    class="form-control form-control-sm"
                                    style="width: 100px;"
                                    value="${lengthValue}"
-                                   onchange="updateDimension('temp-${Date.now()}', 'length', this.value)"
+                                   onchange="updateDimension('temp-${tempId}', 'length', this.value)"
                                    min="0">
                             <span class="badge bg-warning text-dark">Tạm thời</span>
                         </div>
@@ -1192,7 +1603,7 @@
                                    class="form-control form-control-sm"
                                    style="width: 100px;"
                                    value="${widthValue}"
-                                   onchange="updateDimension('temp-${Date.now()}', 'width', this.value)"
+                                   onchange="updateDimension('temp-${tempId}', 'width', this.value)"
                                    min="0">
                             <span class="badge bg-warning text-dark">Tạm thời</span>
                         </div>
@@ -1203,7 +1614,7 @@
                                    class="form-control form-control-sm"
                                    style="width: 100px;"
                                    value="${heightValue}"
-                                   onchange="updateDimension('temp-${Date.now()}', 'height', this.value)"
+                                   onchange="updateDimension('temp-${tempId}', 'height', this.value)"
                                    min="0">
                             <span class="badge bg-warning text-dark">Tạm thời</span>
                         </div>
@@ -1214,7 +1625,7 @@
                                    class="form-control form-control-sm"
                                    style="width: 100px;"
                                    value="${weightValue}"
-                                   onchange="updateDimension('temp-${Date.now()}', 'weight', this.value)"
+                                   onchange="updateDimension('temp-${tempId}', 'weight', this.value)"
                                    min="0">
                             <span class="badge bg-warning text-dark">Tạm thời</span>
                         </div>
@@ -1222,7 +1633,7 @@
                     <td>
                         <button type="button"
                                 class="btn btn-outline-danger btn-sm"
-                                onclick="deleteDimension('temp-${Date.now()}')">
+                                onclick="deleteDimension('temp-${tempId}')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>

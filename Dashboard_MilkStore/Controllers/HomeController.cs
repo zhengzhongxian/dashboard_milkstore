@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Dashboard_MilkStore.Models;
 using Dashboard_MilkStore.Models.Home;
+using Dashboard_MilkStore.Models.Statistics;
 using Dashboard_MilkStore.Services.Statistics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,6 +48,34 @@ namespace Dashboard_MilkStore.Controllers
             {
                 _logger.LogError(ex, "Lỗi khi lấy dữ liệu doanh thu");
                 return View(new HomeViewModel { CurrentYear = DateTime.Now.Year });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProductSalesForMonth(int month, int year)
+        {
+            try
+            {
+                // Kiểm tra xem người dùng đã đăng nhập chưa
+                if (HttpContext.Session.GetString("Token") == null)
+                {
+                    return Unauthorized(new { Success = false, Message = "Unauthorized" });
+                }
+
+                // Gọi API để lấy doanh số sản phẩm theo tháng
+                var response = await _statisticsService.GetProductSalesForMonthAsync(month, year);
+
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy dữ liệu doanh số sản phẩm");
+                return StatusCode(500, new { Success = false, Message = $"Lỗi: {ex.Message}" });
             }
         }
 

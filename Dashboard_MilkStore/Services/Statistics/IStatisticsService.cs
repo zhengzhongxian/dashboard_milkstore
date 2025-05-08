@@ -6,5 +6,6 @@ namespace Dashboard_MilkStore.Services.Statistics
     public interface IStatisticsService
     {
         Task<MonthlyRevenueResponse> GetMonthlyRevenueForYearAsync(int year);
+        Task<ProductSalesResponse> GetProductSalesForMonthAsync(int month, int year);
     }
 }

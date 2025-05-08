@@ -1,5 +1,5 @@
 wwwroot\css\order-detail.css
-wwwroot\css\product-management.css
+wwwroot\css\product-management-1.css
 wwwroot\css\site.css
 wwwroot\css\statistics.css
 wwwroot\favicon.ico
@@ -67,3 +67,4 @@ wwwroot\lib\jquery-validation\LICENSE.md
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js
 wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+wwwroot\sounds\fireworks-sound.mp3
