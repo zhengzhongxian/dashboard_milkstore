@@ -846,5 +846,415 @@ namespace Dashboard_MilkStore.Controllers.Product
         {
             public string DimensionId { get; set; }
         }
+
+        // ProductPrice operations
+        [HttpPost]
+        public async Task<IActionResult> AddProductPrice([FromBody] AddProductPriceRequest request)
+        {
+            if (string.IsNullOrEmpty(request.ProductId))
+            {
+                return Json(new { success = false, message = "ProductId không được để trống" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+
+                var createDto = new CreateProductPriceDTONew
+                {
+                    ProductId = request.ProductId,
+                    Price = request.Price,
+                    IsDefault = request.IsDefault,
+                    IsActive = request.IsActive
+                };
+
+                var response = await _productService.AddProductPriceAsync(createDto, token);
+
+                if (response.Success)
+                {
+                    return Json(new {
+                        success = true,
+                        message = "Thêm giá sản phẩm thành công",
+                        data = response.Data
+                    });
+                }
+                else
+                {
+                    return Json(new {
+                        success = false,
+                        message = response.Message
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in AddProductPrice: {ex.Message}");
+                return Json(new {
+                    success = false,
+                    message = $"Lỗi khi thêm giá sản phẩm: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProductPrice([FromBody] UpdateProductPriceRequest request)
+        {
+            System.Diagnostics.Debug.WriteLine($"UpdateProductPrice called with request: {System.Text.Json.JsonSerializer.Serialize(request)}");
+
+            if (string.IsNullOrEmpty(request.PriceId))
+            {
+                System.Diagnostics.Debug.WriteLine("UpdateProductPrice: PriceId is empty");
+                return Json(new { success = false, message = "PriceId không được để trống" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                System.Diagnostics.Debug.WriteLine($"UpdateProductPrice: Token from session: {(string.IsNullOrEmpty(token) ? "null" : "present")}");
+
+                var patchValues = new Dictionary<string, object>();
+
+                if (request.Price.HasValue)
+                {
+                    patchValues.Add("price", request.Price.Value);
+                    System.Diagnostics.Debug.WriteLine($"UpdateProductPrice: Adding price: {request.Price.Value}");
+                }
+
+                if (request.IsDefault.HasValue)
+                {
+                    patchValues.Add("isDefault", request.IsDefault.Value);
+                    System.Diagnostics.Debug.WriteLine($"UpdateProductPrice: Adding isDefault: {request.IsDefault.Value}");
+                }
+
+                if (request.IsActive.HasValue)
+                {
+                    patchValues.Add("isActive", request.IsActive.Value);
+                    System.Diagnostics.Debug.WriteLine($"UpdateProductPrice: Adding isActive: {request.IsActive.Value}");
+                }
+
+                System.Diagnostics.Debug.WriteLine($"UpdateProductPrice: Calling UpdateProductPriceAsync with priceId: {request.PriceId} and patchValues: {System.Text.Json.JsonSerializer.Serialize(patchValues)}");
+                var response = await _productService.UpdateProductPriceAsync(request.PriceId, patchValues, token);
+                System.Diagnostics.Debug.WriteLine($"UpdateProductPrice: Response from UpdateProductPriceAsync: {System.Text.Json.JsonSerializer.Serialize(response)}");
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Success ? "Cập nhật giá sản phẩm thành công" : response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in UpdateProductPrice: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Exception stack trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                return Json(new {
+                    success = false,
+                    message = $"Lỗi khi cập nhật giá sản phẩm: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteProductPrice([FromBody] DeleteProductPriceRequest request)
+        {
+            if (string.IsNullOrEmpty(request.PriceId))
+            {
+                return Json(new { success = false, message = "PriceId không được để trống" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+
+                var response = await _productService.DeleteProductPriceAsync(request.PriceId, token);
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Success ? "Xóa giá sản phẩm thành công" : response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in DeleteProductPrice: {ex.Message}");
+                return Json(new {
+                    success = false,
+                    message = $"Lỗi khi xóa giá sản phẩm: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetDefaultPrice([FromBody] SetDefaultPriceRequest request)
+        {
+            if (string.IsNullOrEmpty(request.PriceId))
+            {
+                return Json(new { success = false, message = "PriceId không được để trống" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+
+                var response = await _productService.SetDefaultPriceAsync(request.PriceId, request.IsDefault, token);
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Success ? "Cập nhật giá mặc định thành công" : response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in SetDefaultPrice: {ex.Message}");
+                return Json(new {
+                    success = false,
+                    message = $"Lỗi khi cập nhật giá mặc định: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetPriceStatus([FromBody] SetPriceStatusRequest request)
+        {
+            if (string.IsNullOrEmpty(request.PriceId))
+            {
+                return Json(new { success = false, message = "PriceId không được để trống" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+
+                var response = await _productService.SetPriceStatusAsync(request.PriceId, request.IsActive, token);
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Success ? "Cập nhật trạng thái giá thành công" : response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in SetPriceStatus: {ex.Message}");
+                return Json(new {
+                    success = false,
+                    message = $"Lỗi khi cập nhật trạng thái giá: {ex.Message}"
+                });
+            }
+        }
+
+        // Model classes for ProductPrice operations
+        public class AddProductPriceRequest
+        {
+            public string ProductId { get; set; }
+            public decimal Price { get; set; }
+            public bool IsDefault { get; set; }
+            public bool IsActive { get; set; } = true;
+        }
+
+        public class UpdateProductPriceRequest
+        {
+            public string PriceId { get; set; }
+            public decimal? Price { get; set; }
+            public bool? IsDefault { get; set; }
+            public bool? IsActive { get; set; }
+        }
+
+        public class DeleteProductPriceRequest
+        {
+            public string PriceId { get; set; }
+        }
+
+        public class SetDefaultPriceRequest
+        {
+            public string PriceId { get; set; }
+            public bool IsDefault { get; set; }
+        }
+
+        public class SetPriceStatusRequest
+        {
+            public string PriceId { get; set; }
+            public bool IsActive { get; set; }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProcessPriceChanges(string productId, [FromBody] ProductPriceChangesViewModel changes)
+        {
+            if (string.IsNullOrEmpty(productId))
+            {
+                return Json(new { success = false, message = "ID sản phẩm không hợp lệ" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                var successCount = 0;
+                var errorMessages = new List<string>();
+
+                // 1. Process deleted prices
+                if (changes.DeletedPriceIds != null && changes.DeletedPriceIds.Any())
+                {
+                    foreach (var priceId in changes.DeletedPriceIds)
+                    {
+                        var deleteResponse = await _productService.DeleteProductPriceAsync(priceId, token);
+                        if (deleteResponse.Success)
+                        {
+                            successCount++;
+                        }
+                        else
+                        {
+                            errorMessages.Add($"Lỗi khi xóa giá {priceId}: {deleteResponse.Message}");
+                        }
+                    }
+                }
+
+                // 2. Process new prices
+                if (changes.NewPrices != null && changes.NewPrices.Any())
+                {
+                    foreach (var newPrice in changes.NewPrices)
+                    {
+                        try
+                        {
+                            var createDto = new CreateProductPriceDTONew
+                            {
+                                ProductId = productId,
+                                Price = newPrice.Price,
+                                IsDefault = newPrice.IsDefault,
+                                IsActive = newPrice.IsActive
+                            };
+
+                            var addResponse = await _productService.AddProductPriceAsync(createDto, token);
+                            if (addResponse.Success)
+                            {
+                                successCount++;
+                            }
+                            else
+                            {
+                                errorMessages.Add($"Lỗi khi thêm giá mới: {addResponse.Message}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            errorMessages.Add($"Lỗi xử lý giá: {ex.Message}");
+                        }
+                    }
+                }
+
+                // 3. Process updated prices
+                if (changes.UpdatedPrices != null && changes.UpdatedPrices.Any())
+                {
+                    foreach (var update in changes.UpdatedPrices)
+                    {
+                        var patchValues = new Dictionary<string, object>();
+
+                        if (update.Price.HasValue)
+                        {
+                            patchValues.Add("price", update.Price.Value);
+                        }
+
+                        if (update.IsDefault.HasValue)
+                        {
+                            patchValues.Add("isDefault", update.IsDefault.Value);
+                        }
+
+                        if (update.IsActive.HasValue)
+                        {
+                            patchValues.Add("isActive", update.IsActive.Value);
+                        }
+
+                        var updateResponse = await _productService.UpdateProductPriceAsync(update.PriceId, patchValues, token);
+                        if (updateResponse.Success)
+                        {
+                            successCount++;
+                        }
+                        else
+                        {
+                            errorMessages.Add($"Lỗi khi cập nhật giá {update.PriceId}: {updateResponse.Message}");
+                        }
+                    }
+                }
+
+                // Return result
+                if (errorMessages.Any())
+                {
+                    return Json(new {
+                        success = successCount > 0,
+                        message = $"Đã xử lý {successCount} thao tác thành công. Có lỗi: {string.Join(", ", errorMessages)}"
+                    });
+                }
+                else
+                {
+                    return Json(new {
+                        success = true,
+                        message = $"Đã cập nhật {successCount} thay đổi giá thành công"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi cập nhật giá: {ex.Message}" });
+            }
+        }
+
+        // GET: Product/Delete/5
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["ErrorMessage"] = "ID sản phẩm không hợp lệ";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy sản phẩm";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Hiển thị trang xác nhận xóa
+                return View(product);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi khi tải thông tin sản phẩm: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // POST: Product/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["ErrorMessage"] = "ID sản phẩm không hợp lệ";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                var response = await _productService.DeleteProductAsync(id, token);
+
+                if (response.Success)
+                {
+                    TempData["SuccessMessage"] = "Xóa sản phẩm thành công";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"Lỗi khi xóa sản phẩm: {response.Message}";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi khi xóa sản phẩm: {ex.Message}";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

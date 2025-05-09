@@ -62,7 +62,7 @@ namespace Dashboard_MilkStore.Services.Product
         {
             try
             {
-                var response = await _callAPI.GetAsync<ServiceResponse<List<ProductPriceDTO>>>($"{_baseUrl}/api/ProductPrice/{productId}");
+                var response = await _callAPI.GetAsync<ServiceResponse<List<ProductPriceDTO>>>($"{_baseUrl}/api/ProductPrice/product/{productId}");
                 if (response == null || !response.Success)
                 {
                     return null;
@@ -693,6 +693,257 @@ namespace Dashboard_MilkStore.Services.Product
                 {
                     Success = false,
                     Message = $"Error deleting dimension: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        // ProductPrice operations
+        public async Task<ServiceResponse<ProductPriceDTO>> AddProductPriceAsync(CreateProductPriceDTONew createDto, string? token = null)
+        {
+            try
+            {
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrEmpty(createDto.ProductId))
+                {
+                    return new ServiceResponse<ProductPriceDTO>
+                    {
+                        Success = false,
+                        Message = "ProductId không được để trống",
+                        StatusCode = (int)HttpStatusCode.BadRequest
+                    };
+                }
+
+                // Chuyển đổi từ CreateProductPriceDTONew sang ProductPriceCreateDTO
+                var productPriceCreateDTO = new ProductPriceCreateDTO
+                {
+                    ProductId = createDto.ProductId,
+                    Price = createDto.Price,
+                    IsDefault = createDto.IsDefault,
+                    IsActive = createDto.IsActive
+                };
+
+                System.Diagnostics.Debug.WriteLine($"AddProductPriceAsync: Sending data to API: {System.Text.Json.JsonSerializer.Serialize(productPriceCreateDTO)}");
+
+                var url = $"{_baseUrl}/api/ProductPrice";
+                var response = await _callAPI.PostAsync<ServiceResponse<ProductPriceDTO>>(url, productPriceCreateDTO, token);
+
+                if (response == null)
+                {
+                    return new ServiceResponse<ProductPriceDTO>
+                    {
+                        Success = false,
+                        Message = "Failed to add product price. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in AddProductPriceAsync: {ex.Message}");
+                return new ServiceResponse<ProductPriceDTO>
+                {
+                    Success = false,
+                    Message = $"Error adding product price: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateProductPriceAsync(string priceId, Dictionary<string, object> patchValues, string? token = null)
+        {
+            try
+            {
+                // Tạo một mảng các operations cho JsonPatchDocument
+                var operations = new List<Dictionary<string, object>>();
+
+                if (patchValues.ContainsKey("price") && patchValues["price"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/price" }, { "value", Convert.ToDecimal(patchValues["price"]) } });
+                }
+
+                if (patchValues.ContainsKey("isDefault") && patchValues["isDefault"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/isDefault" }, { "value", Convert.ToBoolean(patchValues["isDefault"]) } });
+                }
+
+                if (patchValues.ContainsKey("isActive") && patchValues["isActive"] != null)
+                {
+                    operations.Add(new Dictionary<string, object> { { "op", "replace" }, { "path", "/isActive" }, { "value", Convert.ToBoolean(patchValues["isActive"]) } });
+                }
+
+                // In ra dữ liệu gửi đi để debug
+                System.Diagnostics.Debug.WriteLine("Sending PATCH request to: " + $"{_baseUrl}/api/ProductPrice/{priceId}");
+                System.Diagnostics.Debug.WriteLine("Data: " + System.Text.Json.JsonSerializer.Serialize(operations));
+
+                // Sử dụng PATCH để cập nhật giá sản phẩm
+                var response = await _callAPI.PatchAsync<ServiceResponse<bool>>($"{_baseUrl}/api/ProductPrice/{priceId}", operations, token);
+                return response ?? new ServiceResponse<bool> { Success = false, Message = "Failed to update product price" };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in UpdateProductPriceAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error updating product price: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProductPriceAsync(string priceId, string? token = null)
+        {
+            try
+            {
+                var url = $"{_baseUrl}/api/ProductPrice/{priceId}";
+
+                System.Diagnostics.Debug.WriteLine($"DeleteProductPriceAsync: Sending DELETE request to {url}");
+
+                var response = await _callAPI.DeleteAsync<ServiceResponse<bool>>(url, token);
+
+                return response ?? new ServiceResponse<bool>
+                {
+                    Success = true,
+                    Message = "Product price deleted successfully",
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in DeleteProductPriceAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error deleting product price: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> SetDefaultPriceAsync(string priceId, bool isDefault, string? token = null)
+        {
+            try
+            {
+                var url = $"{_baseUrl}/api/ProductPrice/{priceId}/set-default";
+                var data = new { isDefault = isDefault };
+                var response = await _callAPI.PutAsync<ServiceResponse<bool>>(url, data, token);
+
+                if (response == null)
+                {
+                    return new ServiceResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Failed to set default price. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in SetDefaultPriceAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error setting default price: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> SetPriceStatusAsync(string priceId, bool isActive, string? token = null)
+        {
+            try
+            {
+                var url = $"{_baseUrl}/api/ProductPrice/{priceId}/set-status";
+                var data = new { isActive = isActive };
+                var response = await _callAPI.PutAsync<ServiceResponse<bool>>(url, data, token);
+
+                if (response == null)
+                {
+                    return new ServiceResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Failed to set price status. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in SetPriceStatusAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error setting price status: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ProductPriceDTO?> GetProductPriceByIdAsync(string priceId, string? token = null)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"GetProductPriceByIdAsync: Starting request to {_baseUrl}/api/ProductPrice/{priceId}");
+                System.Diagnostics.Debug.WriteLine($"GetProductPriceByIdAsync: Using token from session: {(string.IsNullOrEmpty(token) ? "null" : "present")}");
+
+                var response = await _callAPI.GetAsync<ServiceResponse<ProductPriceDTO>>($"{_baseUrl}/api/ProductPrice/{priceId}", token);
+
+                if (response == null || !response.Success)
+                {
+                    System.Diagnostics.Debug.WriteLine($"GetProductPriceByIdAsync: Failed to get product price. Response: {(response == null ? "null" : response.Message)}");
+                    return null;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"GetProductPriceByIdAsync: Successfully retrieved product price with ID {priceId}");
+                return response.Data;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetProductPriceByIdAsync: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProductAsync(string productId, string? token = null)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"DeleteProductAsync: Starting request to delete product with ID {productId}");
+
+                var url = $"{_baseUrl}/api/Product/{productId}";
+                System.Diagnostics.Debug.WriteLine($"DeleteProductAsync: Sending DELETE request to {url}");
+
+                var response = await _callAPI.DeleteAsync<ServiceResponse<bool>>(url, token);
+
+                if (response == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("DeleteProductAsync: Received null response from API");
+                    return new ServiceResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Failed to delete product. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                System.Diagnostics.Debug.WriteLine($"DeleteProductAsync: API response - Success: {response.Success}, Message: {response.Message}, StatusCode: {response.StatusCode}");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in DeleteProductAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error deleting product: {ex.Message}",
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }

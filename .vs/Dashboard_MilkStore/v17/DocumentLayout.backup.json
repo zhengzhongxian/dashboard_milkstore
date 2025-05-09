@@ -3,6 +3,30 @@
   "WorkspaceRootPath": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\corehelpers\\callapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\corehelpers\\callapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\services\\product\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\services\\product\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\controllers\\product\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\controllers\\product\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\views\\product\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\views\\product\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\models\\product\\createproductpricedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\models\\product\\createproductpricedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -10,8 +34,8 @@
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\controllers\\product\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\controllers\\product\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -20,25 +44,77 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 132,
-          "SelectedChildIndex": 1,
+          "DockedWidth": 259,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "secrets.json",
-              "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
-              "ToolTip": "C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
-              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-05-08T15:21:08.941Z",
+              "Title": "CallAPI.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\CoreHelpers\\CallAPI.cs",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\CoreHelpers\\CallAPI.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\CoreHelpers\\CallAPI.cs",
+              "RelativeToolTip": "Dashboard_MilkStore\\CoreHelpers\\CallAPI.cs",
+              "ViewState": "AgIAAOsAAAAAAAAAAAAmwA4BAABQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T06:53:00.506Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "ProductService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Services\\Product\\ProductService.cs",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Services\\Product\\ProductService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Services\\Product\\ProductService.cs",
+              "RelativeToolTip": "Dashboard_MilkStore\\Services\\Product\\ProductService.cs",
+              "ViewState": "AgIAAHICAAAAAAAAAAAqwBcDAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T08:51:34.333Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ProductController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
+              "RelativeToolTip": "Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
+              "ViewState": "AgIAAG0EAAAAAAAAAAAAAIwEAABPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-08T07:12:41.17Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Product\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Views\\Product\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Product\\Edit.cshtml",
+              "RelativeToolTip": "Dashboard_MilkStore\\Views\\Product\\Edit.cshtml",
+              "ViewState": "AgIAABMGAAAAAAAAAAAMwDQFAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-09T07:27:20.096Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CreateProductPriceDTO.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Product\\CreateProductPriceDTO.cs",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Models\\Product\\CreateProductPriceDTO.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Product\\CreateProductPriceDTO.cs",
+              "RelativeToolTip": "Dashboard_MilkStore\\Models\\Product\\CreateProductPriceDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T07:57:45.472Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\appsettings.json",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\appsettings.json",
@@ -51,15 +127,51 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ProductController.cs",
-              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
-              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
-              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
-              "RelativeToolTip": "Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
-              "ViewState": "AgIAAFgBAAAAAAAAAAAowAQBAABHAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "secrets.json",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
+              "ToolTip": "C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\2855c2a6-759a-4e33-9d6f-29154829a071\\secrets.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-08T15:21:08.941Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Services\\Auth\\AuthService.cs",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Services\\Auth\\AuthService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Services\\Auth\\AuthService.cs",
+              "RelativeToolTip": "Dashboard_MilkStore\\Services\\Auth\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-08T07:12:41.17Z",
+              "WhenOpened": "2025-05-09T06:53:16.975Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 457,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Dashboard_MilkStore\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAABkDAAAAAAAAAAAswCkDAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-09T09:46:26.594Z",
               "EditorCaption": ""
             }
           ]

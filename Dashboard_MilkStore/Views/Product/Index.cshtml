@@ -60,18 +60,8 @@
                                     <span>Tên Sản phẩm</span>
                                 </div>
                             </th>
-                            <th style="width: 150px;">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-tags me-2"></i>
-                                    <span>Thương hiệu</span>
-                                </div>
-                            </th>
-                            <th class="d-none d-lg-table-cell" style="width: 200px;">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-card-text me-2"></i>
-                                    <span>Mô tả</span>
-                                </div>
-                            </th>
+                            <!-- Cột thương hiệu đã ẩn -->
+                            <!-- Cột mô tả đã ẩn -->
                             <th style="width: 150px;">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <i class="bi bi-currency-dollar me-2"></i>
@@ -84,18 +74,8 @@
                                     <span>Giá khuyến mãi</span>
                                 </div>
                             </th>
-                            <th style="width: 120px;">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-percent me-2"></i>
-                                    <span>Giảm giá</span>
-                                </div>
-                            </th>
-                            <th style="width: 120px;">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-boxes me-2"></i>
-                                    <span>Tồn kho</span>
-                                </div>
-                            </th>
+                            <!-- Cột giảm giá đã ẩn -->
+                            <!-- Cột tồn kho đã ẩn -->
                             <th style="width: 120px;">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <i class="bi bi-power me-2"></i>
@@ -153,14 +133,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <span class="badge rounded-pill bg-light text-dark">
-                                            <i class="bi bi-tag-fill me-1 text-warning"></i>@product.Brand
-                                        </span>
-                                    </td>
-                                    <td class="d-none d-lg-table-cell text-muted text-truncate" style="max-width: 200px;">
-                                        @product.Description
-                                    </td>
+                                    <!-- Cột thương hiệu đã ẩn -->
+                                    <!-- Cột mô tả đã ẩn -->
                                     <td class="text-end fw-bold" style="color: #64748b;">
                                         @(product.PriceDefault?.ToString("N0"))đ
                                     </td>
@@ -175,32 +149,8 @@
                                             <span class="text-muted">-</span>
                                         }
                                     </td>
-                                    <td class="text-center">
-                                        @if (product.PriceActive.HasValue && product.PriceDefault.HasValue)
-                                        {
-                                            var discountPercent = ((product.PriceDefault.Value - product.PriceActive.Value) / product.PriceDefault.Value * 100);
-                                            if (discountPercent > 0)
-                                            {
-                                                <span class="badge bg-danger bg-opacity-10 text-danger">
-                                                    <i class="bi bi-arrow-down me-1"></i>@(discountPercent.ToString("N1"))%
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">-</span>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">-</span>
-                                        }
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge rounded-pill @GetStockBadgeClass(product.StockQuantity)">
-                                            <i class="bi @GetStockIcon(product.StockQuantity) me-1"></i>
-                                            @product.StockQuantity
-                                        </span>
-                                    </td>
+                                    <!-- Cột giảm giá đã ẩn -->
+                                    <!-- Cột tồn kho đã ẩn -->
                                     <td class="text-center">
                                         <span class="badge rounded-pill @(product.StatusName == "Active" ? "bg-success bg-opacity-10 text-success" : "bg-danger bg-opacity-10 text-danger")">
                                             <i class="bi @(product.StatusName == "Active" ? "bi-check-circle" : "bi-x-circle") me-1"></i>
@@ -228,7 +178,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-muted">
+                                <td colspan="4" class="text-center py-4 text-muted">
                                     <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy sản phẩm
                                 </td>
                             </tr>
@@ -542,7 +492,7 @@
 
         #productsTable {
             width: 100%;
-            min-width: 1200px;
+            min-width: 800px;
             margin: 0;
         }
 

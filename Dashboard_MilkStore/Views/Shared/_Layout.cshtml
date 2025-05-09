@@ -475,33 +475,225 @@
 
         /* Footer */
         .footer {
-            padding: 2rem 0 0 0; /* Giảm padding top */
-            color: var(--light-text);
+            padding: 3rem 0 0 0;
+            color: var(--dark-text);
             font-size: 0.9rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); /* Giống màu navbar */
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             position: relative;
             overflow: hidden;
-            color: var(--dark-text); /* Đổi màu chữ cho phù hợp với nền sáng */
-            margin-top: 2rem; /* Khoảng cách với nội dung */
+            margin-top: 3rem;
             position: relative !important;
             z-index: 1;
-            clear: both; /* Đảm bảo footer không bị đè */
-            border-radius: var(--border-radius) var(--border-radius) 0 0; /* Bo góc trên */
-            width: 100%; /* Đảm bảo chiều rộng 100% */
-            box-shadow: var(--card-shadow); /* Thêm shadow giống navbar */
-            margin-bottom: 0; /* Đảm bảo không có margin dưới */
-            border-bottom: 0; /* Đảm bảo không có border dưới */
+            clear: both;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            width: 100%;
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.03);
+            margin-bottom: 0;
+            border-bottom: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            border: 1px solid rgba(0,0,0,0.05); /* Thêm border giống navbar */
-            border-bottom: none; /* Bỏ border dưới */
+            border: 1px solid rgba(0,0,0,0.05);
+            border-bottom: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%233a86ff' fill-opacity='0.03'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
-        /* Bỏ thanh gradient ở trên footer */
+        .footer-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            overflow: hidden;
+            transform: translateY(-99%);
+            filter: drop-shadow(0 -3px 5px rgba(0, 0, 0, 0.03));
+        }
+
+        .footer-wave svg {
+            width: 100%;
+            height: 100px;
+            animation: wave-animation 15s linear infinite;
+        }
+
+        @@keyframes wave-animation {
+            0% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(-50px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .footer-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.9) 100%);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(58, 134, 255, 0.1);
+        }
+
+        .footer-brand:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: translateX(-100%);
+            transition: all 0.6s ease;
+        }
+
+        .footer-brand:hover:before {
+            transform: translateX(100%);
+        }
+
+        .footer-brand i {
+            font-size: 1.75rem;
+            color: var(--accent-color);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .footer-text {
+            color: var(--light-text);
+            line-height: 1.8;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary-color);
+            margin-top: 15px;
+            position: relative;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .footer-text:before {
+            content: '"';
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-size: 2rem;
+            color: rgba(58, 134, 255, 0.1);
+            font-family: Georgia, serif;
+        }
+
+        .footer-heading {
+            color: var(--primary-color);
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: inline-block;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .footer-heading:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(58, 134, 255, 0.2);
+        }
+
+        .footer-heading:after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            bottom: -1px;
+            left: 0;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .footer-heading:hover:after {
+            width: 100%;
+        }
+
+        .footer-links li {
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .footer-links li a {
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-links li a:before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .footer-links li a i {
+            margin-right: 8px;
+            font-size: 12px;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .footer-links li:hover a {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .footer-links li:hover a:before {
+            width: 100%;
+            opacity: 1;
+        }
+
+        .footer-links li:hover a i {
+            transform: translateX(3px);
+        }
 
         .footer a {
-            color: var(--primary-color);
+            color: var(--light-text);
             text-decoration: none;
             transition: all var(--transition-speed);
             font-weight: 500;
@@ -509,35 +701,212 @@
         }
 
         .footer a:hover {
-            color: var(--accent-color);
+            color: var(--primary-color);
             text-decoration: none;
-            transform: translateY(-2px);
         }
 
         .footer .social-icon {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.05);
+            background: #f8f9fa;
             border-radius: 50%;
             transition: all var(--transition-speed);
-            color: var(--primary-color);
+            color: #fff;
+        }
+
+        .footer .facebook-icon {
+            background-color: #3b5998;
+        }
+
+        .footer .twitter-icon {
+            background-color: #1da1f2;
+        }
+
+        .footer .instagram-icon {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        }
+
+        .footer .linkedin-icon {
+            background-color: #0077b5;
         }
 
         .footer .social-icon:hover {
-            background: var(--primary-color);
-            color: white;
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0.9;
         }
 
-        /* Điều chỉnh phần copyright */
-        .footer .border-top {
-            padding-bottom: 1rem; /* Giảm padding dưới */
-            margin-top: 1.5rem !important; /* Giảm margin top */
-            border-color: rgba(0, 0, 0, 0.05) !important;
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .footer-contact-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-contact-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 10px;
+            margin-right: 15px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(58, 134, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .footer-contact-item:hover .footer-contact-icon {
+            transform: rotate(360deg);
+        }
+
+        .footer-contact-text {
+            color: var(--dark-text);
+            line-height: 1.5;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .footer-bottom {
+            position: relative;
+            padding: 25px 0;
+            margin-top: 40px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 249, 250, 0.8) 100%);
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+        }
+
+        .footer-bottom:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(58, 134, 255, 0.2), transparent);
+        }
+
+        .footer-copyright {
+            color: var(--dark-text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .footer-payment {
+            color: var(--dark-text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            display: inline-block;
+        }
+
+        .footer-payment .payment-icon {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-payment .visa-icon {
+            color: #1a1f71;
+        }
+
+        .footer-payment .mastercard-icon {
+            color: #eb001b;
+        }
+
+        .footer-payment .paypal-icon {
+            color: #003087;
+        }
+
+        .footer-payment .applepay-icon {
+            color: #000;
+        }
+
+        .footer-payment .payment-icon:hover {
+            transform: translateY(-2px);
+            opacity: 0.8;
+        }
+
+        /* Footer decoration */
+        .footer-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .footer-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            opacity: 0.035;
+            filter: blur(1px);
+        }
+
+        .footer-circle-1 {
+            width: 250px;
+            height: 250px;
+            top: -100px;
+            right: 15%;
+            animation: float-slow 15s ease-in-out infinite;
+        }
+
+        .footer-circle-2 {
+            width: 180px;
+            height: 180px;
+            bottom: 70px;
+            left: 8%;
+            animation: float-slow 12s ease-in-out infinite 1s;
+        }
+
+        .footer-circle-3 {
+            width: 80px;
+            height: 80px;
+            top: 35%;
+            left: 35%;
+            animation: float-slow 10s ease-in-out infinite 2s;
+        }
+
+        .footer-circle-4 {
+            width: 120px;
+            height: 120px;
+            bottom: 25%;
+            right: 25%;
+            animation: float-slow 8s ease-in-out infinite 3s;
+        }
+
+        @@keyframes float-slow {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-10px) scale(1.02);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+            }
         }
 
         /* Table container */
@@ -712,49 +1081,49 @@
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
                                    href="@Url.Action("Index", "Home")">
                                     <i class="bi bi-speedometer2"></i>
-                                    <span>Dashboard</span>
+                                    <span>Trang chủ</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")"
                                    href="@Url.Action("Index", "Product")">
                                     <i class="bi bi-cart"></i>
-                                    <span>Products</span>
+                                    <span>Sản phẩm</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Order" ? "active" : "")"
                                    href="@Url.Action("Index", "Order")">
                                     <i class="bi bi-receipt"></i>
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")"
                                    href="@Url.Action("Index", "Customer")">
                                     <i class="bi bi-people"></i>
-                                    <span>Customers</span>
+                                    <span>Khách hàng</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" ? "active" : "")"
                                    href="@Url.Action("Index", "Inventory")">
                                     <i class="bi bi-box-seam"></i>
-                                    <span>Inventory</span>
+                                    <span>Kho hàng</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Report" ? "active" : "")"
                                    href="@Url.Action("Index", "Report")">
                                     <i class="bi bi-graph-up"></i>
-                                    <span>Reports</span>
+                                    <span>Báo cáo</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Privacy" ? "active" : "")"
                                    href="@Url.Action("Index", "Privacy")">
                                     <i class="bi bi-shield-check"></i>
-                                    <span>Privacy</span>
+                                    <span>Bảo mật</span>
                                 </a>
                             </li>
                         </ul>
@@ -787,12 +1156,12 @@
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
-                                            <button type="submit" class="dropdown-item fireworks-btn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                            <button type="submit" class="dropdown-item fireworks-btn"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</button>
                                         </form>
                                     </li>
                                 </ul>
@@ -801,7 +1170,7 @@
                         else
                         {
                             <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary fireworks-btn">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
                             </a>
                         }
                     </div>
@@ -819,69 +1188,117 @@
 
             <!-- Footer -->
             <footer class="footer">
+                <div class="footer-wave">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" preserveAspectRatio="none">
+                        <path fill="#f0f5ff" fill-opacity="1" d="M0,32L60,42.7C120,53,240,75,360,74.7C480,75,600,53,720,42.7C840,32,960,32,1080,37.3C1200,43,1320,53,1380,58.7L1440,64L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+                    </svg>
+                </div>
+                <div class="footer-decoration">
+                    <div class="footer-circle footer-circle-1"></div>
+                    <div class="footer-circle footer-circle-2"></div>
+                    <div class="footer-circle footer-circle-3"></div>
+                    <div class="footer-circle footer-circle-4"></div>
+                </div>
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-4 mb-3 mb-lg-0">
-                            <h5 class="mb-3" style="color: var(--dark-text);">MilkStore Dashboard</h5>
-                            <p class="mb-3" style="color: var(--dark-text);">Quản lý hiệu quả cửa hàng sữa của bạn với công cụ phân tích doanh thu và quản lý sản phẩm toàn diện.</p>
-                            <div class="d-flex gap-3">
-                                <a href="#" class="social-icon">
+                        <div class="col-lg-4 mb-4 mb-lg-0">
+                            <div class="footer-brand mb-4">
+                                <i class="bi bi-cup-hot-fill me-2"></i>
+                                <span>MilkStore</span>
+                            </div>
+                            <p class="mb-3 footer-text">Quản lý hiệu quả cửa hàng sữa của bạn với công cụ phân tích doanh thu và quản lý sản phẩm toàn diện.</p>
+                            <div class="d-flex gap-3 mb-3">
+                                <a href="#" class="social-icon facebook-icon">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
-                                <a href="#" class="social-icon">
+                                <a href="#" class="social-icon twitter-icon">
                                     <i class="fab fa-twitter"></i>
                                 </a>
-                                <a href="#" class="social-icon">
+                                <a href="#" class="social-icon instagram-icon">
                                     <i class="fab fa-instagram"></i>
                                 </a>
-                                <a href="#" class="social-icon">
+                                <a href="#" class="social-icon linkedin-icon">
                                     <i class="fab fa-linkedin-in"></i>
                                 </a>
                             </div>
                         </div>
-                        <div class="col-lg-2 col-md-6 mb-3 mb-md-0">
-                            <h6 class="mb-3" style="color: var(--dark-text);">Liên kết nhanh</h6>
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-1">
-                                    <a href="@Url.Action("Index", "Home")">Dashboard</a>
+                        <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                            <h6 class="footer-heading mb-3">Liên kết nhanh</h6>
+                            <ul class="list-unstyled footer-links mb-0">
+                                <li class="mb-2">
+                                    <a href="@Url.Action("Index", "Home")"><i class="bi bi-chevron-right me-1 small"></i>Trang chủ</a>
                                 </li>
-                                <li class="mb-1">
-                                    <a href="@Url.Action("Index", "Product")">Sản phẩm</a>
+                                <li class="mb-2">
+                                    <a href="@Url.Action("Index", "Product")"><i class="bi bi-chevron-right me-1 small"></i>Sản phẩm</a>
                                 </li>
-                                <li class="mb-1">
-                                    <a href="@Url.Action("Index", "Order")">Đơn hàng</a>
+                                <li class="mb-2">
+                                    <a href="@Url.Action("Index", "Order")"><i class="bi bi-chevron-right me-1 small"></i>Đơn hàng</a>
                                 </li>
-                                <li class="mb-1">
-                                    <a href="@Url.Action("Index", "Report")">Báo cáo</a>
+                                <li class="mb-2">
+                                    <a href="@Url.Action("Index", "Report")"><i class="bi bi-chevron-right me-1 small"></i>Báo cáo</a>
                                 </li>
                             </ul>
                         </div>
-                        <div class="col-lg-2 col-md-6 mb-3 mb-md-0">
-                            <h6 class="mb-3" style="color: var(--dark-text);">Hỗ trợ</h6>
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-1">
-                                    <a href="#">Trung tâm trợ giúp</a>
+                        <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                            <h6 class="footer-heading mb-3">Hỗ trợ</h6>
+                            <ul class="list-unstyled footer-links mb-0">
+                                <li class="mb-2">
+                                    <a href="#"><i class="bi bi-chevron-right me-1 small"></i>Trung tâm trợ giúp</a>
                                 </li>
-                                <li class="mb-1">
-                                    <a href="#">Hướng dẫn sử dụng</a>
+                                <li class="mb-2">
+                                    <a href="#"><i class="bi bi-chevron-right me-1 small"></i>Hướng dẫn sử dụng</a>
                                 </li>
-                                <li class="mb-1">
-                                    <a href="#">Liên hệ</a>
+                                <li class="mb-2">
+                                    <a href="#"><i class="bi bi-chevron-right me-1 small"></i>Liên hệ</a>
                                 </li>
-                                <li class="mb-1">
-                                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Chính sách bảo mật</a>
+                                <li class="mb-2">
+                                    <a asp-area="" asp-controller="Home" asp-action="Privacy"><i class="bi bi-chevron-right me-1 small"></i>Chính sách bảo mật</a>
                                 </li>
                             </ul>
                         </div>
                         <div class="col-lg-4">
-                            <h6 class="mb-3" style="color: var(--dark-text);">Liên hệ với chúng tôi</h6>
-                            <p class="mb-1" style="color: var(--dark-text);"><i class="fas fa-map-marker-alt me-2" style="color: var(--primary-color);"></i> 123 Đường ABC, Quận XYZ, TP.HCM</p>
-                            <p class="mb-1" style="color: var(--dark-text);"><i class="fas fa-phone-alt me-2" style="color: var(--primary-color);"></i> (84) 123 456 789</p>
-                            <p class="mb-2" style="color: var(--dark-text);"><i class="fas fa-envelope me-2" style="color: var(--primary-color);"></i> support@milkstore.com</p>
+                            <h6 class="footer-heading mb-3">Liên hệ với chúng tôi</h6>
+                            <div class="footer-contact-item">
+                                <div class="footer-contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="footer-contact-text">
+                                    123 Đường ABC, Quận XYZ, TP.HCM
+                                </div>
+                            </div>
+                            <div class="footer-contact-item">
+                                <div class="footer-contact-icon">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div class="footer-contact-text">
+                                    (84) 123 456 789
+                                </div>
+                            </div>
+                            <div class="footer-contact-item">
+                                <div class="footer-contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="footer-contact-text">
+                                    support@milkstore.com
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-top pt-4 text-center">
-                        <p class="mb-0" style="color: var(--dark-text);">&copy; 2025 MilkStore Dashboard. All rights reserved.</p>
+                    <div class="footer-bottom">
+                        <div class="row align-items-center">
+                            <div class="col-md-6 text-center text-md-start">
+                                <p class="mb-0 footer-copyright">&copy; 2025 MilkStore Dashboard. Đã đăng ký bản quyền.</p>
+                            </div>
+                            <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                                <div class="footer-payment">
+                                    <span class="me-3">Thanh toán qua:</span>
+                                    <i class="fab fa-cc-visa me-2 payment-icon visa-icon"></i>
+                                    <i class="fab fa-cc-mastercard me-2 payment-icon mastercard-icon"></i>
+                                    <i class="fab fa-cc-paypal me-2 payment-icon paypal-icon"></i>
+                                    <i class="fab fa-cc-apple-pay payment-icon applepay-icon"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </footer>

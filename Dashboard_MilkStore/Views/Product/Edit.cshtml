@@ -480,6 +480,9 @@
             let imageOrder = @(Model.Images?.Count() ?? 0) + 1;
             let deletedImages = [];
             window.deletedDimensions = []; // Thêm mảng để lưu các dimension bị xóa (global scope)
+            window.dimensionChanges = {}; // Khởi tạo object để lưu các thay đổi dimension
+            window.deletedPrices = []; // Thêm mảng để lưu các giá bị xóa (global scope)
+            window.priceChanges = {}; // Khởi tạo object để lưu các thay đổi giá
             let updatedOrders = {};
 
             // Image preview for new uploads
@@ -790,6 +793,13 @@
                     updatedDimensions: []
                 };
 
+                // Prepare data for price changes
+                const priceChanges = {
+                    deletedPriceIds: window.deletedPrices || [],
+                    newPrices: [],
+                    updatedPrices: []
+                };
+
                 // Process new dimensions (temporary dimensions)
                 const newDimensionElements = $('#dimensionsTableBody tr').filter(function() {
                     const id = $(this).attr('id');
@@ -839,15 +849,61 @@
 
                 console.log("Final dimensionChanges object:", dimensionChanges);
 
+                // Process new prices (temporary prices)
+                const newPriceElements = $('#priceTable tbody tr.table-warning');
+
+                newPriceElements.each(function() {
+                    const priceValue = parseFloat($(this).find('input[type="number"]').val()?.replace(',', '.')) || 0;
+                    const isDefault = $(this).find('input[type="checkbox"]').eq(0).is(':checked');
+                    const isActive = $(this).find('input[type="checkbox"]').eq(1).is(':checked');
+
+                    priceChanges.newPrices.push({
+                        price: priceValue,
+                        isDefault: isDefault,
+                        isActive: isActive
+                    });
+                });
+
+                // Process updated prices
+                console.log("Price changes object:", window.priceChanges);
+
+                for (let priceId in window.priceChanges) {
+                    // Bỏ qua các giá tạm thời và giá đã bị xóa
+                    if (priceId.startsWith('temp-') || (window.deletedPrices && window.deletedPrices.includes(priceId))) {
+                        console.log(`Skipping price ${priceId} because it's temporary or marked for deletion`);
+                        continue;
+                    }
+
+                    console.log(`Processing updates for price ${priceId}:`, window.priceChanges[priceId]);
+
+                    // Kiểm tra xem có thay đổi nào không
+                    const changes = window.priceChanges[priceId];
+                    if (changes && Object.keys(changes).length > 0) {
+                        console.log(`Adding price ${priceId} to updatedPrices list`);
+                        priceChanges.updatedPrices.push({
+                            priceId: priceId,
+                            ...changes
+                        });
+                    } else {
+                        console.log(`No changes found for price ${priceId}`);
+                    }
+                }
+
+                console.log("Final priceChanges object:", priceChanges);
+
                 // Lấy token CSRF từ form
                 const token = $('input[name="__RequestVerificationToken"]').val();
 
-                // If there are no image changes and no dimension changes, redirect to index
+                // If there are no image changes, dimension changes, and price changes, redirect to index
                 if (imageChanges.deletedImageIds.length === 0 &&
                     imageChanges.newImages.length === 0 &&
                     imageChanges.updatedOrders.length === 0 &&
                     dimensionChanges.deletedDimensionIds.length === 0 &&
-                    dimensionChanges.newDimensions.length === 0) {
+                    dimensionChanges.newDimensions.length === 0 &&
+                    dimensionChanges.updatedDimensions.length === 0 &&
+                    priceChanges.deletedPriceIds.length === 0 &&
+                    priceChanges.newPrices.length === 0 &&
+                    priceChanges.updatedPrices.length === 0) {
 
                     Swal.fire({
                         title: 'Thành công!',
@@ -860,17 +916,22 @@
                     return;
                 }
 
-                // Process dimension changes first
-                processDimensionChanges(productId, dimensionChanges, token, function() {
-                    // After dimension changes are processed, process image changes
-                    processImageChangesOnly(productId, imageChanges);
+                // Process price changes first, then dimension changes, then image changes
+                processPriceChanges(productId, priceChanges, token, function() {
+                    // After price changes are processed, process dimension changes
+                    processDimensionChanges(productId, dimensionChanges, token, function() {
+                        // After dimension changes are processed, process image changes
+                        processImageChangesOnly(productId, imageChanges);
+                    });
                 });
             }
 
             // Function to process dimension changes
             function processDimensionChanges(productId, dimensionChanges, token, callback) {
                 // If there are no dimension changes, call the callback immediately
-                if ((window.deletedDimensions.length === 0 || typeof window.deletedDimensions === 'undefined') && dimensionChanges.newDimensions.length === 0) {
+                if ((window.deletedDimensions.length === 0 || typeof window.deletedDimensions === 'undefined') &&
+                    dimensionChanges.newDimensions.length === 0 &&
+                    dimensionChanges.updatedDimensions.length === 0) {
                     if (callback) callback();
                     return;
                 }
@@ -1020,11 +1081,26 @@
                     });
                 });
 
-                // Wait for all dimension operations to complete
-                Promise.all([...deletePromises, ...addPromises, ...updatePromises])
-                    .then(results => {
-                        console.log("All dimension operations completed:", results);
-                        if (callback) callback();
+                // Xử lý các thao tác cập nhật trước
+                Promise.all([...updatePromises])
+                    .then(updateResults => {
+                        console.log("Update dimension operations completed:", updateResults);
+
+                        // Sau khi cập nhật xong, xử lý các thao tác thêm mới
+                        return Promise.all([...addPromises])
+                            .then(addResults => {
+                                console.log("Add dimension operations completed:", addResults);
+
+                                // Cuối cùng, xử lý các thao tác xóa
+                                return Promise.all([...deletePromises])
+                                    .then(deleteResults => {
+                                        console.log("Delete dimension operations completed:", deleteResults);
+
+                                        // Tất cả các thao tác đã hoàn thành
+                                        console.log("All dimension operations completed");
+                                        if (callback) callback();
+                                    });
+                            });
                     })
                     .catch(error => {
                         console.error("Error processing dimensions:", error);
@@ -1036,6 +1112,51 @@
                         });
                         if (callback) callback();
                     });
+            }
+
+            // Function to process price changes
+            function processPriceChanges(productId, priceChanges, token, callback) {
+                // If there are no price changes, call the callback immediately
+                if ((priceChanges.deletedPriceIds.length === 0 || typeof priceChanges.deletedPriceIds === 'undefined') &&
+                    priceChanges.newPrices.length === 0 &&
+                    priceChanges.updatedPrices.length === 0) {
+                    if (callback) callback();
+                    return;
+                }
+
+                // Gửi dữ liệu thay đổi giá đến API
+                $.ajax({
+                    url: '@Url.Action("ProcessPriceChanges", "Product")?productId=' + productId,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    data: JSON.stringify(priceChanges),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        console.log("Price changes processed successfully:", response);
+                        if (callback) callback();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error processing price changes:", {
+                            status: status,
+                            error: error,
+                            responseText: xhr.responseText,
+                            statusText: xhr.statusText,
+                            statusCode: xhr.status
+                        });
+
+                        Swal.fire({
+                            title: 'Cảnh báo!',
+                            text: 'Có lỗi xảy ra khi xử lý giá sản phẩm. Tiếp tục xử lý các thay đổi khác.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK'
+                        });
+
+                        if (callback) callback();
+                    }
+                });
             }
 
             // Function to process image changes only
@@ -1189,70 +1310,264 @@
         }
 
         function deletePrice(ppsid) {
-            Swal.fire({
-                title: 'Xác nhận xóa?',
-                text: 'Bạn có chắc muốn xóa giá này?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Xóa',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '/api/ProductPrice/' + ppsid,
-                        type: 'DELETE',
-                        success: function(response) {
-                            if (response.success) {
-                                location.reload();
-                            } else {
-                                Swal.fire('Lỗi!', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa giá', 'error');
+            console.log(`Attempting to delete price with ID: ${ppsid}`);
+
+            // Kiểm tra xem ppsid có bắt đầu bằng 'temp-' không
+            if (ppsid.startsWith('temp-')) {
+                console.log(`This is a temporary price, will be removed immediately`);
+
+                // Tìm phần tử price tạm thời
+                let tempElement = $(`#price-temp-${ppsid.replace('temp-', '')}`);
+
+                // Nếu không tìm thấy, thử tìm với selector khác
+                if (tempElement.length === 0) {
+                    // Tìm tất cả các hàng có class table-warning (hàng tạm thời)
+                    const tempRows = $('#priceTable tbody tr.table-warning');
+                    console.log(`Found ${tempRows.length} temporary price rows`);
+
+                    // Nếu chỉ có một hàng tạm thời, xóa nó
+                    if (tempRows.length === 1) {
+                        tempElement = tempRows;
+                        console.log(`Using the only temporary price row as the element to delete`);
+                    } else {
+                        // Tìm hàng cuối cùng trong bảng
+                        tempElement = $('#priceTable tbody tr:last');
+                        console.log(`Using the last row in the price table as the element to delete`);
+                    }
+                }
+
+                if (tempElement.length > 0) {
+                    console.log(`Found temporary price element:`, tempElement);
+
+                    // Xóa phần tử tạm thời khỏi DOM ngay lập tức không cần thông báo
+                    console.log(`Removing temporary price element`);
+                    tempElement.remove();
+
+                    // Xóa khỏi priceChanges nếu có
+                    if (window.priceChanges[ppsid]) {
+                        delete window.priceChanges[ppsid];
+                        console.log(`Removed price ${ppsid} from priceChanges`);
+                    }
+                    return;
+                } else {
+                    console.error(`Could not find any temporary price element to delete`);
+                    return;
+                }
+            }
+
+            // Nếu không phải price tạm thời, tìm phần tử price
+            const priceElement = $(`#price-${ppsid}`);
+
+            // Nếu không tìm thấy bằng ID, thử tìm bằng data attribute
+            if (priceElement.length === 0) {
+                const priceElementByData = $(`tr[data-price-id="${ppsid}"]`);
+                if (priceElementByData.length > 0) {
+                    console.log(`Found price element by data attribute:`, priceElementByData);
+
+                    Swal.fire({
+                        title: 'Xác nhận đánh dấu xóa?',
+                        text: 'Giá sẽ biến mất khỏi giao diện và chỉ bị xóa thật sự khi bạn nhấn "Lưu thay đổi".',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Đánh dấu xóa',
+                        cancelButtonText: 'Hủy',
+                        confirmButtonColor: '#d33',
+                        footer: '<span class="text-muted">Bạn có thể hủy thao tác này bằng cách tải lại trang mà không lưu</span>'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log(`Marking price ${ppsid} for deletion`);
+                            markPriceForDeletion(ppsid, priceElementByData);
                         }
                     });
+                    return;
                 }
+            }
+
+            // Nếu vẫn không tìm thấy, thử tìm hàng chứa nút xóa
+            if (priceElement.length === 0) {
+                const clickedButton = $(`button[onclick*="deletePrice('${ppsid}')"]`);
+                if (clickedButton.length > 0) {
+                    const priceRow = clickedButton.closest('tr');
+                    console.log(`Found price row from delete button:`, priceRow);
+
+                    Swal.fire({
+                        title: 'Xác nhận đánh dấu xóa?',
+                        text: 'Giá sẽ biến mất khỏi giao diện và chỉ bị xóa thật sự khi bạn nhấn "Lưu thay đổi".',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Đánh dấu xóa',
+                        cancelButtonText: 'Hủy',
+                        confirmButtonColor: '#d33',
+                        footer: '<span class="text-muted">Bạn có thể hủy thao tác này bằng cách tải lại trang mà không lưu</span>'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log(`Marking price ${ppsid} for deletion`);
+                            markPriceForDeletion(ppsid, priceRow);
+                        }
+                    });
+                    return;
+                }
+            }
+
+            // Nếu tìm thấy bằng ID
+            if (priceElement.length > 0) {
+                console.log(`Found price element by ID:`, priceElement);
+
+                Swal.fire({
+                    title: 'Xác nhận đánh dấu xóa?',
+                    text: 'Giá sẽ biến mất khỏi giao diện và chỉ bị xóa thật sự khi bạn nhấn "Lưu thay đổi".',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đánh dấu xóa',
+                    cancelButtonText: 'Hủy',
+                    confirmButtonColor: '#d33',
+                    footer: '<span class="text-muted">Bạn có thể hủy thao tác này bằng cách tải lại trang mà không lưu</span>'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        console.log(`Marking price ${ppsid} for deletion`);
+                        markPriceForDeletion(ppsid, priceElement);
+                    }
+                });
+                return;
+            }
+
+            // Nếu không tìm thấy bằng bất kỳ cách nào, hiển thị thông báo lỗi
+            console.error(`Could not find any price element to delete for ID: ${ppsid}`);
+            Swal.fire('Lỗi!', 'Không thể tìm thấy giá để xóa', 'error');
+        }
+
+        // Hàm để đánh dấu xóa giá
+        function markPriceForDeletion(ppsid, priceElement) {
+            // Đảm bảo rằng biến deletedPrices đã được khởi tạo
+            if (typeof window.deletedPrices === 'undefined') {
+                window.deletedPrices = [];
+                console.log("Initialized window.deletedPrices array");
+            }
+
+            // Thêm ID giá vào danh sách giá cần xóa
+            window.deletedPrices.push(ppsid);
+            console.log(`Added price ${ppsid} to deletedPrices array:`, window.deletedPrices);
+
+            // Thêm lớp "marked-for-deletion" để đánh dấu trực quan
+            priceElement.addClass('marked-for-deletion');
+
+            // Thêm hiệu ứng mờ dần và thông báo
+            priceElement.css('opacity', '0.5');
+            priceElement.css('background-color', 'rgba(220, 53, 69, 0.1)');
+            priceElement.css('border-left', '3px solid #dc3545');
+
+            // Thêm nút khôi phục
+            const restoreButton = $('<button type="button" class="btn btn-sm btn-success restore-price" title="Khôi phục giá"><i class="bi bi-arrow-counterclockwise"></i></button>');
+            const actionCell = priceElement.find('td:last-child');
+            actionCell.find('.btn-outline-danger').hide();
+            actionCell.append(restoreButton);
+
+            // Gắn sự kiện click cho nút khôi phục
+            restoreButton.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                restorePrice(ppsid, priceElement);
             });
+
+            // Hiển thị thông báo
+            Swal.fire({
+                title: 'Đã đánh dấu xóa!',
+                text: 'Giá sẽ bị xóa khi bạn nhấn "Lưu thay đổi". Bạn có thể khôi phục bằng cách nhấn vào nút khôi phục.',
+                icon: 'info'
+            });
+        }
+
+        // Hàm để khôi phục giá đã đánh dấu xóa
+        function restorePrice(ppsid, priceElement) {
+            // Đảm bảo rằng biến deletedPrices đã được khởi tạo
+            if (typeof window.deletedPrices === 'undefined') {
+                window.deletedPrices = [];
+                console.log("Initialized window.deletedPrices array in restorePrice");
+            }
+
+            // Xóa ID giá khỏi danh sách giá cần xóa
+            const index = window.deletedPrices.indexOf(ppsid);
+            if (index > -1) {
+                window.deletedPrices.splice(index, 1);
+                console.log(`Removed price ${ppsid} from deletedPrices array:`, window.deletedPrices);
+            }
+
+            // Khôi phục giao diện
+            priceElement.removeClass('marked-for-deletion');
+            priceElement.css('opacity', '1');
+            priceElement.css('background-color', '');
+            priceElement.css('border-left', '');
+
+            // Hiển thị lại nút xóa và xóa nút khôi phục
+            const actionCell = priceElement.find('td:last-child');
+            actionCell.find('.btn-outline-danger').show();
+            actionCell.find('.restore-price').remove();
+
+            // Hiển thị thông báo
+            Swal.fire('Đã khôi phục!', 'Giá đã được khôi phục và sẽ không bị xóa.', 'success');
         }
 
         function updateDefaultPrice(ppsid, isDefault) {
             const productId = $('#productId').val();
-            $.ajax({
-                url: '/api/ProductPrice/' + ppsid + '/set-default',
-                type: 'PUT',
-                data: JSON.stringify({ productId: productId, isDefault: isDefault }),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (!response.success) {
-                        Swal.fire('Lỗi!', response.message, 'error');
-                        location.reload();
-                    }
-                },
-                error: function() {
-                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật giá mặc định', 'error');
-                    location.reload();
+
+            // Kiểm tra xem ppsid có bắt đầu bằng 'temp-' không
+            if (ppsid.startsWith('temp-')) {
+                console.log(`This is a temporary price, will be saved when form is submitted`);
+
+                // Lưu thay đổi vào object để gửi khi submit form
+                if (!window.priceChanges[ppsid]) {
+                    window.priceChanges[ppsid] = {};
                 }
-            });
+
+                window.priceChanges[ppsid].isDefault = isDefault;
+                console.log(`Price ${ppsid} updated (isDefault: ${isDefault}). Will be saved when form is submitted.`);
+
+                // Nếu đang đặt làm mặc định, cập nhật giao diện các giá khác
+                if (isDefault) {
+                    // Bỏ chọn tất cả các checkbox isDefault khác (trừ giá tạm thời hiện tại)
+                    $('input[onchange^="updateDefaultPrice"]').not(`[onchange="updateDefaultPrice('${ppsid}', this.checked)"]`).prop('checked', false);
+                }
+
+                return;
+            }
+
+            // Lưu thay đổi vào object để gửi khi submit form
+            if (!window.priceChanges[ppsid]) {
+                window.priceChanges[ppsid] = {};
+            }
+
+            window.priceChanges[ppsid].isDefault = isDefault;
+            console.log(`Price ${ppsid} updated (isDefault: ${isDefault}). Will be saved when form is submitted.`);
+
+            // Nếu đang đặt làm mặc định, cập nhật giao diện các giá khác
+            if (isDefault) {
+                // Bỏ chọn tất cả các checkbox isDefault khác (trừ giá hiện tại)
+                $('input[onchange^="updateDefaultPrice"]').not(`[onchange="updateDefaultPrice('${ppsid}', this.checked)"]`).prop('checked', false);
+            }
         }
 
         function updatePriceStatus(ppsid, isActive) {
-            $.ajax({
-                url: '/api/ProductPrice/' + ppsid + '/set-status',
-                type: 'PUT',
-                data: JSON.stringify({ isActive: isActive }),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (!response.success) {
-                        Swal.fire('Lỗi!', response.message, 'error');
-                        location.reload();
-                    }
-                },
-                error: function() {
-                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật trạng thái', 'error');
-                    location.reload();
+            // Kiểm tra xem ppsid có bắt đầu bằng 'temp-' không
+            if (ppsid.startsWith('temp-')) {
+                console.log(`This is a temporary price, will be saved when form is submitted`);
+
+                // Lưu thay đổi vào object để gửi khi submit form
+                if (!window.priceChanges[ppsid]) {
+                    window.priceChanges[ppsid] = {};
                 }
-            });
+
+                window.priceChanges[ppsid].isActive = isActive;
+                console.log(`Price ${ppsid} updated (isActive: ${isActive}). Will be saved when form is submitted.`);
+                return;
+            }
+
+            // Lưu thay đổi vào object để gửi khi submit form
+            if (!window.priceChanges[ppsid]) {
+                window.priceChanges[ppsid] = {};
+            }
+
+            window.priceChanges[ppsid].isActive = isActive;
+            console.log(`Price ${ppsid} updated (isActive: ${isActive}). Will be saved when form is submitted.`);
         }
 
         function showAddDimensionModal() {
@@ -1506,29 +1821,42 @@
                 return;
             }
 
-            $.ajax({
-                url: '/api/ProductPrice/' + ppsid,
-                type: 'PUT',
-                data: JSON.stringify({
-                    productId: productId,
-                    price: numericPrice
-                }),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (!response.success) {
-                        Swal.fire('Lỗi!', response.message, 'error');
-                        location.reload();
-                    }
-                },
-                error: function() {
-                    Swal.fire('Lỗi!', 'Có lỗi xảy ra khi cập nhật giá', 'error');
-                    location.reload();
-                }
-            });
-        }
+            // Kiểm tra xem ppsid có bắt đầu bằng 'temp-' không
+            if (ppsid.startsWith('temp-')) {
+                console.log(`This is a temporary price, will be saved when form is submitted`);
 
-        // Lưu trữ các thay đổi dimension để gửi khi submit form
-        window.dimensionChanges = {};
+                // Lưu thay đổi vào object để gửi khi submit form
+                if (!window.priceChanges[ppsid]) {
+                    window.priceChanges[ppsid] = {};
+                }
+
+                window.priceChanges[ppsid].price = numericPrice;
+                console.log(`Price ${ppsid} updated (price: ${numericPrice}). Will be saved when form is submitted.`);
+
+                // Cập nhật hiển thị giá đã định dạng
+                const priceElement = $(`input[onchange="updatePrice('${ppsid}', this.value)"]`);
+                if (priceElement.length > 0) {
+                    const formattedPrice = numericPrice.toLocaleString('vi-VN');
+                    priceElement.closest('td').find('.text-muted').html(`(${formattedPrice} VNĐ) <span class="badge bg-warning text-dark ms-1">Tạm thời</span>`);
+                }
+                return;
+            }
+
+            // Lưu thay đổi vào object để gửi khi submit form
+            if (!window.priceChanges[ppsid]) {
+                window.priceChanges[ppsid] = {};
+            }
+
+            window.priceChanges[ppsid].price = numericPrice;
+            console.log(`Price ${ppsid} updated (price: ${numericPrice}). Will be saved when form is submitted.`);
+
+            // Cập nhật hiển thị giá đã định dạng
+            const priceElement = $(`input[onchange="updatePrice('${ppsid}', this.value)"]`);
+            if (priceElement.length > 0) {
+                const formattedPrice = numericPrice.toLocaleString('vi-VN');
+                priceElement.closest('td').find('.text-muted').text(`(${formattedPrice} VNĐ)`);
+            }
+        }
 
         // Update the updateDimension function
         function updateDimension(dimensionId, field, value) {

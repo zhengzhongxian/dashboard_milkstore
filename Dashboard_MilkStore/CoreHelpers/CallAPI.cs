@@ -1,3 +1,4 @@
+using Dashboard_MilkStore.Models.Common;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -210,56 +211,135 @@ namespace Dashboard_MilkStore.CoreHelpers
 
         public async Task<T?> PatchAsync<T>(string url, object data, string? token = null)
         {
-            if (!string.IsNullOrEmpty(token))
+            try
             {
-                // Không sử dụng AuthenticationHeaderValue mà thêm trực tiếp vào header
-                Console.WriteLine("PatchAsync: Using provided token");
-                if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                if (!string.IsNullOrEmpty(token))
                 {
-                    _httpClient.DefaultRequestHeaders.Remove("Authorization");
-                }
-                _httpClient.DefaultRequestHeaders.Add("Authorization", token);
-
-                // In ra header để kiểm tra
-                Console.WriteLine($"PatchAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
-            }
-            else if (_httpContextAccessor?.HttpContext != null)
-            {
-                // Tự động lấy token từ session nếu có
-                var sessionToken = _httpContextAccessor.HttpContext.Session.GetString("Token");
-                if (!string.IsNullOrEmpty(sessionToken))
-                {
-                    Console.WriteLine("PatchAsync: Using token from session");
+                    // Không sử dụng AuthenticationHeaderValue mà thêm trực tiếp vào header
+                    System.Diagnostics.Debug.WriteLine("PatchAsync: Using provided token");
                     if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
                     {
                         _httpClient.DefaultRequestHeaders.Remove("Authorization");
                     }
-                    _httpClient.DefaultRequestHeaders.Add("Authorization", sessionToken);
+                    _httpClient.DefaultRequestHeaders.Add("Authorization", token);
 
                     // In ra header để kiểm tra
-                    Console.WriteLine($"PatchAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                    System.Diagnostics.Debug.WriteLine($"PatchAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                }
+                else if (_httpContextAccessor?.HttpContext != null)
+                {
+                    // Tự động lấy token từ session nếu có
+                    var sessionToken = _httpContextAccessor.HttpContext.Session.GetString("Token");
+                    if (!string.IsNullOrEmpty(sessionToken))
+                    {
+                        System.Diagnostics.Debug.WriteLine("PatchAsync: Using token from session");
+                        if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                        {
+                            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                        }
+                        _httpClient.DefaultRequestHeaders.Add("Authorization", sessionToken);
+
+                        // In ra header để kiểm tra
+                        System.Diagnostics.Debug.WriteLine($"PatchAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("PatchAsync: No token found in session");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("PatchAsync: No token found in session");
+                    System.Diagnostics.Debug.WriteLine("PatchAsync: No token provided and no HttpContext available");
                 }
+
+                var json = JsonSerializer.Serialize(data);
+                System.Diagnostics.Debug.WriteLine($"PatchAsync: Sending data to {url}: {json}");
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json-patch+json");
+
+                System.Diagnostics.Debug.WriteLine($"PatchAsync: Content-Type: {content.Headers.ContentType}");
+
+                var response = await _httpClient.PatchAsync(url, content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"PatchAsync: Response status code: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"PatchAsync: Response content: {responseContent}");
+
+                response.EnsureSuccessStatusCode();
+
+                // Kiểm tra xem responseContent có chứa "data":null không
+                if (responseContent.Contains("\"data\":null") && typeof(T).IsGenericType &&
+                    typeof(T).GetGenericTypeDefinition() == typeof(ServiceResponse<>) &&
+                    typeof(T).GetGenericArguments()[0] == typeof(bool))
+                {
+                    try
+                    {
+                        // Parse JSON document
+                        var jsonDoc = JsonDocument.Parse(responseContent);
+                        var root = jsonDoc.RootElement;
+
+                        // Tạo một đối tượng ServiceResponse<bool> mới
+                        var serviceResponse = (T)Activator.CreateInstance(typeof(T));
+
+                        // Đặt các thuộc tính từ response
+                        if (root.TryGetProperty("success", out var successElement))
+                        {
+                            var successProperty = typeof(T).GetProperty("Success");
+                            if (successProperty != null)
+                            {
+                                successProperty.SetValue(serviceResponse, successElement.GetBoolean());
+                            }
+                        }
+
+                        if (root.TryGetProperty("message", out var messageElement))
+                        {
+                            var messageProperty = typeof(T).GetProperty("Message");
+                            if (messageProperty != null)
+                            {
+                                messageProperty.SetValue(serviceResponse, messageElement.GetString());
+                            }
+                        }
+
+                        if (root.TryGetProperty("statusCode", out var statusCodeElement))
+                        {
+                            var statusCodeProperty = typeof(T).GetProperty("StatusCode");
+                            if (statusCodeProperty != null)
+                            {
+                                statusCodeProperty.SetValue(serviceResponse, statusCodeElement.GetInt32());
+                            }
+                        }
+
+                        // Đặt Data = true nếu success = true
+                        if (root.TryGetProperty("success", out var successForData) && successForData.GetBoolean())
+                        {
+                            var dataProperty = typeof(T).GetProperty("Data");
+                            if (dataProperty != null)
+                            {
+                                dataProperty.SetValue(serviceResponse, true);
+                            }
+                        }
+
+                        return serviceResponse;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"PatchAsync: Error creating ServiceResponse<bool>: {ex.Message}");
+                    }
+                }
+
+                return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("PatchAsync: No token provided and no HttpContext available");
+                System.Diagnostics.Debug.WriteLine($"PatchAsync: Exception: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"PatchAsync: Inner exception: {ex.InnerException.Message}");
+                }
+                throw;
             }
-
-            var json = JsonSerializer.Serialize(data);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PatchAsync(url, content);
-            response.EnsureSuccessStatusCode();
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
         }
 
         public async Task<T?> PutAsync<T>(string url, object data, string? token = null)
@@ -316,6 +396,67 @@ namespace Dashboard_MilkStore.CoreHelpers
 
                 // Không gọi EnsureSuccessStatusCode để tránh ném ngoại lệ
                 // Thay vào đó, chúng ta sẽ cố gắng deserialize phản hồi
+
+                // Kiểm tra xem responseContent có chứa "data":null không
+                if (responseContent.Contains("\"data\":null") && typeof(T).IsGenericType &&
+                    typeof(T).GetGenericTypeDefinition() == typeof(ServiceResponse<>) &&
+                    typeof(T).GetGenericArguments()[0] == typeof(bool))
+                {
+                    try
+                    {
+                        // Parse JSON document
+                        var jsonDoc = JsonDocument.Parse(responseContent);
+                        var root = jsonDoc.RootElement;
+
+                        // Tạo một đối tượng ServiceResponse<bool> mới
+                        var serviceResponse = (T)Activator.CreateInstance(typeof(T));
+
+                        // Đặt các thuộc tính từ response
+                        if (root.TryGetProperty("success", out var successElement))
+                        {
+                            var successProperty = typeof(T).GetProperty("Success");
+                            if (successProperty != null)
+                            {
+                                successProperty.SetValue(serviceResponse, successElement.GetBoolean());
+                            }
+                        }
+
+                        if (root.TryGetProperty("message", out var messageElement))
+                        {
+                            var messageProperty = typeof(T).GetProperty("Message");
+                            if (messageProperty != null)
+                            {
+                                messageProperty.SetValue(serviceResponse, messageElement.GetString());
+                            }
+                        }
+
+                        if (root.TryGetProperty("statusCode", out var statusCodeElement))
+                        {
+                            var statusCodeProperty = typeof(T).GetProperty("StatusCode");
+                            if (statusCodeProperty != null)
+                            {
+                                statusCodeProperty.SetValue(serviceResponse, statusCodeElement.GetInt32());
+                            }
+                        }
+
+                        // Đặt Data = true nếu success = true
+                        if (root.TryGetProperty("success", out var successForData) && successForData.GetBoolean())
+                        {
+                            var dataProperty = typeof(T).GetProperty("Data");
+                            if (dataProperty != null)
+                            {
+                                dataProperty.SetValue(serviceResponse, true);
+                            }
+                        }
+
+                        return serviceResponse;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"PutAsync: Error creating ServiceResponse<bool>: {ex.Message}");
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(responseContent))
                 {
                     try
@@ -343,6 +484,149 @@ namespace Dashboard_MilkStore.CoreHelpers
             catch (Exception ex)
             {
                 Console.WriteLine($"Unexpected error in PutAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<T?> DeleteAsync<T>(string url, string? token = null)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(token))
+                {
+                    // Không sử dụng AuthenticationHeaderValue mà thêm trực tiếp vào header
+                    System.Diagnostics.Debug.WriteLine("DeleteAsync: Using provided token");
+                    if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                    {
+                        _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                    }
+                    _httpClient.DefaultRequestHeaders.Add("Authorization", token);
+
+                    // In ra header để kiểm tra
+                    System.Diagnostics.Debug.WriteLine($"DeleteAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                }
+                else if (_httpContextAccessor?.HttpContext != null)
+                {
+                    // Tự động lấy token từ session nếu có
+                    var sessionToken = _httpContextAccessor.HttpContext.Session.GetString("Token");
+                    if (!string.IsNullOrEmpty(sessionToken))
+                    {
+                        System.Diagnostics.Debug.WriteLine("DeleteAsync: Using token from session");
+                        if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                        {
+                            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                        }
+                        _httpClient.DefaultRequestHeaders.Add("Authorization", sessionToken);
+
+                        // In ra header để kiểm tra
+                        System.Diagnostics.Debug.WriteLine($"DeleteAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("DeleteAsync: No token found in session");
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("DeleteAsync: No token provided and no HttpContext available");
+                }
+
+                System.Diagnostics.Debug.WriteLine($"DeleteAsync: Sending request to {url}");
+                var response = await _httpClient.DeleteAsync(url);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"DeleteAsync: Response status code: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"DeleteAsync: Response content: {responseContent}");
+
+                response.EnsureSuccessStatusCode();
+
+                // Kiểm tra xem responseContent có chứa "data":null không
+                if (responseContent.Contains("\"data\":null") && typeof(T).IsGenericType &&
+                    typeof(T).GetGenericTypeDefinition() == typeof(ServiceResponse<>) &&
+                    typeof(T).GetGenericArguments()[0] == typeof(bool))
+                {
+                    try
+                    {
+                        // Parse JSON document
+                        var jsonDoc = JsonDocument.Parse(responseContent);
+                        var root = jsonDoc.RootElement;
+
+                        // Tạo một đối tượng ServiceResponse<bool> mới
+                        var serviceResponse = (T)Activator.CreateInstance(typeof(T));
+
+                        // Đặt các thuộc tính từ response
+                        if (root.TryGetProperty("success", out var successElement))
+                        {
+                            var successProperty = typeof(T).GetProperty("Success");
+                            if (successProperty != null)
+                            {
+                                successProperty.SetValue(serviceResponse, successElement.GetBoolean());
+                            }
+                        }
+
+                        if (root.TryGetProperty("message", out var messageElement))
+                        {
+                            var messageProperty = typeof(T).GetProperty("Message");
+                            if (messageProperty != null)
+                            {
+                                messageProperty.SetValue(serviceResponse, messageElement.GetString());
+                            }
+                        }
+
+                        if (root.TryGetProperty("statusCode", out var statusCodeElement))
+                        {
+                            var statusCodeProperty = typeof(T).GetProperty("StatusCode");
+                            if (statusCodeProperty != null)
+                            {
+                                statusCodeProperty.SetValue(serviceResponse, statusCodeElement.GetInt32());
+                            }
+                        }
+
+                        // Đặt Data = true nếu success = true
+                        if (root.TryGetProperty("success", out var successForData) && successForData.GetBoolean())
+                        {
+                            var dataProperty = typeof(T).GetProperty("Data");
+                            if (dataProperty != null)
+                            {
+                                dataProperty.SetValue(serviceResponse, true);
+                            }
+                        }
+
+                        return serviceResponse;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"DeleteAsync: Error creating ServiceResponse<bool>: {ex.Message}");
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(responseContent))
+                {
+                    try
+                    {
+                        return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                    }
+                    catch (JsonException ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"DeleteAsync: JSON deserialization error: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"DeleteAsync: Response content that failed to deserialize: {responseContent}");
+                        return default;
+                    }
+                }
+
+                return default;
+            }
+            catch (HttpRequestException ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"HTTP error in DeleteAsync: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Unexpected error in DeleteAsync: {ex.Message}");
                 throw;
             }
         }
