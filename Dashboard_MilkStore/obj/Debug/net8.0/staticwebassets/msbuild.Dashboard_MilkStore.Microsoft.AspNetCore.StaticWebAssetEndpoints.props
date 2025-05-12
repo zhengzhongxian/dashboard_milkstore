@@ -1,5 +1,17 @@
 ﻿<Project>
   <ItemGroup>
+    <StaticWebAssetEndpoint Include="_content/Dashboard_MilkStore/css/customer-management.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\customer-management.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-QqnLFqohfhmWnHfmq35sY4m7\u002BDX/0H9GjrHzo2k6mhY="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"6529"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022QqnLFqohfhmWnHfmq35sY4m7\u002BDX/0H9GjrHzo2k6mhY=\u0022"},{"Name":"Last-Modified","Value":"Mon, 12 May 2025 15:39:23 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/Dashboard_MilkStore/css/customer-management.ucbp5vx9rv.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\customer-management.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"ucbp5vx9rv"},{"Name":"integrity","Value":"sha256-QqnLFqohfhmWnHfmq35sY4m7\u002BDX/0H9GjrHzo2k6mhY="},{"Name":"label","Value":"_content/Dashboard_MilkStore/css/customer-management.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"6529"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022QqnLFqohfhmWnHfmq35sY4m7\u002BDX/0H9GjrHzo2k6mhY=\u0022"},{"Name":"Last-Modified","Value":"Mon, 12 May 2025 15:39:23 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/Dashboard_MilkStore/css/order-detail.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\order-detail.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>

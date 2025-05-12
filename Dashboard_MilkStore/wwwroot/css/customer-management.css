@@ -1,0 +1,360 @@
+/* Customer Management Styles */
+/* Fix for full width layout */
+.container-fluid {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-right: 1.5rem !important;
+  padding-left: 1.5rem !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Override any parent container constraints */
+body > .container,
+body > .container-fluid,
+main > .container,
+main > .container-fluid,
+.content-wrapper > .container,
+.content-wrapper > .container-fluid {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Fix for content wrapper */
+.content-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+.header-custom {
+  background: linear-gradient(135deg, #36b9cc 0%, #1a8a98 100%);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.header-icon {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  border-radius: 50%;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-button {
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.15rem 1rem 0 rgba(58, 59, 69, 0.1);
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 0.15rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e0e4f0;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #9fe7ef;
+  box-shadow: 0 0 0 0.25rem rgba(54, 185, 204, 0.25);
+}
+
+.input-group-text {
+  background-color: #f8f9fc;
+  border-color: #e0e4f0;
+  color: #36b9cc;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #5a5c69;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn-primary {
+  background-color: #36b9cc;
+  border-color: #36b9cc;
+}
+
+.btn-primary:hover {
+  background-color: #2a9aaa;
+  border-color: #2691a0;
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.btn-light {
+  background-color: #f8f9fc;
+  border-color: #e0e4f0;
+  color: #6e707e;
+}
+
+.btn-light:hover {
+  background-color: #e2e6f1;
+  border-color: #dbe0f0;
+  transform: translateY(-2px);
+}
+
+
+.rounded-pill {
+  border-radius: 50rem !important;
+}
+
+.profile-section {
+  background-color: #f8f9fc;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0.15rem 1rem 0 rgba(58, 59, 69, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.profile-image {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 1.5rem;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid white;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.profile-image img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.15);
+}
+
+.profile-image .upload-overlay {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: #36b9cc;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid white;
+}
+
+.profile-image .upload-overlay:hover {
+  background-color: #2a9aaa;
+  transform: scale(1.1);
+}
+
+.info-card {
+  border-left: 4px solid #36b9cc;
+  background-color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+}
+
+.info-card .label {
+  font-size: 0.8rem;
+  color: #858796;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-card .value {
+  font-weight: 600;
+  color: #5a5c69;
+  font-size: 1.1rem;
+}
+
+.form-check-input:checked {
+  background-color: #36b9cc;
+  border-color: #36b9cc;
+}
+
+.form-check-input {
+  cursor: pointer;
+  width: 2.5em;
+  height: 1.25em;
+}
+
+.form-check-label {
+  cursor: pointer;
+}
+
+.metadata {
+  font-size: 0.8rem;
+  color: #858796;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e3e6f0;
+  display: flex;
+  align-items: center;
+}
+
+.metadata i {
+  margin-right: 0.5rem;
+  color: #36b9cc;
+}
+
+/* Custom styling for form elements */
+.input-group {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.03);
+}
+
+.input-group-text {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.input-group .form-control {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* Animation effects */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Fix for layout issues */
+.row {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.col-md-4,
+.col-md-8,
+.col-12 {
+  padding: 0.75rem;
+}
+
+/* Ensure form takes full width */
+#customerForm {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100% !important;
+}
+
+/* Button sizing adjustments */
+.btn-sm-custom {
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  max-width: 150px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-section {
+    padding: 1.5rem;
+  }
+
+  .profile-image {
+    width: 150px;
+    height: 150px;
+  }
+
+  .header-custom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-custom a {
+    margin-top: 1rem;
+    align-self: flex-end;
+  }
+
+  .col-md-4,
+  .col-md-8 {
+    width: 100%;
+  }
+
+  /* Button adjustments for smaller screens */
+  .btn-sm-custom {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem !important;
+    max-width: 120px;
+  }
+
+  .btn-sm-custom i {
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 576px) {
+  .btn-sm-custom {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem !important;
+    max-width: 100px;
+  }
+
+  .btn-sm-custom i {
+    font-size: 0.8rem;
+    margin-right: 0.2rem !important;
+  }
+}

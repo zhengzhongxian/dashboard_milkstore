@@ -1,6 +1,7 @@
 using Dashboard_MilkStore.CoreHelpers;
 using Dashboard_MilkStore.Middleware;
 using Dashboard_MilkStore.Services.Auth;
+using Dashboard_MilkStore.Services.Customer;
 using Dashboard_MilkStore.Services.Order;
 using Dashboard_MilkStore.Services.Product;
 using Dashboard_MilkStore.Services.Statistics;
@@ -33,6 +34,9 @@ builder.Services.AddScoped<IStatisticsService>(provider =>
 // Register Order Services
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
+
+// Register Customer Service
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

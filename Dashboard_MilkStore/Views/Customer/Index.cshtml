@@ -1,0 +1,453 @@
+@model Dashboard_MilkStore.Models.Customer.UserResponse
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-people fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Quản lý người dùng</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Theo dõi và quản lý tài khoản người dùng</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Hidden form for sorting and pagination -->
+    <form id="sortForm" method="get" class="d-none">
+        <input type="hidden" name="sortBy" value="@ViewBag.CurrentSort" id="sortByField">
+        <input type="hidden" name="sortAscending" value="@ViewBag.CurrentSortDirection" id="sortAscendingField">
+        <input type="hidden" name="pageNumber" value="1" id="pageNumber">
+        <input type="hidden" name="pageSize" value="@(ViewBag.CurrentPageSize ?? 10)" id="pageSize">
+        <input type="hidden" name="searchTerm" id="hiddenSearchTerm" value="@ViewBag.CurrentSearchTerm">
+        <input type="hidden" name="statusId" value="@ViewBag.CurrentStatusId">
+        <input type="hidden" name="isActive" value="@ViewBag.CurrentIsActive">
+    </form>
+
+    <!-- User Table -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="search-container mb-3 p-3 border-bottom">
+                <div class="dataTables_filter">
+                    <input type="search" class="form-control form-control-sm rounded-pill" id="tableSearch"
+                           placeholder="Tìm kiếm nhanh..." value="@ViewBag.CurrentSearchTerm">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="usersTable" class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" class="text-white">
+                            <th class="px-4 text-center" style="width: 120px;">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person-badge me-2"></i>
+                                    <span>ID</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person me-2"></i>
+                                    <span>Tên người dùng</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    <span>Email</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-calendar-date me-2"></i>
+                                    <span>Ngày tạo</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-tag me-2"></i>
+                                    <span>Trạng thái</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 120px;">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-gear me-2"></i>
+                                    <span>Thao tác</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Items != null && Model.Items.Any())
+                        {
+                            foreach (var user in Model.Items)
+                            {
+                                // Các biến trạng thái được định nghĩa trong phần hiển thị
+
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">
+                                        <span title="@user.UserId">#@user.UserId.Substring(0, Math.Min(8, user.UserId.Length))@(user.UserId.Length > 8 ? "..." : "")</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar me-2">
+                                                <div class="user-avatar-circle">
+                                                    <span>@(string.IsNullOrEmpty(user.Username) ? "U" : user.Username.Substring(0, 1).ToUpper())</span>
+                                                </div>
+                                            </div>
+                                            <div>@user.Username</div>
+                                        </div>
+                                    </td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-calendar-date text-muted me-2"></i>
+                                            <span>@(user.CreatedAt?.ToString("yyyy-MM-dd") ?? "-")</span>
+                                        </div>
+                                        <small class="text-muted">@(user.CreatedAt?.ToString("HH:mm") ?? "")</small>
+                                    </td>
+                                    <td>
+                                        @{
+                                            string statusClass = "inactive";
+                                            string statusIcon = "bi-x-circle";
+                                            string statusText = "Không hoạt động";
+
+                                            // Hiển thị thông tin debug để kiểm tra giá trị thực tế
+                                            var debugInfo = $"StatusName: {user.StatusName}, IsActive: {user.IsActive}";
+
+                                            // Kiểm tra cả "Active" và "Hoạt động" vì có thể API trả về tiếng Việt
+                                            bool isStatusActive = user.StatusName == "Active" ||
+                                                                 user.StatusName == "Hoạt động" ||
+                                                                 user.StatusName?.ToLower() == "active" ||
+                                                                 user.StatusName?.ToLower() == "hoạt động";
+
+                                            if (isStatusActive && user.IsActive == true)
+                                            {
+                                                statusClass = "active";
+                                                statusIcon = "bi-check-circle";
+                                                statusText = "Tài khoản hoạt động";
+                                            }
+                                            else if (isStatusActive && user.IsActive != true)
+                                            {
+                                                statusClass = "locked";
+                                                statusIcon = "bi-lock";
+                                                statusText = "Tài khoản bị khóa";
+                                            }
+                                        }
+                                        <div class="status-badge @statusClass" title="@debugInfo">
+                                            <i class="bi @statusIcon me-2"></i>
+                                            <span>@statusText</span>
+                                        </div>
+                                        <!-- Hiển thị thông tin debug khi hover -->
+                                        <!-- <small class="text-muted d-block mt-1">@debugInfo</small> -->
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a href="@Url.Action("Details", "Customer", new { id = user.UserId })" class="btn btn-sm btn-outline-info rounded-pill fireworks-btn" title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy người dùng
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model?.Metadata != null)
+            {
+                <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                    <div class="text-muted">
+                        <i class="bi bi-list-check me-1"></i>
+                        Hiển thị @((Model.Metadata.PageNumber - 1) * Model.Metadata.PageSize + 1) đến
+                        @Math.Min(Model.Metadata.PageNumber * Model.Metadata.PageSize, Model.Metadata.TotalCount) trong
+                        @Model.Metadata.TotalCount người dùng
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(Model.Metadata.HasPrevious ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("Index", new {
+                                    pageNumber = Model.Metadata.PageNumber - 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    sortBy = ViewBag.CurrentSort,
+                                    sortAscending = ViewBag.CurrentSortDirection,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    statusId = ViewBag.CurrentStatusId,
+                                    isActive = ViewBag.CurrentIsActive
+                                })">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= Model.Metadata.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
+                                    <a class="page-link border-0" href="@Url.Action("Index", new {
+                                        pageNumber = i,
+                                        pageSize = ViewBag.CurrentPageSize,
+                                        sortBy = ViewBag.CurrentSort,
+                                        sortAscending = ViewBag.CurrentSortDirection,
+                                        searchTerm = ViewBag.CurrentSearchTerm,
+                                        statusId = ViewBag.CurrentStatusId,
+                                        isActive = ViewBag.CurrentIsActive
+                                    })">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.Metadata.HasNext ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("Index", new {
+                                    pageNumber = Model.Metadata.PageNumber + 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    sortBy = ViewBag.CurrentSort,
+                                    sortAscending = ViewBag.CurrentSortDirection,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    statusId = ViewBag.CurrentStatusId,
+                                    isActive = ViewBag.CurrentIsActive
+                                })">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        /* Search container styles */
+        .search-container {
+            background: white;
+            padding: 1rem;
+        }
+
+        .search-container .form-control {
+            max-width: 300px;
+            margin-left: auto;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .search-container .form-control:focus {
+            background-color: white;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #usersTable {
+            width: 100%;
+            min-width: 1100px;
+            margin: 0;
+        }
+
+        #usersTable thead tr {
+            height: 50px;
+        }
+
+        #usersTable thead th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        #usersTable thead th div {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #usersTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #usersTable tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.04);
+        }
+
+        /* User avatar styles */
+        .user-avatar-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Status styles */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-badge.active {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-badge.inactive {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-badge.locked {
+            background-color: rgba(234, 179, 8, 0.1);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.2);
+        }
+
+        .status-badge i {
+            font-size: 1rem;
+        }
+
+        .status-badge:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Pagination redesign */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background-color: #f1f5f9;
+            color: #6366f1;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .page-link i {
+            font-size: 14px;
+            line-height: 1;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#usersTable').DataTable({
+                "paging": false,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+                "dom": "<'row'<'col-sm-12'tr>>",
+                "language": {
+                    "zeroRecords": "Không tìm thấy người dùng phù hợp"
+                }
+            });
+
+            // Bind custom search input - chỉ tìm kiếm client-side
+            $('#tableSearch').on('keyup', function() {
+                table.search(this.value).draw();
+
+                // Không gửi form để tránh tải lại trang
+                // $('#hiddenSearchTerm').val(this.value);
+                // clearTimeout(window.searchTimeout);
+                // window.searchTimeout = setTimeout(function() {
+                //     if ($('#tableSearch').val().length > 2 || $('#tableSearch').val().length === 0) {
+                //         $('#sortForm').submit();
+                //     }
+                // }, 800);
+            });
+
+            // Add pulse effect to active status icons
+            setInterval(function() {
+                $('.status-badge.active i').animate({
+                    opacity: 0.6
+                }, 1000).animate({
+                    opacity: 1
+                }, 1000);
+            }, 2000);
+        });
+    </script>
+}

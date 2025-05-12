@@ -1,0 +1,615 @@
+@model Dashboard_MilkStore.Models.Customer.CustomerDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết khách hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center header-custom mb-4">
+        <div class="d-flex align-items-center">
+            <div class="header-icon">
+                <i class="bi bi-person-badge fs-4 text-white"></i>
+            </div>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Chi tiết khách hàng</h5>
+                <p class="text-white-50 mb-0 small">Thông tin chi tiết của khách hàng #@Model.CustomerId</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Customer")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button">
+            <i class="bi bi-arrow-left me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Quay lại</span>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Profile Section -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="profile-section text-center">
+                        <div class="profile-image mb-4">
+                            @if (!string.IsNullOrEmpty(Model.Avatar))
+                            {
+                                <img src="@Model.Avatar" alt="Ảnh đại diện" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <img src="/img/default-avatar.png" alt="Ảnh đại diện mặc định" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" />
+                            }
+                            <label for="avatarFile" class="upload-overlay">
+                                <i class="bi bi-camera"></i>
+                            </label>
+                        </div>
+
+                        <h5 class="fw-bold mb-1">@Model.FullName</h5>
+                        <p class="text-muted mb-3">@Model.Email</p>
+
+                        <div class="info-card mb-3">
+                            <div class="label">ID Khách hàng</div>
+                            <div class="value">@Model.CustomerId</div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="label">Ngày tạo tài khoản</div>
+                            <div class="value">@(Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Information Section -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <!-- Alerts -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form id="customerForm" asp-action="Details" asp-route-id="@Model.CustomerId" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="CustomerId" />
+                        <input type="hidden" asp-for="AvatarPublicId" />
+                        <input type="file" id="avatarFile" name="avatarFile" accept="image/*" class="d-none" />
+
+                        <!-- Account Information -->
+                        <div class="mb-4 pb-3 border-bottom">
+                            <h5 class="mb-3 d-flex align-items-center section-title">
+                                <i class="bi bi-person-lines-fill me-2 text-primary"></i>
+                                Thông tin tài khoản
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="Username" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        <input asp-for="Username" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Username" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input asp-for="Email" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Information -->
+                        <div class="mb-4 pb-3 border-bottom">
+                            <h5 class="mb-3 d-flex align-items-center section-title">
+                                <i class="bi bi-person-vcard me-2 text-primary"></i>
+                                Thông tin cá nhân
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="Surname" class="form-label"></label>
+                                    <input asp-for="Surname" class="form-control" />
+                                    <span asp-validation-for="Surname" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Middlename" class="form-label"></label>
+                                    <input asp-for="Middlename" class="form-control" />
+                                    <span asp-validation-for="Middlename" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Firstname" class="form-label"></label>
+                                    <input asp-for="Firstname" class="form-control" />
+                                    <span asp-validation-for="Firstname" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <label asp-for="PhoneNumber" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input asp-for="PhoneNumber" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Dob" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                        <input asp-for="Dob" type="date" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Dob" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <label asp-for="Address" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                                </div>
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- System Information -->
+                        <div class="mb-4">
+                            <h5 class="mb-3 d-flex align-items-center section-title">
+                                <i class="bi bi-gear me-2 text-primary"></i>
+                                Thông tin hệ thống
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="Gender" class="form-label">Giới tính</label>
+                                    <select asp-for="Gender" class="form-select">
+                                        <option value="">-- Chọn giới tính --</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                    <span asp-validation-for="Gender" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="StatusId" class="form-label">Trạng thái</label>
+                                    <select asp-for="StatusId" class="form-select">
+                                        <option value="">-- Chọn trạng thái --</option>
+                                        @if (Model.UserStatuses != null)
+                                        {
+                                            foreach (var status in Model.UserStatuses)
+                                            {
+                                                if (status.StatusId == Model.StatusId)
+                                                {
+                                                    <option value="@status.StatusId" selected="selected">@status.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@status.StatusId">@status.Name</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="StatusId" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="RoleId" class="form-label">Vai trò</label>
+                                    <select asp-for="RoleId" class="form-select">
+                                        <option value="">-- Chọn vai trò --</option>
+                                        @if (Model.Roles != null)
+                                        {
+                                            foreach (var role in Model.Roles)
+                                            {
+                                                if (role.RoleId.Trim() == Model.RoleId.Trim())
+                                                {
+                                                    <option value="@role.RoleId" selected="selected">@role.RoleName</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@role.RoleId">@role.RoleName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="RoleId" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between border rounded-3 px-3 py-2 mt-4">
+                                <label class="form-check-label mb-0" for="isActive">Trạng thái hoạt động</label>
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" id="isActive" name="IsActive" @(Model.IsActive ? "checked" : "")>
+                                </div>
+                            </div>
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <div class="metadata text-muted small mt-2">
+                                    <i class="bi bi-clock-history me-1"></i>
+                                    Cập nhật lần cuối: @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+                            }
+                            <div class="d-flex justify-content-end gap-2 mt-4 flex-wrap">
+                                <div class="d-flex justify-content-center my-3">
+                                    <a href="@Url.Action("Index", "Customer")" class="btn btn-light rounded-pill">
+                                        <i class="bi bi-x me-1"></i>Hủy
+                                    </a>
+                                </div>
+                                <div class="d-flex justify-content-center my-3">
+                                    <button type="submit" class="btn btn-primary rounded-pill">
+                                        <i class="bi bi-check2 me-1"></i>Lưu thay đổi
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Customer Management Styles - Green Theme */
+        .container-fluid {
+          width: 100% !important;
+          max-width: 100% !important;
+          padding-right: 1.5rem !important;
+          padding-left: 1.5rem !important;
+          margin-right: auto !important;
+          margin-left: auto !important;
+          overflow-x: hidden !important;
+        }
+        body > .container,
+        body > .container-fluid,
+        main > .container,
+        main > .container-fluid,
+        .content-wrapper > .container,
+        .content-wrapper > .container-fluid {
+          max-width: 100% !important;
+          width: 100% !important;
+          padding: 0 !important;
+        }
+        .content-wrapper {
+          width: 100% !important;
+          max-width: 100% !important;
+          padding: 0 !important;
+        }
+        .header-custom {
+          background: linear-gradient(135deg, #22c55e 0%, #198754 100%);
+          padding: 1.5rem;
+          border-radius: 0.5rem;
+          margin-bottom: 1.5rem;
+          box-shadow: 0 0.15rem 0.5rem rgba(34, 197, 94, 0.1);
+        }
+        .header-icon {
+          background-color: rgba(255, 255, 255, 0.2);
+          padding: 0.75rem;
+          border-radius: 50%;
+          margin-right: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .action-button {
+          transition: all 0.3s ease;
+        }
+        .action-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 0.5rem 1rem rgba(34, 197, 94, 0.15) !important;
+        }
+        .card {
+          border: none;
+          box-shadow: 0 0.15rem 1rem 0 rgba(34, 197, 94, 0.1);
+          border-radius: 0.75rem;
+          transition: all 0.3s ease;
+          overflow: hidden;
+          animation: fadeIn 0.5s ease-out;
+        }
+        .card:hover {
+          box-shadow: 0 0.15rem 1.5rem 0 rgba(34, 197, 94, 0.15);
+        }
+        .card-header {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          background-color: #fff;
+        }
+        .form-control,
+        .form-select {
+          border-radius: 0.5rem;
+          padding: 0.6rem 0.75rem;
+          border: 1px solid #bbf7d0;
+          font-size: 0.9rem;
+          transition: all 0.2s ease;
+        }
+        .form-control:focus,
+        .form-select:focus {
+          border-color: #22c55e;
+          box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25);
+        }
+        .input-group-text {
+          background-color: #f8f9fc;
+          border-color: #bbf7d0;
+          color: #22c55e;
+        }
+        .form-label {
+          font-weight: 600;
+          color: #198754;
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+        .btn-primary {
+          background-color: #22c55e;
+          border-color: #22c55e;
+        }
+        .btn-primary:hover {
+          background-color: #198754;
+          border-color: #16a34a;
+          transform: translateY(-2px);
+          box-shadow: 0 0.5rem 1rem rgba(34, 197, 94, 0.15);
+        }
+        .btn-light {
+          background-color: #f8f9fc;
+          border-color: #bbf7d0;
+          color: #198754;
+        }
+        .btn-light:hover {
+          background-color: #e2e6f1;
+          border-color: #bbf7d0;
+          transform: translateY(-2px);
+        }
+        .rounded-pill {
+          border-radius: 50rem !important;
+        }
+        .profile-section {
+          background-color: #f8f9fc;
+          border-radius: 0.75rem;
+          padding: 2rem;
+          margin-bottom: 1.5rem;
+          box-shadow: 0 0.15rem 1rem 0 rgba(34, 197, 94, 0.1);
+          border: 1px solid #bbf7d0;
+        }
+        .profile-image {
+          position: relative;
+          width: 180px;
+          height: 180px;
+          margin: 0 auto 1.5rem;
+        }
+        .profile-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+          border: 5px solid white;
+          box-shadow: 0 0.5rem 1.5rem rgba(34, 197, 94, 0.1);
+          transition: all 0.3s ease;
+        }
+        .profile-image img:hover {
+          transform: scale(1.02);
+          box-shadow: 0 0.5rem 2rem rgba(34, 197, 94, 0.15);
+        }
+        .profile-image .upload-overlay {
+          position: absolute;
+          bottom: 5px;
+          right: 5px;
+          background-color: #22c55e;
+          color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 0.25rem 0.5rem rgba(34, 197, 94, 0.1);
+          transition: all 0.3s ease;
+          border: 2px solid white;
+        }
+        .profile-image .upload-overlay:hover {
+          background-color: #16a34a;
+          transform: scale(1.1);
+        }
+        .info-card {
+          border-left: 4px solid #22c55e;
+          background-color: white;
+          padding: 1rem;
+          margin-bottom: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 0.125rem 0.5rem rgba(34, 197, 94, 0.05);
+          transition: all 0.3s ease;
+        }
+        .info-card:hover {
+          transform: translateX(5px);
+          box-shadow: 0 0.25rem 0.75rem rgba(34, 197, 94, 0.1);
+        }
+        .info-card .label {
+          font-size: 0.8rem;
+          color: #198754;
+          margin-bottom: 0.25rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        .info-card .value {
+          font-weight: 600;
+          color: #198754;
+          font-size: 1.1rem;
+        }
+        .form-check-input:checked {
+          background-color: #22c55e;
+          border-color: #22c55e;
+        }
+        .form-check-input {
+          cursor: pointer;
+          width: 2.5em;
+          height: 1.25em;
+        }
+        .form-check-label {
+          cursor: pointer;
+        }
+        .metadata {
+          font-size: 0.8rem;
+          color: #198754;
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 1px solid #bbf7d0;
+          display: flex;
+          align-items: center;
+        }
+        .metadata i {
+          margin-right: 0.5rem;
+          color: #22c55e;
+        }
+        .input-group {
+          border-radius: 0.5rem;
+          overflow: hidden;
+          box-shadow: 0 0.125rem 0.25rem rgba(34, 197, 94, 0.03);
+        }
+        .input-group-text {
+          border-top-left-radius: 0.5rem;
+          border-bottom-left-radius: 0.5rem;
+        }
+        .input-group .form-control {
+          border-top-right-radius: 0.5rem;
+          border-bottom-right-radius: 0.5rem;
+        }
+        @@keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .row {
+          width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+        .col-md-4,
+        .col-md-8,
+        .col-12 {
+          padding: 0.75rem;
+        }
+        #customerForm {
+          display: flex;
+          flex-wrap: wrap;
+          width: 100% !important;
+        }
+        @@media (max-width: 768px) {
+          .profile-section {
+            padding: 1.5rem;
+          }
+          .profile-image {
+            width: 150px;
+            height: 150px;
+          }
+          .header-custom {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .header-custom a {
+            margin-top: 1rem;
+            align-self: flex-end;
+          }
+          .btn-sm-custom {
+            font-size: 0.8rem;
+            max-width: 120px;
+          }
+          .btn-sm-custom i {
+            font-size: 0.9rem;
+          }
+        }
+        @@media (max-width: 576px) {
+          .btn-sm-custom {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem !important;
+            max-width: 100px;
+          }
+          .btn-sm-custom i {
+            font-size: 0.8rem;
+            margin-right: 0.2rem !important;
+          }
+        }
+        /* Section title green accent */
+        .section-title h5, h5.section-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #22c55e;
+        }
+        .border-bottom {
+            border-bottom: 1.5px solid #bbf7d0 !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            // Fix layout issues
+            $('.content-wrapper').css({
+                'width': '100%',
+                'max-width': '100%',
+                'padding': '0',
+                'margin': '0'
+            });
+
+            $('.container-fluid').css({
+                'width': '100%',
+                'max-width': '100%'
+            });
+
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function () {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Preview image when file is selected
+            $('#avatarFile').on('change', function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('.profile-image img').attr('src', e.target.result);
+                        // Add a flash effect
+                        $('.profile-image').addClass('shadow-lg');
+                        setTimeout(function() {
+                            $('.profile-image').removeClass('shadow-lg');
+                        }, 300);
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Add animation to buttons
+            $('.action-button, .btn-primary, .btn-light').hover(
+                function() { $(this).addClass('shadow'); },
+                function() { $(this).removeClass('shadow'); }
+            );
+
+            // Add subtle animation to form fields on focus
+            $('.form-control, .form-select').focus(function() {
+                $(this).closest('.input-group, .col-md-4, .col-md-6, .mb-4').addClass('shadow-sm');
+            }).blur(function() {
+                $(this).closest('.input-group, .col-md-4, .col-md-6, .mb-4').removeClass('shadow-sm');
+            });
+
+            // Add animation to info cards
+            $('.info-card').hover(
+                function() { $(this).addClass('border-primary'); },
+                function() { $(this).removeClass('border-primary'); }
+            );
+        });
+    </script>
+}

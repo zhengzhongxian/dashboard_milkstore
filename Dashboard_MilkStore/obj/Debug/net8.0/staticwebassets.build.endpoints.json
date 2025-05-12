@@ -85,6 +85,88 @@
       ]
     },
     {
+      "Route": "css/customer-management.css",
+      "AssetFile": "css/customer-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6529"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 12 May 2025 15:39:23 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY="
+        }
+      ]
+    },
+    {
+      "Route": "css/customer-management.ucbp5vx9rv.css",
+      "AssetFile": "css/customer-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6529"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 12 May 2025 15:39:23 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ucbp5vx9rv"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY="
+        },
+        {
+          "Name": "label",
+          "Value": "css/customer-management.css"
+        }
+      ]
+    },
+    {
       "Route": "css/order-detail.css",
       "AssetFile": "css/order-detail.css",
       "Selectors": [],

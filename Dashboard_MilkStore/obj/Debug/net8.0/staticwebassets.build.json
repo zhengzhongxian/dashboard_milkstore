@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "6HM4CVM1gE4lyfI4a0Sm1PNkfucnWFm0IvhlS8aUfuk=",
+  "Hash": "OGgDus5XzmjU2PODJxz3KC0i0S6Wy8aysnhnNDZ7R8A=",
   "Source": "Dashboard_MilkStore",
   "BasePath": "_content/Dashboard_MilkStore",
   "Mode": "Default",
@@ -57,6 +57,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Dashboard_MilkStore.bundle.scp.css"
+    },
+    {
+      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\customer-management.css",
+      "SourceId": "Dashboard_MilkStore",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\",
+      "BasePath": "_content/Dashboard_MilkStore",
+      "RelativePath": "css/customer-management#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ucbp5vx9rv",
+      "Integrity": "QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\customer-management.css"
     },
     {
       "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\order-detail.css",
@@ -1530,6 +1551,88 @@
     }
   ],
   "Endpoints": [
+    {
+      "Route": "css/customer-management.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\customer-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6529"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 12 May 2025 15:39:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY="
+        }
+      ]
+    },
+    {
+      "Route": "css/customer-management.ucbp5vx9rv.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\customer-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6529"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 12 May 2025 15:39:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ucbp5vx9rv"
+        },
+        {
+          "Name": "label",
+          "Value": "css/customer-management.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-QqnLFqohfhmWnHfmq35sY4m7+DX/0H9GjrHzo2k6mhY="
+        }
+      ]
+    },
     {
       "Route": "css/order-detail.css",
       "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\order-detail.css",
