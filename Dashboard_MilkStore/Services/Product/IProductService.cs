@@ -27,6 +27,12 @@ namespace Dashboard_MilkStore.Services.Product
         Task<ServiceResponse<Dimension>> AddDimensionAsync(CreateDimensionDTO createDto, string? token = null);
         Task<ServiceResponse<bool>> UpdateDimensionAsync(string dimensionId, Dictionary<string, object> patchValues, string? token = null);
         Task<ServiceResponse<bool>> DeleteDimensionAsync(string dimensionId, string? token = null);
+
+        // Product Category operations
+        Task<ServiceResponse<List<ProductCategoryViewModel>>> GetProductCategoriesAsync(string productId, string? token = null);
+        Task<ServiceResponse<bool>> ProcessProductCategoryChangesAsync(string productId, ProductCategoryChangesViewModel changes, string? token = null);
+        Task<ServiceResponse<ProductCategoryViewModel>> AddProductCategoryAsync(CreateProductCategoryViewModel createViewModel, string? token = null);
+        Task<ServiceResponse<bool>> DeleteProductCategoryAsync(string productId, string categoryId, string? token = null);
         Task<ServiceResponse<List<ImageDTO>>> GetImagesByProductIdAsync(string productId, string? token = null);
 
         // ProductPrice operations

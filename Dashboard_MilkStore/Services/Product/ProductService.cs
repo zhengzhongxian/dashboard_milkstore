@@ -351,31 +351,24 @@ namespace Dashboard_MilkStore.Services.Product
             {
                 var url = $"{_baseUrl}/api/Image/{imageId}";
 
-                // Create a HttpClient instance
-                using (var httpClient = new HttpClient())
+                // Sử dụng CallAPI thay vì HttpClient trực tiếp để đảm bảo xử lý token nhất quán
+                var response = await _callAPI.DeleteAsync<ServiceResponse<bool>>(url, token);
+
+                if (response == null)
                 {
-                    if (!string.IsNullOrEmpty(token))
+                    return new ServiceResponse<bool>
                     {
-                        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                    }
-
-                    var response = await httpClient.DeleteAsync(url);
-                    response.EnsureSuccessStatusCode();
-
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<bool>>(content,
-                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-                    return result ?? new ServiceResponse<bool>
-                    {
-                        Success = true,
-                        Message = "Image deleted successfully",
-                        StatusCode = (int)HttpStatusCode.OK
+                        Success = false,
+                        Message = "Failed to delete image. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
                     };
                 }
+
+                return response;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception in DeleteImageAsync: {ex}");
                 return new ServiceResponse<bool>
                 {
                     Success = false,
@@ -944,6 +937,225 @@ namespace Dashboard_MilkStore.Services.Product
                 {
                     Success = false,
                     Message = $"Error deleting product: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        // Product Category operations
+
+        public async Task<ServiceResponse<ProductCategoryViewModel>> AddProductCategoryAsync(CreateProductCategoryViewModel createViewModel, string? token = null)
+        {
+            try
+            {
+                // Chuyển đổi từ ViewModel sang DTO để gửi đến API
+                var createDto = new
+                {
+                    ProductId = createViewModel.ProductId,
+                    CategoryId = createViewModel.CategoryId
+                };
+
+                var url = $"{_baseUrl}/api/product-categories";
+                System.Diagnostics.Debug.WriteLine($"AddProductCategoryAsync: Sending POST request to {url}");
+                System.Diagnostics.Debug.WriteLine($"AddProductCategoryAsync: Data: {System.Text.Json.JsonSerializer.Serialize(createDto)}");
+
+                var response = await _callAPI.PostAsync<ServiceResponse<ProductCategoryViewModel>>(url, createDto, token);
+
+                if (response == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("AddProductCategoryAsync: Received null response from API");
+                    return new ServiceResponse<ProductCategoryViewModel>
+                    {
+                        Success = false,
+                        Message = "Failed to add product category. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                System.Diagnostics.Debug.WriteLine($"AddProductCategoryAsync: API response - Success: {response.Success}, Message: {response.Message}");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in AddProductCategoryAsync: {ex.Message}");
+                return new ServiceResponse<ProductCategoryViewModel>
+                {
+                    Success = false,
+                    Message = $"Error adding product category: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProductCategoryAsync(string productId, string categoryId, string? token = null)
+        {
+            try
+            {
+                var url = $"{_baseUrl}/api/product-categories/product/{productId}/category/{categoryId}";
+                System.Diagnostics.Debug.WriteLine($"DeleteProductCategoryAsync: Sending DELETE request to {url}");
+
+                var response = await _callAPI.DeleteAsync<ServiceResponse<bool>>(url, token);
+
+                if (response == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("DeleteProductCategoryAsync: Received null response from API");
+                    return new ServiceResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Failed to delete product category. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                System.Diagnostics.Debug.WriteLine($"DeleteProductCategoryAsync: API response - Success: {response.Success}, Message: {response.Message}");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in DeleteProductCategoryAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error deleting product category: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> ProcessProductCategoryChangesAsync(string productId, ProductCategoryChangesViewModel changes, string? token = null)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"ProcessProductCategoryChangesAsync: Processing changes for product {productId}");
+                System.Diagnostics.Debug.WriteLine($"ProcessProductCategoryChangesAsync: Deleted categories: {changes.DeletedCategoryIds?.Count ?? 0}, New categories: {changes.NewCategoryIds?.Count ?? 0}");
+
+                // Log token for debugging
+                System.Diagnostics.Debug.WriteLine($"ProcessProductCategoryChangesAsync: Token present: {!string.IsNullOrEmpty(token)}");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    System.Diagnostics.Debug.WriteLine($"ProcessProductCategoryChangesAsync: Token length: {token.Length}");
+                    System.Diagnostics.Debug.WriteLine($"ProcessProductCategoryChangesAsync: Token starts with: {token.Substring(0, Math.Min(10, token.Length))}...");
+                }
+
+                var successCount = 0;
+                var errorMessages = new List<string>();
+
+                // 1. Process deleted categories
+                if (changes.DeletedCategoryIds != null && changes.DeletedCategoryIds.Any())
+                {
+                    foreach (var categoryId in changes.DeletedCategoryIds)
+                    {
+                        var deleteResponse = await DeleteProductCategoryAsync(productId, categoryId, token);
+                        if (deleteResponse.Success)
+                        {
+                            successCount++;
+                        }
+                        else
+                        {
+                            errorMessages.Add($"Lỗi khi xóa danh mục {categoryId}: {deleteResponse.Message}");
+                        }
+                    }
+                }
+
+                // 2. Process new categories
+                if (changes.NewCategoryIds != null && changes.NewCategoryIds.Any())
+                {
+                    foreach (var categoryId in changes.NewCategoryIds)
+                    {
+                        var createDto = new CreateProductCategoryViewModel
+                        {
+                            ProductId = productId,
+                            CategoryId = categoryId
+                        };
+
+                        var addResponse = await AddProductCategoryAsync(createDto, token);
+                        if (addResponse.Success)
+                        {
+                            successCount++;
+                        }
+                        else
+                        {
+                            errorMessages.Add($"Lỗi khi thêm danh mục {categoryId}: {addResponse.Message}");
+                        }
+                    }
+                }
+
+                // Return result
+                if (errorMessages.Any())
+                {
+                    System.Diagnostics.Debug.WriteLine($"ProcessProductCategoryChangesAsync: Completed with {successCount} successes and {errorMessages.Count} errors");
+                    return new ServiceResponse<bool>
+                    {
+                        Success = successCount > 0,
+                        Data = successCount > 0,
+                        Message = $"Đã xử lý {successCount} thay đổi thành công. Lỗi: {string.Join("; ", errorMessages)}",
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"ProcessProductCategoryChangesAsync: Completed successfully with {successCount} changes");
+                    return new ServiceResponse<bool>
+                    {
+                        Success = true,
+                        Data = true,
+                        Message = $"Đã xử lý {successCount} thay đổi thành công",
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in ProcessProductCategoryChangesAsync: {ex.Message}");
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error processing product category changes: {ex.Message}",
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<List<ProductCategoryViewModel>>> GetProductCategoriesAsync(string productId, string? token = null)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(productId))
+                {
+                    return new ServiceResponse<List<ProductCategoryViewModel>>
+                    {
+                        Success = false,
+                        Message = "ProductId không được để trống",
+                        StatusCode = (int)HttpStatusCode.BadRequest
+                    };
+                }
+
+                var url = $"{_baseUrl}/api/product-categories/product/{productId}";
+                System.Diagnostics.Debug.WriteLine($"GetProductCategoriesAsync: Calling API at URL: {url}");
+
+                var response = await _callAPI.GetAsync<ServiceResponse<List<ProductCategoryViewModel>>>(url, token);
+
+                if (response == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("GetProductCategoriesAsync: Received null response from API");
+                    return new ServiceResponse<List<ProductCategoryViewModel>>
+                    {
+                        Success = false,
+                        Message = "Failed to get product categories. No response from server.",
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
+
+                System.Diagnostics.Debug.WriteLine($"GetProductCategoriesAsync: API response - Success: {response.Success}, Message: {response.Message}, Categories count: {response.Data?.Count ?? 0}");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetProductCategoriesAsync: {ex.Message}");
+                return new ServiceResponse<List<ProductCategoryViewModel>>
+                {
+                    Success = false,
+                    Message = $"Error getting product categories: {ex.Message}",
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }

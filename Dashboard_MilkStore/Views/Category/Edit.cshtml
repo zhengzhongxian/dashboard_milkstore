@@ -1,0 +1,215 @@
+@model Dashboard_MilkStore.Models.Category.CreateCategoryViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa Danh mục";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-pencil-square fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Chỉnh sửa Danh mục</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Cập nhật thông tin danh mục</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Category")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button">
+            <i class="bi bi-arrow-left me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Quay lại</span>
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Edit Form -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post" class="row g-3">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="CategoryName" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-folder"></i></span>
+                            <input asp-for="CategoryName" class="form-control" placeholder="Nhập tên danh mục" />
+                        </div>
+                        <span asp-validation-for="CategoryName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Priority" class="form-label">Độ ưu tiên</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-arrow-up-circle"></i></span>
+                            <input asp-for="Priority" class="form-control" type="number" min="0" placeholder="Nhập độ ưu tiên" />
+                        </div>
+                        <span asp-validation-for="Priority" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Parentid" class="form-label">Danh mục cha</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
+                            <select asp-for="Parentid" class="form-select" asp-items="Model.Parents">
+                                <option value="">-- Chọn danh mục cha --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="Parentid" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="Metadata" class="form-label">Metadata</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-code-square"></i></span>
+                            <input asp-for="Metadata" class="form-control" placeholder="Nhập metadata (tùy chọn)" />
+                        </div>
+                        <span asp-validation-for="Metadata" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("Index", "Category")" class="btn btn-light rounded-pill px-4 py-2">
+                            <i class="bi bi-x me-2"></i>Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">
+                            <i class="bi bi-check2 me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .action-button {
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+
+        /* Form styles */
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid #e0e4f0;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #9fe7ef;
+            box-shadow: 0 0 0 0.25rem rgba(54, 185, 204, 0.25);
+        }
+
+        .input-group-text {
+            background-color: #f8f9fc;
+            border-color: #e0e4f0;
+            color: #6366f1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #5a5c69;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-primary:hover {
+            background-color: #4f46e5;
+            border-color: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-light {
+            background-color: #f8f9fc;
+            border-color: #e0e4f0;
+            color: #6e707e;
+        }
+
+        .btn-light:hover {
+            background-color: #e2e6f1;
+            border-color: #dbe0f0;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function () {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Add animation to buttons
+            $('.btn').hover(
+                function() { $(this).addClass('shadow'); },
+                function() { $(this).removeClass('shadow'); }
+            );
+
+            // Add subtle animation to form fields on focus
+            $('.form-control, .form-select').focus(function() {
+                $(this).closest('.input-group').addClass('shadow-sm');
+            }).blur(function() {
+                $(this).closest('.input-group').removeClass('shadow-sm');
+            });
+        });
+    </script>
+}

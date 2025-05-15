@@ -51,6 +51,16 @@
                             <div class="value">@Model.CustomerId</div>
                         </div>
 
+                        <div class="info-card mb-3">
+                            <div class="label">Điểm tích lũy</div>
+                            <div class="value">
+                                <span class="badge bg-success rounded-pill px-3 py-2">
+                                    <i class="bi bi-gift me-1"></i>
+                                    @(Model.Coupoun ?? 0) điểm
+                                </span>
+                            </div>
+                        </div>
+
                         <div class="info-card">
                             <div class="label">Ngày tạo tài khoản</div>
                             <div class="value">@(Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</div>

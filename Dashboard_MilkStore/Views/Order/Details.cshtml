@@ -193,27 +193,80 @@
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             color: white;
             border: none;
-            border-radius: 50px;
-            padding: 5px 12px;
-            font-size: 0.8rem;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
             font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            min-width: 80px;
+            max-width: 120px;
+            height: 28px;
+        }
+
+        .update-status-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transition: all 0.4s ease;
+            z-index: -1;
         }
 
         .update-status-btn:hover {
             background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 5px 10px rgba(79, 70, 229, 0.4);
+        }
+
+        .update-status-btn:hover::before {
+            left: 100%;
         }
 
         .update-status-btn:active {
             transform: translateY(0);
             box-shadow: 0 2px 3px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Admin button style */
+        .admin-update-btn {
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            box-shadow: 0 3px 6px rgba(225, 29, 72, 0.3);
+        }
+
+        .admin-update-btn:hover {
+            background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+            box-shadow: 0 5px 10px rgba(225, 29, 72, 0.4);
+        }
+
+        /* Locked button style */
+        .locked-btn {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(100, 116, 139, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: not-allowed;
+            min-width: 80px;
+            max-width: 120px;
+            height: 28px;
         }
 
         /* Modal cập nhật trạng thái */
@@ -222,34 +275,92 @@
             color: white;
             border-bottom: none;
             padding: 15px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.1));
+            clip-path: polygon(100% 0, 0% 0, 100% 100%);
+        }
+
+        .admin-modal-header {
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
         }
 
         .order-info {
             background-color: #f8f9fa;
             border-radius: 8px;
-            padding: 12px 15px;
+            padding: 15px;
             border-left: 4px solid #6366f1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .order-info::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, transparent 50%, rgba(99, 102, 241, 0.1) 50%);
+            border-radius: 0 0 8px 0;
+        }
+
+        .admin-order-info {
+            border-left: 4px solid #e11d48;
+        }
+
+        .admin-order-info::after {
+            background: linear-gradient(135deg, transparent 50%, rgba(225, 29, 72, 0.1) 50%);
         }
 
         .order-number {
-            font-size: 0.95rem;
-            margin-bottom: 5px;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .order-number strong {
             color: #4f46e5;
+            font-weight: 600;
+        }
+
+        .admin-order-info .order-number strong {
+            color: #e11d48;
         }
 
         .order-date {
             font-size: 0.85rem;
             color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .status-select {
             border-color: #d1d5db;
             border-radius: 8px;
-            padding: 10px 15px;
-            transition: all 0.2s;
+            padding: 12px 15px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+        }
+
+        .admin-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e11d48' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
         }
 
         .status-select:focus {
@@ -257,39 +368,172 @@
             box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
         }
 
+        .admin-select:focus {
+            border-color: #e11d48;
+            box-shadow: 0 0 0 0.25rem rgba(225, 29, 72, 0.25);
+        }
+
         .status-alert {
             background-color: #e0e7ff;
             border-left: 4px solid #6366f1;
             color: #4338ca;
             border-radius: 8px;
-            padding: 12px 15px;
+            padding: 15px;
             font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-alert::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, transparent 50%, rgba(99, 102, 241, 0.1) 50%);
+            border-radius: 0 0 8px 0;
+        }
+
+        .admin-status-alert {
+            background-color: #ffe4e6;
+            border-left: 4px solid #e11d48;
+            color: #be123c;
+        }
+
+        .admin-status-alert::after {
+            background: linear-gradient(135deg, transparent 50%, rgba(225, 29, 72, 0.1) 50%);
+        }
+
+        .alert-info {
+            background-color: #e0f2fe;
+            border-left: 4px solid #0ea5e9;
+            color: #0369a1;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-info::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, transparent 50%, rgba(14, 165, 233, 0.1) 50%);
+            border-radius: 0 0 8px 0;
+        }
+
+        .alert-info ul {
+            padding-left: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .alert-info li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .alert-info li:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-danger {
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #b91c1c;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-danger::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, transparent 50%, rgba(239, 68, 68, 0.1) 50%);
+            border-radius: 0 0 8px 0;
         }
 
         .btn-cancel {
             background-color: #f3f4f6;
             color: #4b5563;
             border: none;
-            border-radius: 50px;
-            padding: 8px 15px;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-cancel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.05), rgba(0,0,0,0));
+            transition: all 0.4s ease;
         }
 
         .btn-cancel:hover {
             background-color: #e5e7eb;
             color: #1f2937;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-cancel:hover::before {
+            left: 100%;
+        }
+
+        .btn-cancel:active {
+            transform: translateY(0);
         }
 
         .btn-update {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             color: white;
             border: none;
-            border-radius: 50px;
-            padding: 8px 20px;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
             font-weight: 500;
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-update::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transition: all 0.4s ease;
         }
 
         .btn-update:hover {
@@ -299,9 +543,23 @@
             box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
         }
 
+        .btn-update:hover::before {
+            left: 100%;
+        }
+
         .btn-update:active {
             transform: translateY(0);
             box-shadow: 0 2px 3px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-update-admin {
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            box-shadow: 0 2px 5px rgba(225, 29, 72, 0.3);
+        }
+
+        .btn-update-admin:hover {
+            background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+            box-shadow: 0 4px 8px rgba(225, 29, 72, 0.4);
         }
 
         /* Responsive */
@@ -331,7 +589,16 @@
                 <i class="bi bi-box-seam"></i>
                 Chi tiết đơn hàng #@Model.OrderNumber
             </h3>
-            <a href="@Url.Action("Index")" class="btn btn-back">
+            <a href="@Url.Action("Index", new {
+                pageNumber = ViewBag.ReturnPageNumber,
+                pageSize = ViewBag.ReturnPageSize,
+                sortBy = ViewBag.ReturnSortBy,
+                sortAscending = ViewBag.ReturnSortAscending,
+                statusId = ViewBag.ReturnStatusId,
+                searchTerm = ViewBag.ReturnSearchTerm,
+                startDate = ViewBag.ReturnStartDate,
+                endDate = ViewBag.ReturnEndDate
+            })" class="btn btn-back">
                 <i class="bi bi-arrow-left"></i> Quay lại
             </a>
         </div>
@@ -414,9 +681,29 @@
                                                 <i class="bi @statusIcon"></i>
                                                 @statusText
                                             </span>
-                                            <button type="button" class="btn btn-sm update-status-btn" data-bs-toggle="modal" data-bs-target="#updateStatusModal">
-                                                <i class="bi bi-pencil-square"></i> Cập nhật
-                                            </button>
+                                            @if (ViewBag.IsAdmin)
+                                            {
+                                                <!-- Admin có thể cập nhật bất kỳ trạng thái nào -->
+                                                <button type="button" class="btn update-status-btn admin-update-btn" data-bs-toggle="modal" data-bs-target="#updateStatusModal">
+                                                    <i class="bi bi-shield-fill-check"></i> CẬP NHẬT
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <!-- Staff chỉ có thể cập nhật theo quy trình -->
+                                                @if (Model.StatusId == "COMPLETED" || Model.StatusId == "CANCELLED")
+                                                {
+                                                    <button type="button" class="btn locked-btn" disabled title="Không thể cập nhật trạng thái đơn hàng đã hoàn thành hoặc đã hủy">
+                                                        <i class="bi bi-lock-fill"></i> ĐÃ KHÓA
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn update-status-btn" data-bs-toggle="modal" data-bs-target="#updateStatusModal">
+                                                        <i class="bi bi-pencil-square"></i> CẬP NHẬT
+                                                    </button>
+                                                }
+                                            }
                                         </div>
                                     </td>
                                 </tr>
@@ -533,6 +820,30 @@
                                         <th colspan="5" class="text-right">Tổng tiền sản phẩm:</th>
                                         <td><span class="price-display">@(Model.OrderDetails.Sum(x => x.SubTotal)?.ToString("N0") ?? "-") đ</span></td>
                                     </tr>
+                                    @if (Model.AppliedVouchers != null && Model.AppliedVouchers.Any())
+                                    {
+                                        <tr>
+                                            <th colspan="5" class="text-right">Mã giảm giá đã áp dụng:</th>
+                                            <td>
+                                                @foreach (var voucher in Model.AppliedVouchers)
+                                                {
+                                                    <div class="voucher-item mb-1">
+                                                        <span class="badge bg-info rounded-pill">
+                                                            @voucher.VoucherCode
+                                                            @if (voucher.DiscountType == "Percentage")
+                                                            {
+                                                                <span>(@voucher.DiscountValue%)</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>(@voucher.DiscountValue?.ToString("N0") đ)</span>
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
                                     <tr>
                                         <th colspan="5" class="text-right">Phí giao hàng:</th>
                                         <td><span class="price-display">@(Model.ShippingFee?.ToString("N0") ?? "-") đ</span></td>
@@ -561,55 +872,169 @@
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header status-modal-header">
+            <div class="modal-header status-modal-header @(ViewBag.IsAdmin ? "admin-modal-header" : "")">
                 <h5 class="modal-title" id="updateStatusModalLabel">
-                    <i class="bi bi-arrow-repeat me-2"></i>
-                    Cập nhật trạng thái đơn hàng
+                    @if (ViewBag.IsAdmin)
+                    {
+                        <i class="bi bi-shield-fill-check me-2"></i>
+                        <span>Cập nhật trạng thái đơn hàng (Admin)</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-arrow-repeat me-2"></i>
+                        <span>Cập nhật trạng thái đơn hàng</span>
+                    }
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form asp-action="UpdateStatus" asp-controller="Order" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="orderId" value="@Model.OrderId" />
+                    <input type="hidden" name="pageNumber" value="@ViewBag.ReturnPageNumber" />
+                    <input type="hidden" name="pageSize" value="@ViewBag.ReturnPageSize" />
+                    <input type="hidden" name="sortBy" value="@ViewBag.ReturnSortBy" />
+                    <input type="hidden" name="sortAscending" value="@ViewBag.ReturnSortAscending" />
+                    <input type="hidden" name="statusId_filter" value="@ViewBag.ReturnStatusId" />
+                    <input type="hidden" name="searchTerm" value="@ViewBag.ReturnSearchTerm" />
+                    <input type="hidden" name="startDate" value="@ViewBag.ReturnStartDate" />
+                    <input type="hidden" name="endDate" value="@ViewBag.ReturnEndDate" />
 
-                    <div class="order-info mb-3">
+                    <div class="order-info mb-4 @(ViewBag.IsAdmin ? "admin-order-info" : "")">
                         <div class="order-number">Đơn hàng: <strong>#@Model.OrderNumber</strong></div>
-                        <div class="order-date">Ngày đặt: @(Model.OrderDate?.ToString("yyyy-MM-dd HH:mm") ?? "-")</div>
+                        <div class="order-date">
+                            <i class="bi bi-calendar3"></i>
+                            <span>Ngày đặt: @(Model.OrderDate?.ToString("yyyy-MM-dd HH:mm") ?? "-")</span>
+                        </div>
                     </div>
 
                     <div class="mb-4">
-                        <label for="statusId" class="form-label">Chọn trạng thái mới</label>
-                        <select class="form-select status-select" id="statusId" name="statusId" required>
+                        <label for="statusId" class="form-label fw-medium">Chọn trạng thái mới</label>
+                        <select class="form-select status-select @(ViewBag.IsAdmin ? "admin-select" : "")" id="statusId" name="statusId" required>
                             <option value="">-- Chọn trạng thái --</option>
                             @if (ViewBag.OrderStatuses != null)
                             {
-                                foreach (var status in ViewBag.OrderStatuses)
+                                if (ViewBag.IsAdmin)
                                 {
-                                    @if (status.StatusId == Model.StatusId)
+                                    // Admin có thể chọn bất kỳ trạng thái nào
+                                    foreach (var status in ViewBag.OrderStatuses)
                                     {
-                                        <option value="@status.StatusId" selected>@status.Name</option>
+                                        bool isCurrentStatus = status.StatusId == Model.StatusId;
+
+                                        if (isCurrentStatus)
+                                        {
+                                            <option value="@status.StatusId" selected>@status.Name (Hiện tại)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@status.StatusId">@status.Name</option>
+                                        }
                                     }
-                                    else
+                                }
+                                else
+                                {
+                                    // Staff chỉ có thể chọn theo quy trình
+                                    // Xác định các trạng thái hợp lệ dựa trên trạng thái hiện tại
+                                    var validNextStatuses = new List<string>();
+
+                                    switch (Model.StatusId)
                                     {
-                                        <option value="@status.StatusId">@status.Name</option>
+                                        case "PENDING":
+                                            validNextStatuses.Add("CONFIRMED");
+                                            validNextStatuses.Add("CANCELLED");
+                                            break;
+                                        case "CONFIRMED":
+                                            validNextStatuses.Add("PROCESSING");
+                                            validNextStatuses.Add("CANCELLED");
+                                            break;
+                                        case "PROCESSING":
+                                            validNextStatuses.Add("SHIPPING");
+                                            break;
+                                        case "SHIPPING":
+                                            validNextStatuses.Add("COMPLETED");
+                                            break;
+                                        case "COMPLETED":
+                                        case "CANCELLED":
+                                            // Không có trạng thái hợp lệ tiếp theo
+                                            break;
+                                    }
+
+                                    foreach (var status in ViewBag.OrderStatuses)
+                                    {
+                                        bool isCurrentStatus = status.StatusId == Model.StatusId;
+                                        bool isValidNextStatus = validNextStatuses.Contains(status.StatusId);
+                                        bool shouldDisable = !isValidNextStatus && !isCurrentStatus;
+
+                                        if (isCurrentStatus)
+                                        {
+                                            <option value="@status.StatusId" selected>@status.Name (Hiện tại)</option>
+                                        }
+                                        else if (isValidNextStatus)
+                                        {
+                                            <option value="@status.StatusId">@status.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@status.StatusId" disabled style="color: #aaa;">@status.Name (Không hợp lệ)</option>
+                                        }
                                     }
                                 }
                             }
                         </select>
                     </div>
 
-                    <div class="alert status-alert">
+                    <div class="alert status-alert @(ViewBag.IsAdmin ? "admin-status-alert" : "")">
                         <i class="bi bi-info-circle-fill me-2"></i>
-                        Lưu ý: Việc thay đổi trạng thái đơn hàng sẽ được ghi nhận và không thể hoàn tác.
+                        <strong>Lưu ý:</strong> Việc thay đổi trạng thái đơn hàng sẽ được ghi nhận và không thể hoàn tác.
                     </div>
+
+                    @if (ViewBag.IsAdmin)
+                    {
+                        <div class="alert admin-status-alert">
+                            <i class="bi bi-shield-fill-check me-2"></i>
+                            <strong>Chế độ Admin:</strong> Bạn có thể cập nhật đơn hàng sang bất kỳ trạng thái nào, bao gồm cả đơn hàng đã hoàn thành hoặc đã hủy.
+                        </div>
+                    }
+                    else
+                    {
+                        @if (Model.StatusId == "COMPLETED" || Model.StatusId == "CANCELLED")
+                        {
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                Không thể cập nhật trạng thái đơn hàng đã hoàn thành hoặc đã hủy.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <strong>Quy trình cập nhật trạng thái:</strong>
+                                <ul class="mb-0 mt-1">
+                                    <li>Đơn hàng <strong>chờ xác nhận</strong> chỉ có thể chuyển sang <strong>đã xác nhận</strong> hoặc <strong>đã hủy</strong></li>
+                                    <li>Đơn hàng <strong>đã xác nhận</strong> chỉ có thể chuyển sang <strong>đang xử lý</strong> hoặc <strong>đã hủy</strong></li>
+                                    <li>Đơn hàng <strong>đang xử lý</strong> chỉ có thể chuyển sang <strong>đang giao</strong></li>
+                                    <li>Đơn hàng <strong>đang giao</strong> chỉ có thể chuyển sang <strong>đã hoàn thành</strong></li>
+                                    <li>Đơn hàng <strong>đã hoàn thành</strong> hoặc <strong>đã hủy</strong> không thể thay đổi trạng thái</li>
+                                </ul>
+                            </div>
+                        }
+                    }
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i> Hủy
+                        <i class="bi bi-x-circle"></i> HỦY
                     </button>
-                    <button type="submit" class="btn btn-update">
-                        <i class="bi bi-check-circle me-1"></i> Cập nhật
-                    </button>
+                    @if (ViewBag.IsAdmin)
+                    {
+                        <button type="submit" class="btn btn-update btn-update-admin">
+                            <i class="bi bi-shield-fill-check"></i> CẬP NHẬT
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-update" @(Model.StatusId == "COMPLETED" || Model.StatusId == "CANCELLED" ? "disabled" : "")>
+                            <i class="bi bi-check-circle"></i> XÁC NHẬN
+                        </button>
+                    }
                 </div>
             </form>
         </div>

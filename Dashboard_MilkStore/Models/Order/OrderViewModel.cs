@@ -21,6 +21,7 @@ namespace Dashboard_MilkStore.Models.Order
         public string StatusName { get; set; } // Thêm trường này để hiển thị tên trạng thái
         public bool? IsSuccess { get; set; }
         public List<OrderDetailViewModel> OrderDetails { get; set; } = new List<OrderDetailViewModel>();
+        public List<AppliedVoucherViewModel> AppliedVouchers { get; set; } = new List<AppliedVoucherViewModel>();
     }
 
     public class OrderDetailViewModel
@@ -32,5 +33,13 @@ namespace Dashboard_MilkStore.Models.Order
         public decimal? ProductPrice { get; set; }
         public int? Quantity { get; set; }
         public decimal? SubTotal { get; set; }
+    }
+
+    public class AppliedVoucherViewModel
+    {
+        public string VoucherId { get; set; }
+        public string VoucherCode { get; set; }
+        public decimal? DiscountValue { get; set; }
+        public string DiscountType { get; set; }
     }
 }

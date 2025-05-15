@@ -65,9 +65,13 @@ namespace Dashboard_MilkStore.Models.Product
         public List<ProductPriceDTOCreate> Prices { get; set; } = new List<ProductPriceDTOCreate>();
         public List<Dimension> Dimensions { get; set; } = new List<Dimension>();
 
+        // Danh sách danh mục
+        public List<string> CategoryIds { get; set; } = new List<string>();
+
         // Danh sách dropdown
         public List<SelectListItem> Statuses { get; set; } = new List<SelectListItem>();
         public List<SelectListItem> Brands { get; set; } = new List<SelectListItem>();
         public List<SelectListItem> Units { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Categories { get; set; } = new List<SelectListItem>();
     }
 }

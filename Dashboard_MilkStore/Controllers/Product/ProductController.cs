@@ -1,4 +1,5 @@
 using Dashboard_MilkStore.Models.Product;
+using Dashboard_MilkStore.Services.Category;
 using Dashboard_MilkStore.Services.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,19 +9,22 @@ namespace Dashboard_MilkStore.Controllers.Product
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductController(IProductService productService, IHttpContextAccessor httpContextAccessor)
+        public ProductController(IProductService productService, ICategoryService categoryService, IHttpContextAccessor httpContextAccessor)
         {
             _productService = productService;
+            _categoryService = categoryService;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IActionResult> Index(string? searchTerm = null, string? sortBy = null, bool sortAscending = true, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string? searchTerm = null, string? categoryId = null, string? sortBy = null, bool sortAscending = true, int pageNumber = 1, int pageSize = 10)
         {
             var request = new ProductQueryRequest
             {
                 SearchTerm = searchTerm,
+                CategoryId = categoryId,
                 SortBy = sortBy,
                 SortAscending = sortAscending,
                 PageNumber = pageNumber,
@@ -29,6 +33,18 @@ namespace Dashboard_MilkStore.Controllers.Product
 
             var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
             var response = await _productService.GetProductsAsync(request, token);
+
+            // Lấy danh sách danh mục để hiển thị trong dropdown
+            var categoriesResponse = await _categoryService.GetCategoriesAsync(token);
+            ViewBag.Categories = categoriesResponse.Success && categoriesResponse.Data != null
+                ? categoriesResponse.Data
+                : new List<Models.Category.Category>();
+
+            // Lưu các tham số tìm kiếm vào ViewBag để sử dụng trong view
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.SortBy = sortBy;
+            ViewBag.SortAscending = sortAscending;
 
             if (!response.Success)
             {
@@ -59,6 +75,9 @@ namespace Dashboard_MilkStore.Controllers.Product
         // GET: Product/Create
         public async Task<IActionResult> Create()
         {
+            var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+            var categoriesResponse = await _categoryService.GetCategoriesAsync(token);
+
             var viewModel = new ProductCreateViewModel
             {
                 IsActive = true,
@@ -79,7 +98,14 @@ namespace Dashboard_MilkStore.Controllers.Product
                     {
                         Value = u.Unit1,
                         Text = u.UnitName ?? u.Unit1,
+                    }).ToList(),
+                Categories = categoriesResponse.Success && categoriesResponse.Data != null
+                    ? categoriesResponse.Data.Select(c => new SelectListItem
+                    {
+                        Value = c.Categoryid,
+                        Text = c.CategoryName
                     }).ToList()
+                    : new List<SelectListItem>()
             };
 
             return View(viewModel);
@@ -102,6 +128,9 @@ namespace Dashboard_MilkStore.Controllers.Product
                 }
 
                 // Nếu model không hợp lệ, tải lại các danh sách dropdown
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                var categoriesResponse = await _categoryService.GetCategoriesAsync(token);
+
                 viewModel.Statuses = (await _productService.GetProductStatus())
                     .Select(s => new SelectListItem
                     {
@@ -120,6 +149,13 @@ namespace Dashboard_MilkStore.Controllers.Product
                         Value = u.Unit1,
                         Text = u.UnitName ?? u.Unit1,
                     }).ToList();
+                viewModel.Categories = categoriesResponse.Success && categoriesResponse.Data != null
+                    ? categoriesResponse.Data.Select(c => new SelectListItem
+                    {
+                        Value = c.Categoryid,
+                        Text = c.CategoryName
+                    }).ToList()
+                    : new List<SelectListItem>();
 
                 return View(viewModel);
             }
@@ -182,6 +218,7 @@ namespace Dashboard_MilkStore.Controllers.Product
                     StatusId = viewModel.StatusId,
                     IsActive = viewModel.IsActive,
                     Metadata = null,
+                    CategoryIds = viewModel.CategoryIds ?? new List<string>(),
                     ProductPrices = new List<CreateProductPriceDTO>(),
                     Images = new List<CreateImageDTONew>(),
                     Dimensions = new List<CreateDimensionDTONew>()
@@ -280,6 +317,8 @@ namespace Dashboard_MilkStore.Controllers.Product
                     ModelState.AddModelError("", response?.Message ?? "Có lỗi xảy ra khi tạo sản phẩm");
 
                     // Tải lại các danh sách dropdown
+                    var categoriesResponse = await _categoryService.GetCategoriesAsync(token);
+
                     viewModel.Statuses = (await _productService.GetProductStatus())
                         .Select(s => new SelectListItem
                         {
@@ -298,6 +337,13 @@ namespace Dashboard_MilkStore.Controllers.Product
                             Value = u.Unit1,
                             Text = u.UnitName ?? u.Unit1,
                         }).ToList();
+                    viewModel.Categories = categoriesResponse.Success && categoriesResponse.Data != null
+                        ? categoriesResponse.Data.Select(c => new SelectListItem
+                        {
+                            Value = c.Categoryid,
+                            Text = c.CategoryName
+                        }).ToList()
+                        : new List<SelectListItem>();
 
                     return View(viewModel);
                 }
@@ -323,6 +369,9 @@ namespace Dashboard_MilkStore.Controllers.Product
                 }
 
                 // Tải lại các danh sách dropdown
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                var categoriesResponse = await _categoryService.GetCategoriesAsync(token);
+
                 viewModel.Statuses = (await _productService.GetProductStatus())
                     .Select(s => new SelectListItem
                     {
@@ -341,13 +390,21 @@ namespace Dashboard_MilkStore.Controllers.Product
                         Value = u.Unit1,
                         Text = u.UnitName ?? u.Unit1,
                     }).ToList();
+                viewModel.Categories = categoriesResponse.Success && categoriesResponse.Data != null
+                    ? categoriesResponse.Data.Select(c => new SelectListItem
+                    {
+                        Value = c.Categoryid,
+                        Text = c.CategoryName
+                    }).ToList()
+                    : new List<SelectListItem>();
 
                 return View(viewModel);
             }
         }
 
         // GET: Product/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string id, string? searchTerm = null, string? categoryId = null,
+            string? sortBy = null, bool sortAscending = true, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -358,6 +415,28 @@ namespace Dashboard_MilkStore.Controllers.Product
             if (product == null)
             {
                 return NotFound();
+            }
+
+            // Lưu các tham số tìm kiếm vào ViewBag để sử dụng trong view
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.SortBy = sortBy;
+            ViewBag.SortAscending = sortAscending;
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+
+            var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+            var categoriesResponse = await _categoryService.GetCategoriesAsync(token);
+            var productCategoriesResponse = await _productService.GetProductCategoriesAsync(product.ProductId, token);
+
+            // Log để debug
+            System.Diagnostics.Debug.WriteLine($"Product categories response: Success={productCategoriesResponse?.Success}, Count={productCategoriesResponse?.Data?.Count ?? 0}");
+            if (productCategoriesResponse?.Data != null)
+            {
+                foreach (var category in productCategoriesResponse.Data)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Category: ID={category.CategoryId}, Name={category.CategoryName}");
+                }
             }
 
             var viewModel = new ProductEditViewModel
@@ -399,7 +478,23 @@ namespace Dashboard_MilkStore.Controllers.Product
                     {
                         Value = u.Unit1,
                         Text = u.UnitName ?? u.Unit1,
+                    }).ToList(),
+                Categories = categoriesResponse.Success && categoriesResponse.Data != null
+                    ? categoriesResponse.Data.Select(c => new SelectListItem
+                    {
+                        Value = c.Categoryid,
+                        Text = c.CategoryName
                     }).ToList()
+                    : new List<SelectListItem>(),
+                ProductCategories = productCategoriesResponse.Success && productCategoriesResponse.Data != null
+                    ? productCategoriesResponse.Data.Select(pc => new ProductCategoryViewModel
+                    {
+                        Id = pc.Id,
+                        ProductId = pc.ProductId,
+                        CategoryId = pc.CategoryId,
+                        CategoryName = pc.CategoryName
+                    }).ToList()
+                    : new List<ProductCategoryViewModel>()
             };
 
             return View(viewModel);
@@ -1196,13 +1291,314 @@ namespace Dashboard_MilkStore.Controllers.Product
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveDimensionChanges(string productId,
+            [FromBody] ProductDimensionChangesViewModel changes)
+        {
+            if (string.IsNullOrEmpty(productId))
+            {
+                return Json(new { success = false, message = "ID sản phẩm không hợp lệ" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                var successCount = 0;
+                var errorMessages = new List<string>();
+
+                // 1. Process updated dimensions
+                if (changes.UpdatedDimensions != null && changes.UpdatedDimensions.Any())
+                {
+                    foreach (var dimension in changes.UpdatedDimensions)
+                    {
+                        var patchValues = new Dictionary<string, object>();
+
+                        if (dimension.LengthValue.HasValue)
+                            patchValues.Add("lengthValue", dimension.LengthValue.Value);
+
+                        if (dimension.WidthValue.HasValue)
+                            patchValues.Add("widthValue", dimension.WidthValue.Value);
+
+                        if (dimension.HeightValue.HasValue)
+                            patchValues.Add("heightValue", dimension.HeightValue.Value);
+
+                        if (dimension.WeightValue.HasValue)
+                            patchValues.Add("weightValue", dimension.WeightValue.Value);
+
+                        if (!string.IsNullOrEmpty(dimension.Metadata))
+                            patchValues.Add("metadata", dimension.Metadata);
+
+                        if (patchValues.Any())
+                        {
+                            var updateResponse = await _productService.UpdateDimensionAsync(dimension.DimensionId, patchValues, token);
+                            if (updateResponse.Success)
+                            {
+                                successCount++;
+                            }
+                            else
+                            {
+                                errorMessages.Add($"Lỗi khi cập nhật kích thước {dimension.DimensionId}: {updateResponse.Message}");
+                            }
+                        }
+                    }
+                }
+
+                // 2. Process deleted dimensions
+                if (changes.DeletedDimensionIds != null && changes.DeletedDimensionIds.Any())
+                {
+                    foreach (var dimensionId in changes.DeletedDimensionIds)
+                    {
+                        var deleteResponse = await _productService.DeleteDimensionAsync(dimensionId, token);
+                        if (deleteResponse.Success)
+                        {
+                            successCount++;
+                        }
+                        else
+                        {
+                            errorMessages.Add($"Lỗi khi xóa kích thước {dimensionId}: {deleteResponse.Message}");
+                        }
+                    }
+                }
+
+                // 3. Process new dimensions
+                if (changes.NewDimensions != null && changes.NewDimensions.Any())
+                {
+                    foreach (var dimension in changes.NewDimensions)
+                    {
+                        var createDto = new CreateDimensionDTO
+                        {
+                            ProductId = productId,
+                            LengthValue = dimension.LengthValue,
+                            WidthValue = dimension.WidthValue,
+                            HeightValue = dimension.HeightValue,
+                            WeightValue = dimension.WeightValue,
+                            Metadata = dimension.Metadata
+                        };
+
+                        var addResponse = await _productService.AddDimensionAsync(createDto, token);
+                        if (addResponse.Success)
+                        {
+                            successCount++;
+                        }
+                        else
+                        {
+                            errorMessages.Add($"Lỗi khi thêm kích thước mới: {addResponse.Message}");
+                        }
+                    }
+                }
+
+                // Return result
+                if (errorMessages.Any())
+                {
+                    return Json(new
+                    {
+                        success = successCount > 0,
+                        message = $"Đã xử lý {successCount} thay đổi thành công. Lỗi: {string.Join("; ", errorMessages)}"
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = $"Đã xử lý {successCount} thay đổi thành công"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi cập nhật kích thước: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveProductCategoryChanges(string productId,
+            [FromBody] dynamic data)
+        {
+            if (string.IsNullOrEmpty(productId))
+            {
+                return Json(new { success = false, message = "ID sản phẩm không hợp lệ" });
+            }
+
+            try
+            {
+                // Log dữ liệu nhận được
+                System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Received data for product {productId}");
+                System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Data type: {data?.GetType().Name}");
+
+                // Trích xuất changes từ data
+                ProductCategoryChangesViewModel changes;
+
+                if (data.changes != null)
+                {
+                    // Nếu data có thuộc tính changes
+                    changes = new ProductCategoryChangesViewModel
+                    {
+                        DeletedCategoryIds = data.changes.deletedCategoryIds?.ToObject<List<string>>() ?? new List<string>(),
+                        NewCategoryIds = data.changes.newCategoryIds?.ToObject<List<string>>() ?? new List<string>()
+                    };
+                    System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Extracted from data.changes");
+                }
+                else
+                {
+                    // Nếu data là changes
+                    changes = new ProductCategoryChangesViewModel
+                    {
+                        DeletedCategoryIds = data.deletedCategoryIds?.ToObject<List<string>>() ?? new List<string>(),
+                        NewCategoryIds = data.newCategoryIds?.ToObject<List<string>>() ?? new List<string>()
+                    };
+                    System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Extracted directly from data");
+                }
+
+                System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Deleted categories: {changes.DeletedCategoryIds?.Count ?? 0}");
+                System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: New categories: {changes.NewCategoryIds?.Count ?? 0}");
+
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Token present: {!string.IsNullOrEmpty(token)}");
+
+                var response = await _productService.ProcessProductCategoryChangesAsync(productId, changes, token);
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Message,
+                    data = new {
+                        deletedCount = changes.DeletedCategoryIds?.Count ?? 0,
+                        newCount = changes.NewCategoryIds?.Count ?? 0
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Exception: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"SaveProductCategoryChanges: Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Lỗi khi cập nhật danh mục sản phẩm: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProductCategories(string productId)
+        {
+            if (string.IsNullOrEmpty(productId))
+            {
+                return Json(new { success = false, message = "ID sản phẩm không hợp lệ" });
+            }
+
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+                var response = await _productService.GetProductCategoriesAsync(productId, token);
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Message,
+                    data = response.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi lấy danh mục sản phẩm: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddProductCategory([FromBody] AddProductCategoryRequest request)
+        {
+            if (string.IsNullOrEmpty(request.ProductId) || string.IsNullOrEmpty(request.CategoryId))
+            {
+                return Json(new { success = false, message = "ProductId và CategoryId không được để trống" });
+            }
+
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"AddProductCategory: ProductId={request.ProductId}, CategoryId={request.CategoryId}");
+
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+
+                var createDto = new CreateProductCategoryViewModel
+                {
+                    ProductId = request.ProductId,
+                    CategoryId = request.CategoryId
+                };
+
+                var response = await _productService.AddProductCategoryAsync(createDto, token);
+
+                System.Diagnostics.Debug.WriteLine($"AddProductCategory: Response success={response.Success}, message={response.Message}");
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Success ? "Thêm danh mục vào sản phẩm thành công" : response.Message,
+                    data = response.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"AddProductCategory: Exception: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"AddProductCategory: Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Lỗi khi thêm danh mục vào sản phẩm: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProductCategory([FromBody] DeleteProductCategoryRequest request)
+        {
+            if (string.IsNullOrEmpty(request.ProductId) || string.IsNullOrEmpty(request.CategoryId))
+            {
+                return Json(new { success = false, message = "ProductId và CategoryId không được để trống" });
+            }
+
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"DeleteProductCategory: ProductId={request.ProductId}, CategoryId={request.CategoryId}");
+
+                var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
+
+                var response = await _productService.DeleteProductCategoryAsync(request.ProductId, request.CategoryId, token);
+
+                System.Diagnostics.Debug.WriteLine($"DeleteProductCategory: Response success={response.Success}, message={response.Message}");
+
+                return Json(new {
+                    success = response.Success,
+                    message = response.Success ? "Xóa danh mục khỏi sản phẩm thành công" : response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"DeleteProductCategory: Exception: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"DeleteProductCategory: Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Lỗi khi xóa danh mục khỏi sản phẩm: {ex.Message}" });
+            }
+        }
+
+        // Model classes for ProductCategory operations
+        public class AddProductCategoryRequest
+        {
+            public string ProductId { get; set; }
+            public string CategoryId { get; set; }
+        }
+
+        public class DeleteProductCategoryRequest
+        {
+            public string ProductId { get; set; }
+            public string CategoryId { get; set; }
+        }
+
         // GET: Product/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id, string? searchTerm = null, string? categoryId = null,
+            string? sortBy = null, bool sortAscending = true, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrEmpty(id))
             {
                 TempData["ErrorMessage"] = "ID sản phẩm không hợp lệ";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {
+                    searchTerm = searchTerm,
+                    categoryId = categoryId,
+                    sortBy = sortBy,
+                    sortAscending = sortAscending,
+                    pageNumber = pageNumber,
+                    pageSize = pageSize
+                });
             }
 
             try
@@ -1211,8 +1607,23 @@ namespace Dashboard_MilkStore.Controllers.Product
                 if (product == null)
                 {
                     TempData["ErrorMessage"] = "Không tìm thấy sản phẩm";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index), new {
+                        searchTerm = searchTerm,
+                        categoryId = categoryId,
+                        sortBy = sortBy,
+                        sortAscending = sortAscending,
+                        pageNumber = pageNumber,
+                        pageSize = pageSize
+                    });
                 }
+
+                // Lưu các tham số tìm kiếm vào ViewBag để sử dụng trong view
+                ViewBag.SearchTerm = searchTerm;
+                ViewBag.CategoryId = categoryId;
+                ViewBag.SortBy = sortBy;
+                ViewBag.SortAscending = sortAscending;
+                ViewBag.PageNumber = pageNumber;
+                ViewBag.PageSize = pageSize;
 
                 // Hiển thị trang xác nhận xóa
                 return View(product);
@@ -1220,19 +1631,34 @@ namespace Dashboard_MilkStore.Controllers.Product
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Lỗi khi tải thông tin sản phẩm: {ex.Message}";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {
+                    searchTerm = searchTerm,
+                    categoryId = categoryId,
+                    sortBy = sortBy,
+                    sortAscending = sortAscending,
+                    pageNumber = pageNumber,
+                    pageSize = pageSize
+                });
             }
         }
 
         // POST: Product/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string id, string? searchTerm = null, string? categoryId = null,
+            string? sortBy = null, bool sortAscending = true, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrEmpty(id))
             {
                 TempData["ErrorMessage"] = "ID sản phẩm không hợp lệ";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new {
+                    searchTerm = searchTerm,
+                    categoryId = categoryId,
+                    sortBy = sortBy,
+                    sortAscending = sortAscending,
+                    pageNumber = pageNumber,
+                    pageSize = pageSize
+                });
             }
 
             try
@@ -1254,7 +1680,14 @@ namespace Dashboard_MilkStore.Controllers.Product
                 TempData["ErrorMessage"] = $"Lỗi khi xóa sản phẩm: {ex.Message}";
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new {
+                searchTerm = searchTerm,
+                categoryId = categoryId,
+                sortBy = sortBy,
+                sortAscending = sortAscending,
+                pageNumber = pageNumber,
+                pageSize = pageSize
+            });
         }
     }
 }

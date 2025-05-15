@@ -108,7 +108,7 @@ namespace Dashboard_MilkStore.CoreHelpers
             if (!string.IsNullOrEmpty(token))
             {
                 // Không sử dụng AuthenticationHeaderValue mà thêm trực tiếp vào header
-                Console.WriteLine("PostAsync: Using provided token");
+                System.Diagnostics.Debug.WriteLine("PostAsync: Using provided token");
                 if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
                 {
                     _httpClient.DefaultRequestHeaders.Remove("Authorization");
@@ -116,7 +116,7 @@ namespace Dashboard_MilkStore.CoreHelpers
                 _httpClient.DefaultRequestHeaders.Add("Authorization", token);
 
                 // In ra header để kiểm tra
-                Console.WriteLine($"PostAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                System.Diagnostics.Debug.WriteLine($"PostAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
             }
             else if (_httpContextAccessor?.HttpContext != null)
             {
@@ -124,7 +124,7 @@ namespace Dashboard_MilkStore.CoreHelpers
                 var sessionToken = _httpContextAccessor.HttpContext.Session.GetString("Token");
                 if (!string.IsNullOrEmpty(sessionToken))
                 {
-                    Console.WriteLine("PostAsync: Using token from session");
+                    System.Diagnostics.Debug.WriteLine("PostAsync: Using token from session");
                     if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
                     {
                         _httpClient.DefaultRequestHeaders.Remove("Authorization");
@@ -132,16 +132,16 @@ namespace Dashboard_MilkStore.CoreHelpers
                     _httpClient.DefaultRequestHeaders.Add("Authorization", sessionToken);
 
                     // In ra header để kiểm tra
-                    Console.WriteLine($"PostAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
+                    System.Diagnostics.Debug.WriteLine($"PostAsync: Authorization header: {_httpClient.DefaultRequestHeaders.GetValues("Authorization").FirstOrDefault()}");
                 }
                 else
                 {
-                    Console.WriteLine("PostAsync: No token found in session");
+                    System.Diagnostics.Debug.WriteLine("PostAsync: No token found in session");
                 }
             }
             else
             {
-                Console.WriteLine("PostAsync: No token provided and no HttpContext available");
+                System.Diagnostics.Debug.WriteLine("PostAsync: No token provided and no HttpContext available");
             }
 
             var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
@@ -151,11 +151,23 @@ namespace Dashboard_MilkStore.CoreHelpers
             try
             {
                 System.Diagnostics.Debug.WriteLine($"PostAsync: Sending request to {url}");
-                var response = await _httpClient.PostAsync(url, content);
-                var responseContent = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"PostAsync: Headers: {string.Join(", ", _httpClient.DefaultRequestHeaders.Select(h => $"{h.Key}={string.Join(",", h.Value)}"))}");
+                System.Diagnostics.Debug.WriteLine($"PostAsync: Content: {await content.ReadAsStringAsync()}");
 
-                // Ghi log để debug
-                System.Diagnostics.Debug.WriteLine($"PostAsync: Response from {url}: Status={response.StatusCode}, Content={responseContent}");
+                HttpResponseMessage response;
+                string responseContent;
+
+                response = await _httpClient.PostAsync(url, content);
+                responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"PostAsync: Response status code: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"PostAsync: Response content: {responseContent}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine($"PostAsync: Request failed with status code {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"PostAsync: Response headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}={string.Join(",", h.Value)}"))}");
+                }
 
                 // Ngay cả khi response không thành công, vẫn cố gắng deserialize
                 if (!string.IsNullOrEmpty(responseContent))
@@ -496,6 +508,8 @@ namespace Dashboard_MilkStore.CoreHelpers
                 {
                     // Không sử dụng AuthenticationHeaderValue mà thêm trực tiếp vào header
                     System.Diagnostics.Debug.WriteLine("DeleteAsync: Using provided token");
+                    System.Diagnostics.Debug.WriteLine($"DeleteAsync: Token: {token}");
+
                     if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
                     {
                         _httpClient.DefaultRequestHeaders.Remove("Authorization");
@@ -512,6 +526,8 @@ namespace Dashboard_MilkStore.CoreHelpers
                     if (!string.IsNullOrEmpty(sessionToken))
                     {
                         System.Diagnostics.Debug.WriteLine("DeleteAsync: Using token from session");
+                        System.Diagnostics.Debug.WriteLine($"DeleteAsync: Session token: {sessionToken}");
+
                         if (_httpClient.DefaultRequestHeaders.Contains("Authorization"))
                         {
                             _httpClient.DefaultRequestHeaders.Remove("Authorization");
@@ -532,11 +548,22 @@ namespace Dashboard_MilkStore.CoreHelpers
                 }
 
                 System.Diagnostics.Debug.WriteLine($"DeleteAsync: Sending request to {url}");
-                var response = await _httpClient.DeleteAsync(url);
-                var responseContent = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"DeleteAsync: Headers: {string.Join(", ", _httpClient.DefaultRequestHeaders.Select(h => $"{h.Key}={string.Join(",", h.Value)}"))}");
+
+                HttpResponseMessage response;
+                string responseContent;
+
+                response = await _httpClient.DeleteAsync(url);
+                responseContent = await response.Content.ReadAsStringAsync();
 
                 System.Diagnostics.Debug.WriteLine($"DeleteAsync: Response status code: {response.StatusCode}");
                 System.Diagnostics.Debug.WriteLine($"DeleteAsync: Response content: {responseContent}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine($"DeleteAsync: Request failed with status code {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"DeleteAsync: Response headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}={string.Join(",", h.Value)}"))}");
+                }
 
                 response.EnsureSuccessStatusCode();
 

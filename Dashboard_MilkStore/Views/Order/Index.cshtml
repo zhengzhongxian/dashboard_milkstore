@@ -58,9 +58,65 @@
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
         <div class="card-body p-0">
             <div class="search-container mb-3 p-3 border-bottom">
-                <div class="dataTables_filter">
-                    <input type="search" class="form-control form-control-sm rounded-pill" id="tableSearch"
-                           placeholder="Tìm kiếm đơn hàng..." value="@ViewBag.CurrentSearchTerm">
+                <div class="filter-bar">
+                    <!-- Trạng thái filter -->
+                    <div class="filter-item status-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-filter me-1"></i>
+                            <span class="d-none d-sm-inline">Trạng thái:</span>
+                        </div>
+                        <div class="filter-control">
+                            <select id="statusFilter" class="form-select form-select-sm">
+                                <option value="">Tất cả trạng thái</option>
+                                @foreach (var status in ViewBag.OrderStatuses)
+                                {
+                                    @if (ViewBag.CurrentStatusId == status.StatusId)
+                                    {
+                                        <option value="@status.StatusId" selected>@status.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@status.StatusId">@status.Name</option>
+                                    }
+                                }
+                            </select>
+                            <span class="dropdown-icon"><i class="bi bi-chevron-down"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Date range filters -->
+                    <div class="filter-item date-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-calendar-date me-1"></i>
+                            <span class="d-none d-sm-inline">Từ:</span>
+                        </div>
+                        <div class="filter-control">
+                            <input type="date" id="startDate" class="form-control form-control-sm" value="@ViewBag.CurrentStartDate">
+                        </div>
+                    </div>
+
+                    <div class="filter-item date-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-calendar-date me-1"></i>
+                            <span class="d-none d-sm-inline">Đến:</span>
+                        </div>
+                        <div class="filter-control">
+                            <input type="date" id="endDate" class="form-control form-control-sm" value="@ViewBag.CurrentEndDate">
+                        </div>
+                    </div>
+
+                    <!-- Search filter -->
+                    <div class="filter-item search-filter">
+                        <div class="input-group">
+                            <input type="search" id="searchInput" class="form-control form-control-sm rounded-start"
+                                   placeholder="Tìm kiếm đơn hàng..."
+                                   value="@ViewBag.CurrentSearchTerm">
+                            <button id="searchButton" class="btn btn-primary btn-sm rounded-end">
+                                <i class="bi bi-search me-1 d-none d-sm-inline"></i><span class="d-none d-sm-inline">Tìm kiếm</span>
+                                <i class="bi bi-search d-inline d-sm-none"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="table-container">
@@ -184,7 +240,17 @@
                                     </td>
                                     <td class="text-end pe-4">
                                         <div class="d-flex justify-content-end gap-2">
-                                            <a href="@Url.Action("Details", new { id = order.OrderId })" class="btn btn-sm btn-outline-info rounded-pill fireworks-btn" title="Xem chi tiết">
+                                            <a href="@Url.Action("Details", new {
+                                                id = order.OrderId,
+                                                pageNumber = Model.Metadata.PageNumber,
+                                                pageSize = Model.Metadata.PageSize,
+                                                searchTerm = ViewBag.CurrentSearchTerm,
+                                                statusId = ViewBag.CurrentStatusId,
+                                                startDate = ViewBag.CurrentStartDate,
+                                                endDate = ViewBag.CurrentEndDate,
+                                                sortBy = ViewBag.CurrentSortBy,
+                                                sortAscending = ViewBag.CurrentSortAscending
+                                            })" class="btn btn-sm btn-outline-info rounded-pill fireworks-btn" title="Xem chi tiết">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         </div>
@@ -205,58 +271,115 @@
             </div>
 
             <!-- Pagination -->
-            @if (Model?.Metadata != null && Model.Metadata.TotalPages > 1)
+            @if (Model?.Metadata != null)
             {
-                <div class="pagination-container p-3 border-top d-flex justify-content-between align-items-center">
-                    <div class="pagination-info small text-muted">
-                        Hiển thị @Model.Metadata.FirstItemOnPage đến @(Model.Metadata.FirstItemOnPage + Model.Items.Count - 1)
-                        trong tổng số @Model.Metadata.TotalCount đơn hàng
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 border-top">
+                    <div class="text-muted mb-3 mb-md-0 text-center text-md-start">
+                        <i class="bi bi-list-check me-1"></i>
+                        <span class="d-none d-sm-inline">Hiển thị @((Model.Metadata.PageNumber - 1) * Model.Metadata.PageSize + 1) đến
+                        @Math.Min(Model.Metadata.PageNumber * Model.Metadata.PageSize, Model.Metadata.TotalCount) trong</span>
+                        <span class="fw-medium">@Model.Metadata.TotalCount</span> đơn hàng
                     </div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination pagination-sm mb-0">
+                    <nav aria-label="Page navigation" class="d-flex justify-content-center">
+                        <ul class="pagination pagination-sm mb-0 flex-wrap justify-content-center">
                             <li class="page-item @(Model.Metadata.HasPrevious ? "" : "disabled")">
-                                <a class="page-link rounded-start" href="@Url.Action("Index", new {
+                                <a class="page-link border-0" href="@Url.Action("Index", new {
                                     pageNumber = Model.Metadata.PageNumber - 1,
-                                    pageSize = ViewBag.CurrentPageSize,
-                                    sortBy = ViewBag.CurrentSortBy,
-                                    sortAscending = ViewBag.CurrentSortAscending,
-                                    statusId = ViewBag.CurrentStatusId,
+                                    pageSize = Model.Metadata.PageSize,
                                     searchTerm = ViewBag.CurrentSearchTerm,
+                                    statusId = ViewBag.CurrentStatusId,
                                     startDate = ViewBag.CurrentStartDate,
-                                    endDate = ViewBag.CurrentEndDate
-                                })" aria-label="Previous">
-                                    <i class="bi bi-chevron-left small"></i>
+                                    endDate = ViewBag.CurrentEndDate,
+                                    sortBy = ViewBag.CurrentSortBy,
+                                    sortAscending = ViewBag.CurrentSortAscending
+                                })">
+                                    <i class="bi bi-chevron-left"></i>
                                 </a>
                             </li>
+                            @{
+                                // Hiển thị tối đa 5 trang và thêm dấu "..." nếu cần
+                                const int maxPagesToShow = 5;
+                                int startPage = Math.Max(1, Model.Metadata.PageNumber - maxPagesToShow / 2);
+                                int endPage = Math.Min(Model.Metadata.TotalPages, startPage + maxPagesToShow - 1);
 
-                            @for (int i = 1; i <= Model.Metadata.TotalPages; i++)
-                            {
-                                <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
-                                    <a class="page-link" href="@Url.Action("Index", new {
-                                        pageNumber = i,
-                                        pageSize = ViewBag.CurrentPageSize,
-                                        sortBy = ViewBag.CurrentSortBy,
-                                        sortAscending = ViewBag.CurrentSortAscending,
-                                        statusId = ViewBag.CurrentStatusId,
-                                        searchTerm = ViewBag.CurrentSearchTerm,
-                                        startDate = ViewBag.CurrentStartDate,
-                                        endDate = ViewBag.CurrentEndDate
-                                    })">@i</a>
-                                </li>
+                                // Điều chỉnh startPage nếu endPage đã đạt giới hạn
+                                startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+
+                                // Hiển thị trang đầu tiên và dấu "..." nếu cần
+                                if (startPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link border-0" href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.Metadata.PageSize,
+                                            searchTerm = ViewBag.CurrentSearchTerm,
+                                            statusId = ViewBag.CurrentStatusId,
+                                            startDate = ViewBag.CurrentStartDate,
+                                            endDate = ViewBag.CurrentEndDate,
+                                            sortBy = ViewBag.CurrentSortBy,
+                                            sortAscending = ViewBag.CurrentSortAscending
+                                        })">1</a>
+                                    </li>
+                                    if (startPage > 2)
+                                    {
+                                        <li class="page-item disabled">
+                                            <span class="page-link border-0">...</span>
+                                        </li>
+                                    }
+                                }
+
+                                // Hiển thị các trang chính
+                                for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
+                                        <a class="page-link border-0" href="@Url.Action("Index", new {
+                                            pageNumber = i,
+                                            pageSize = Model.Metadata.PageSize,
+                                            searchTerm = ViewBag.CurrentSearchTerm,
+                                            statusId = ViewBag.CurrentStatusId,
+                                            startDate = ViewBag.CurrentStartDate,
+                                            endDate = ViewBag.CurrentEndDate,
+                                            sortBy = ViewBag.CurrentSortBy,
+                                            sortAscending = ViewBag.CurrentSortAscending
+                                        })">@i</a>
+                                    </li>
+                                }
+
+                                // Hiển thị dấu "..." và trang cuối cùng nếu cần
+                                if (endPage < Model.Metadata.TotalPages)
+                                {
+                                    if (endPage < Model.Metadata.TotalPages - 1)
+                                    {
+                                        <li class="page-item disabled">
+                                            <span class="page-link border-0">...</span>
+                                        </li>
+                                    }
+                                    <li class="page-item">
+                                        <a class="page-link border-0" href="@Url.Action("Index", new {
+                                            pageNumber = Model.Metadata.TotalPages,
+                                            pageSize = Model.Metadata.PageSize,
+                                            searchTerm = ViewBag.CurrentSearchTerm,
+                                            statusId = ViewBag.CurrentStatusId,
+                                            startDate = ViewBag.CurrentStartDate,
+                                            endDate = ViewBag.CurrentEndDate,
+                                            sortBy = ViewBag.CurrentSortBy,
+                                            sortAscending = ViewBag.CurrentSortAscending
+                                        })">@Model.Metadata.TotalPages</a>
+                                    </li>
+                                }
                             }
-
                             <li class="page-item @(Model.Metadata.HasNext ? "" : "disabled")">
-                                <a class="page-link rounded-end" href="@Url.Action("Index", new {
+                                <a class="page-link border-0" href="@Url.Action("Index", new {
                                     pageNumber = Model.Metadata.PageNumber + 1,
-                                    pageSize = ViewBag.CurrentPageSize,
-                                    sortBy = ViewBag.CurrentSortBy,
-                                    sortAscending = ViewBag.CurrentSortAscending,
-                                    statusId = ViewBag.CurrentStatusId,
+                                    pageSize = Model.Metadata.PageSize,
                                     searchTerm = ViewBag.CurrentSearchTerm,
+                                    statusId = ViewBag.CurrentStatusId,
                                     startDate = ViewBag.CurrentStartDate,
-                                    endDate = ViewBag.CurrentEndDate
-                                })" aria-label="Next">
-                                    <i class="bi bi-chevron-right small"></i>
+                                    endDate = ViewBag.CurrentEndDate,
+                                    sortBy = ViewBag.CurrentSortBy,
+                                    sortAscending = ViewBag.CurrentSortAscending
+                                })">
+                                    <i class="bi bi-chevron-right"></i>
                                 </a>
                             </li>
                         </ul>
@@ -296,11 +419,106 @@
         .search-container {
             background: white;
             padding: 1rem;
+            position: relative;
+            z-index: 1000; /* Đảm bảo container nằm trên các phần tử khác */
+        }
+
+        /* Filter bar styles */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .filter-label {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            color: #4b5563;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .filter-control {
+            position: relative;
+        }
+
+        /* Status filter styles */
+        .status-filter {
+            min-width: 200px;
+            position: relative;
+            z-index: 1010; /* Đảm bảo dropdown hiển thị trên các phần tử khác */
+        }
+
+        .status-filter .filter-control {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        #statusFilter {
+            width: 100%;
+            position: relative;
+            z-index: 1020;
+            background-color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            appearance: none; /* Ẩn dropdown mặc định của trình duyệt */
+            background-image: none; /* Loại bỏ icon mặc định */
+        }
+
+        /* Tạo dropdown arrow tùy chỉnh */
+        .dropdown-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6366f1;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1030;
+        }
+
+        #statusFilter option {
+            padding: 8px;
+            background-color: white;
+        }
+
+        /* Date filter styles */
+        .date-filter {
+            min-width: 180px;
+        }
+
+        .date-filter .filter-control {
+            flex: 1;
+        }
+
+        .date-filter input[type="date"] {
+            width: 100%;
+            border-radius: 20px;
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Search filter styles */
+        .search-filter {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-filter .input-group {
+            width: 100%;
         }
 
         .search-container .form-control {
-            max-width: 300px;
-            margin-left: auto;
             padding: 0.5rem 1rem;
             border: 1px solid #e2e8f0;
             background-color: #f8fafc;
@@ -310,6 +528,22 @@
             background-color: white;
             border-color: #4361ee;
             box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        /* Responsive styles */
+        @@media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-item {
+                width: 100%;
+            }
+
+            .status-filter, .date-filter, .search-filter {
+                min-width: 100%;
+            }
         }
 
         /* Table styles */
@@ -384,26 +618,115 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Initialize DataTable
-            var table = $('#ordersTable').DataTable({
-                "paging": false,
-                "searching": true,
-                "ordering": true,
-                "info": false,
-                "autoWidth": false,
-                "responsive": true,
-                "dom": "<'row'<'col-sm-12'tr>>",
-                "language": {
-                    "zeroRecords": "Không tìm thấy đơn hàng phù hợp"
-                }
+            // Add hidden form for filter submission
+            const filterForm = $('<form>', {
+                id: 'filterForm',
+                method: 'get',
+                action: '@Url.Action("Index")'
+            }).appendTo('body');
+
+            // Add hidden inputs for all filter parameters
+            $('<input>', {
+                type: 'hidden',
+                id: 'pageNumber',
+                name: 'pageNumber',
+                value: '@Model.Metadata.PageNumber'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'pageSize',
+                name: 'pageSize',
+                value: '@Model.Metadata.PageSize'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'searchTermField',
+                name: 'searchTerm',
+                value: '@ViewBag.CurrentSearchTerm'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'statusIdField',
+                name: 'statusId',
+                value: '@ViewBag.CurrentStatusId'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'startDateField',
+                name: 'startDate',
+                value: '@ViewBag.CurrentStartDate'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'endDateField',
+                name: 'endDate',
+                value: '@ViewBag.CurrentEndDate'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'sortByField',
+                name: 'sortBy',
+                value: '@ViewBag.CurrentSortBy'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'sortAscendingField',
+                name: 'sortAscending',
+                value: '@ViewBag.CurrentSortAscending'
+            }).appendTo(filterForm);
+
+            // Handle status filter change
+            $('#statusFilter').on('change', function() {
+                $('#statusIdField').val($(this).val());
+                $('#pageNumber').val(1); // Reset to first page
+                $('#filterForm').submit();
             });
 
-            // Bind custom search input
-            $('#tableSearch').on('keyup', function() {
-                table.search(this.value).draw();
+            // Handle date filters with debounce
+            let dateFilterTimeout;
 
-                // Update hidden search field for server-side filtering
-                $('#hiddenSearchTerm').val(this.value);
+            $('#startDate').on('change', function() {
+                $('#startDateField').val($(this).val());
+                $('#pageNumber').val(1); // Reset to first page
+
+                clearTimeout(dateFilterTimeout);
+                dateFilterTimeout = setTimeout(function() {
+                    $('#filterForm').submit();
+                }, 500);
+            });
+
+            $('#endDate').on('change', function() {
+                $('#endDateField').val($(this).val());
+                $('#pageNumber').val(1); // Reset to first page
+
+                clearTimeout(dateFilterTimeout);
+                dateFilterTimeout = setTimeout(function() {
+                    $('#filterForm').submit();
+                }, 500);
+            });
+
+            // Handle search button click
+            $('#searchButton').on('click', function() {
+                $('#searchTermField').val($('#searchInput').val());
+                $('#pageNumber').val(1); // Reset to first page
+                $('#filterForm').submit();
+            });
+
+            // Handle search on Enter key
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    $('#searchTermField').val($(this).val());
+                    $('#pageNumber').val(1); // Reset to first page
+                    $('#filterForm').submit();
+                }
             });
 
             // Function to update sort
@@ -418,11 +741,9 @@
                     newSortAscending = !currentSortAscending;
                 }
 
-                document.getElementById('sortByField').value = field;
-                document.getElementById('sortAscendingField').value = newSortAscending;
-
-                // Submit the form
-                document.querySelector('form').submit();
+                $('#sortByField').val(field);
+                $('#sortAscendingField').val(newSortAscending);
+                $('#filterForm').submit();
             }
         });
     </script>

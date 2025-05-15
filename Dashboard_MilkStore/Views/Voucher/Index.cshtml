@@ -1,0 +1,768 @@
+@model Dashboard_MilkStore.Models.Common.PaginatedResult<Dashboard_MilkStore.Models.Voucher.VoucherViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-ticket-perforated-fill fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Quản lý Voucher</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Quản lý mã giảm giá và khuyến mãi</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Create", "Voucher")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 add-button fireworks-btn">
+            <i class="bi bi-plus-circle me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Thêm Voucher</span>
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+
+        <div class="card-body p-0">
+            <!-- Search and filter container -->
+            <div class="search-container border-bottom">
+                <div class="filter-bar">
+                    <!-- Status filter -->
+                    <div class="filter-item status-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-toggle-on me-1"></i>
+                            <span class="d-none d-sm-inline">Trạng thái:</span>
+                        </div>
+                        <div class="filter-control">
+                            <select id="isActiveFilter" class="form-select form-select-sm">
+                                <option value="">Tất cả trạng thái</option>
+                                @{
+                                    var currentIsActive = ViewBag.CurrentIsActive?.ToString()?.ToLower();
+                                }
+
+                                @if (currentIsActive == "true")
+                                {
+                                    <option value="true" selected>Đang hoạt động</option>
+                                }
+                                else
+                                {
+                                    <option value="true">Đang hoạt động</option>
+                                }
+
+                                @if (currentIsActive == "false")
+                                {
+                                    <option value="false" selected>Không hoạt động</option>
+                                }
+                                else
+                                {
+                                    <option value="false">Không hoạt động</option>
+                                }
+                            </select>
+                            <span class="dropdown-icon"><i class="bi bi-chevron-down"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Discount Type filter -->
+                    <div class="filter-item discount-type-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-percent me-1"></i>
+                            <span class="d-none d-sm-inline">Loại giảm giá:</span>
+                        </div>
+                        <div class="filter-control">
+                            <select id="discountTypeFilter" class="form-select form-select-sm">
+                                <option value="">Tất cả loại</option>
+                                @if (ViewBag.CurrentDiscountType == 0)
+                                {
+                                    <option value="0" selected>Phần trăm</option>
+                                }
+                                else
+                                {
+                                    <option value="0">Phần trăm</option>
+                                }
+
+                                @if (ViewBag.CurrentDiscountType == 1)
+                                {
+                                    <option value="1" selected>Giá trị cố định</option>
+                                }
+                                else
+                                {
+                                    <option value="1">Giá trị cố định</option>
+                                }
+                            </select>
+                            <span class="dropdown-icon"><i class="bi bi-chevron-down"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Voucher Type filter -->
+                    <div class="filter-item voucher-type-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-tag me-1"></i>
+                            <span class="d-none d-sm-inline">Loại voucher:</span>
+                        </div>
+                        <div class="filter-control">
+                            <select id="isRootFilter" class="form-select form-select-sm">
+                                <option value="">Tất cả loại</option>
+                                @{
+                                    var currentIsRoot = ViewBag.CurrentIsRoot?.ToString()?.ToLower();
+                                }
+
+                                @if (currentIsRoot == "true")
+                                {
+                                    <option value="true" selected>Voucher gốc</option>
+                                }
+                                else
+                                {
+                                    <option value="true">Voucher gốc</option>
+                                }
+
+                                @if (currentIsRoot == "false")
+                                {
+                                    <option value="false" selected>Voucher con</option>
+                                }
+                                else
+                                {
+                                    <option value="false">Voucher con</option>
+                                }
+                            </select>
+                            <span class="dropdown-icon"><i class="bi bi-chevron-down"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Search filter -->
+                    <div class="filter-item search-filter">
+                        <div class="input-group">
+                            <input type="search" id="searchInput" class="form-control form-control-sm rounded-start"
+                                   placeholder="Tìm kiếm mã voucher..."
+                                   value="@ViewBag.CurrentSearchTerm">
+                            <button id="searchButton" class="btn btn-primary btn-sm rounded-end">
+                                <i class="bi bi-search me-1 d-none d-sm-inline"></i><span class="d-none d-sm-inline">Tìm kiếm</span>
+                                <i class="bi bi-search d-inline d-sm-none"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="vouchersTable" class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" class="text-white">
+                            <th class="px-4 text-center" style="width: 120px;">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-ticket-perforated me-2"></i>
+                                    <span>ID</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-upc me-2"></i>
+                                    <span>Mã</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-percent me-2"></i>
+                                    <span>Giảm giá</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-calendar-date me-2"></i>
+                                    <span>Thời gian</span>
+                                </div>
+                            </th>
+                            <th class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-tag me-2"></i>
+                                    <span>Trạng thái</span>
+                                </div>
+                            </th>
+                            <th class="text-center" style="width: 150px;">
+                                <div class="d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-gear me-2"></i>
+                                    <span>Thao tác</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Items != null && Model.Items.Any())
+                        {
+                            foreach (var voucher in Model.Items)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">
+                                        <span title="@voucher.Voucherid">#@voucher.Voucherid.Substring(0, Math.Min(8, voucher.Voucherid.Length))@(voucher.Voucherid.Length > 8 ? "..." : "")</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="voucher-code me-2">
+                                                <div class="voucher-code-badge">
+                                                    <span>@voucher.Code</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold">
+                                                @if (voucher.DiscountType == 0)
+                                                {
+                                                    <span>@voucher.DiscountValue%</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@string.Format("{0:N0}", voucher.DiscountValue)đ</span>
+                                                }
+                                            </span>
+                                            <small class="text-muted">@voucher.DiscountTypeText</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-calendar-date text-muted me-2"></i>
+                                                <span>@(voucher.StartDate?.ToString("yyyy-MM-dd") ?? "-")</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-calendar-date text-muted me-2"></i>
+                                                <span>@(voucher.EndDate?.ToString("yyyy-MM-dd") ?? "-")</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @{
+                                            string statusClass = voucher.IsActive == true ? "active" : "inactive";
+                                            string statusIcon = voucher.IsActive == true ? "bi-check-circle" : "bi-x-circle";
+                                        }
+                                        <div class="status-badge @statusClass">
+                                            <i class="bi @statusIcon me-2"></i>
+                                            <span>@voucher.StatusText</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a href="@Url.Action("Edit", "Voucher", new { id = voucher.Voucherid })" class="btn btn-sm btn-outline-primary rounded-pill" title="Chỉnh sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill delete-voucher"
+                                                    data-id="@voucher.Voucherid"
+                                                    data-code="@voucher.Code"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy voucher
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model?.Metadata != null)
+            {
+                <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                    <div class="text-muted">
+                        <i class="bi bi-list-check me-1"></i>
+                        Hiển thị @((Model.Metadata.PageNumber - 1) * Model.Metadata.PageSize + 1) đến
+                        @Math.Min(Model.Metadata.PageNumber * Model.Metadata.PageSize, Model.Metadata.TotalCount) trong
+                        @Model.Metadata.TotalCount voucher
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(Model.Metadata.HasPrevious ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("Index", new {
+                                    pageNumber = Model.Metadata.PageNumber - 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    sortBy = ViewBag.CurrentSort,
+                                    sortAscending = ViewBag.CurrentSortDirection,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    isActive = ViewBag.CurrentIsActive?.ToString(),
+                                    discountType = ViewBag.CurrentDiscountType,
+                                    isRoot = ViewBag.CurrentIsRoot?.ToString()
+                                })">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= Model.Metadata.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
+                                    <a class="page-link border-0" href="@Url.Action("Index", new {
+                                        pageNumber = i,
+                                        pageSize = ViewBag.CurrentPageSize,
+                                        sortBy = ViewBag.CurrentSort,
+                                        sortAscending = ViewBag.CurrentSortDirection,
+                                        searchTerm = ViewBag.CurrentSearchTerm,
+                                        isActive = ViewBag.CurrentIsActive?.ToString(),
+                                        discountType = ViewBag.CurrentDiscountType,
+                                        isRoot = ViewBag.CurrentIsRoot?.ToString()
+                                    })">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.Metadata.HasNext ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("Index", new {
+                                    pageNumber = Model.Metadata.PageNumber + 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    sortBy = ViewBag.CurrentSort,
+                                    sortAscending = ViewBag.CurrentSortDirection,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    isActive = ViewBag.CurrentIsActive?.ToString(),
+                                    discountType = ViewBag.CurrentDiscountType,
+                                    isRoot = ViewBag.CurrentIsRoot?.ToString()
+                                })">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-labelledby="deleteVoucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteVoucherModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa voucher <span id="voucherCodeToDelete" class="fw-bold"></span>?</p>
+                <p class="text-danger">Hành động này không thể hoàn tác.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteVoucherForm" method="post" action="@Url.Action("Delete", "Voucher")">
+                    <input type="hidden" id="voucherIdToDelete" name="id" />
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .add-button {
+            transition: all 0.2s ease;
+        }
+
+        .add-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+
+        /* Search container styles */
+        .search-container {
+            background: white;
+            padding: 1rem;
+            position: relative;
+            z-index: 1000; /* Đảm bảo container nằm trên các phần tử khác */
+        }
+
+        /* Filter bar styles */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .filter-label {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            color: #4b5563;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .filter-control {
+            position: relative;
+        }
+
+        /* Status filter styles */
+        .status-filter, .discount-type-filter, .voucher-type-filter {
+            min-width: 200px;
+            position: relative;
+            z-index: 1010; /* Đảm bảo dropdown hiển thị trên các phần tử khác */
+        }
+
+        .status-filter .filter-control, .discount-type-filter .filter-control, .voucher-type-filter .filter-control {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        #isActiveFilter, #discountTypeFilter, #isRootFilter {
+            width: 100%;
+            position: relative;
+            z-index: 1020;
+            background-color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            appearance: none; /* Ẩn dropdown mặc định của trình duyệt */
+            background-image: none; /* Loại bỏ icon mặc định */
+        }
+
+        /* Tạo dropdown arrow tùy chỉnh */
+        .dropdown-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6366f1;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1030;
+        }
+
+        #isActiveFilter option, #discountTypeFilter option, #isRootFilter option {
+            padding: 8px;
+            background-color: white;
+        }
+
+        /* Search filter styles */
+        .search-filter {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-filter .input-group {
+            width: 100%;
+        }
+
+        .search-container .form-control {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .search-container .form-control:focus {
+            background-color: white;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        /* Responsive styles */
+        @@media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-item {
+                width: 100%;
+            }
+
+            .status-filter, .discount-type-filter, .voucher-type-filter, .search-filter {
+                min-width: 100%;
+            }
+        }
+
+        /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #vouchersTable {
+            width: 100%;
+            min-width: 1100px;
+            margin: 0;
+        }
+
+        #vouchersTable thead tr {
+            height: 50px;
+        }
+
+        #vouchersTable thead th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        #vouchersTable thead th div {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #vouchersTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #vouchersTable tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.04);
+        }
+
+        /* Voucher code styles */
+        .voucher-code-badge {
+            padding: 4px 8px;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+            border: 1px dashed #6366f1;
+        }
+
+        /* Status styles */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-badge.active {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-badge.inactive {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-badge i {
+            font-size: 1rem;
+        }
+
+        .status-badge:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Pagination redesign */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background-color: #f1f5f9;
+            color: #6366f1;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .page-link i {
+            font-size: 14px;
+            line-height: 1;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Add hidden form for filter submission
+            const filterForm = $('<form>', {
+                id: 'filterForm',
+                method: 'get',
+                action: '@Url.Action("Index")'
+            }).appendTo('body');
+
+            // Add hidden inputs for all filter parameters
+            $('<input>', {
+                type: 'hidden',
+                id: 'pageNumber',
+                name: 'pageNumber',
+                value: '1'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'pageSize',
+                name: 'pageSize',
+                value: '@(ViewBag.CurrentPageSize ?? 10)'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'searchTermField',
+                name: 'searchTerm',
+                value: '@ViewBag.CurrentSearchTerm'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'isActiveField',
+                name: 'isActive',
+                value: '@ViewBag.CurrentIsActive'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'discountTypeField',
+                name: 'discountType',
+                value: '@ViewBag.CurrentDiscountType'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'isRootField',
+                name: 'isRoot',
+                value: '@ViewBag.CurrentIsRoot'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'sortByField',
+                name: 'sortBy',
+                value: '@ViewBag.CurrentSort'
+            }).appendTo(filterForm);
+
+            $('<input>', {
+                type: 'hidden',
+                id: 'sortAscendingField',
+                name: 'sortAscending',
+                value: '@ViewBag.CurrentSortDirection'
+            }).appendTo(filterForm);
+
+            // Handle status filter change
+            $('#isActiveFilter').on('change', function() {
+                var value = $(this).val();
+                console.log("isActive filter changed to:", value);
+                $('#isActiveField').val(value);
+                $('#pageNumber').val(1); // Reset to first page
+                $('#filterForm').submit();
+            });
+
+            // Handle discount type filter change
+            $('#discountTypeFilter').on('change', function() {
+                var value = $(this).val();
+                console.log("discountType filter changed to:", value);
+                $('#discountTypeField').val(value);
+                $('#pageNumber').val(1); // Reset to first page
+                $('#filterForm').submit();
+            });
+
+            // Handle voucher type filter change
+            $('#isRootFilter').on('change', function() {
+                var value = $(this).val();
+                console.log("isRoot filter changed to:", value);
+                $('#isRootField').val(value);
+                $('#pageNumber').val(1); // Reset to first page
+                $('#filterForm').submit();
+            });
+
+            // Handle search button click
+            $('#searchButton').on('click', function() {
+                $('#searchTermField').val($('#searchInput').val());
+                $('#pageNumber').val(1); // Reset to first page
+                $('#filterForm').submit();
+            });
+
+            // Handle search input enter key
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $('#searchButton').click();
+                }
+            });
+
+            // Handle delete voucher
+            $('.delete-voucher').on('click', function() {
+                const voucherId = $(this).data('id');
+                const voucherCode = $(this).data('code');
+
+                $('#voucherIdToDelete').val(voucherId);
+                $('#voucherCodeToDelete').text(voucherCode);
+
+                $('#deleteVoucherModal').modal('show');
+            });
+        });
+    </script>
+}

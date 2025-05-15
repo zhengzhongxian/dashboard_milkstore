@@ -43,6 +43,7 @@ namespace Dashboard_MilkStore.Models.Product
         [Display(Name = "Metadata")]
         public string? Metadata { get; set; }
 
+        public List<string> CategoryIds { get; set; } = new List<string>();
         public List<CreateProductPriceDTO> ProductPrices { get; set; } = new List<CreateProductPriceDTO>();
         public List<CreateImageDTONew> Images { get; set; } = new List<CreateImageDTONew>();
         public List<CreateDimensionDTONew> Dimensions { get; set; } = new List<CreateDimensionDTONew>();

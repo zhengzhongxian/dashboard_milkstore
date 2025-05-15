@@ -44,13 +44,14 @@ namespace Dashboard_MilkStore.Models.Product
         // Image properties
         [Display(Name = "Hình ảnh sản phẩm")]
         public List<ImageDTO> Images { get; set; } = new List<ImageDTO>();
-        
+
         public List<IFormFile>? NewImages { get; set; }
 
         // Navigation properties for dropdowns
         public IEnumerable<SelectListItem>? Brands { get; set; }
         public IEnumerable<SelectListItem>? Units { get; set; }
         public IEnumerable<SelectListItem>? Statuses { get; set; }
+        public IEnumerable<SelectListItem>? Categories { get; set; }
 
         // Metadata
         public DateTime? CreatedAt { get; set; }
@@ -59,6 +60,7 @@ namespace Dashboard_MilkStore.Models.Product
         // Thêm thông tin giá
         public List<ProductPriceDTO> Prices { get; set; } = new List<ProductPriceDTO>();
         public List<Dimension> Dimensions { get; set; } = new List<Dimension>();
+        public List<ProductCategoryViewModel> ProductCategories { get; set; } = new List<ProductCategoryViewModel>();
         public decimal? DefaultPrice { get; set; }
         public decimal? ActivePrice { get; set; }
     }
@@ -79,4 +81,4 @@ namespace Dashboard_MilkStore.Models.Product
 
         public string? Description { get; set; }
     }
-} 
+}

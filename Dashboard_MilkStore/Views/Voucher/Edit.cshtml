@@ -1,0 +1,297 @@
+@model Dashboard_MilkStore.Models.Voucher.UpdateVoucherViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Voucher";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-ticket-perforated-fill fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Chỉnh Sửa Voucher</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Cập nhật thông tin voucher</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Voucher")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 add-button fireworks-btn">
+            <i class="bi bi-arrow-left me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Quay lại</span>
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Voucherid" />
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Code" class="form-label">Mã voucher <span class="text-danger">*</span></label>
+                            <input asp-for="Code" class="form-control" placeholder="Nhập mã voucher (VD: SUMMER2023)" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                            <small class="form-text text-muted">Mã voucher phải là duy nhất và dễ nhớ.</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="DiscountValue" class="form-label">Giá trị giảm giá <span class="text-danger">*</span></label>
+                                    <input asp-for="DiscountValue" value="@Model.DiscountValue.ToString("0.##")" class="form-control" placeholder="Nhập giá trị giảm giá" />
+                                    <span asp-validation-for="DiscountValue" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="DiscountType" class="form-label">Loại giảm giá <span class="text-danger">*</span></label>
+                                    <select asp-for="DiscountType" class="form-select">
+                                        <option value="0">Phần trăm (%)</option>
+                                        <option value="1">Giá trị cố định (VNĐ)</option>
+                                    </select>
+                                    <span asp-validation-for="DiscountType" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="StartDate" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                                    <input asp-for="StartDate" class="form-control" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="EndDate" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                                    <input asp-for="EndDate" class="form-control" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="UsageLimit" class="form-label">Giới hạn sử dụng <span class="text-danger">*</span></label>
+                                    <input asp-for="UsageLimit" class="form-control" placeholder="Nhập giới hạn sử dụng" />
+                                    <span asp-validation-for="UsageLimit" class="text-danger"></span>
+                                    <small class="form-text text-muted">Số lần voucher có thể được sử dụng.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="MinOrder" class="form-label">Giá trị đơn hàng tối thiểu <span class="text-danger">*</span></label>
+                                    <input asp-for="MinOrder" value="@Model.MinOrder.ToString("0.##")" class="form-control" placeholder="Nhập giá trị đơn hàng tối thiểu" />
+                                    <span asp-validation-for="MinOrder" class="text-danger"></span>
+                                    <small class="form-text text-muted">Đơn hàng phải đạt giá trị này mới áp dụng được voucher.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="MaxDiscount" class="form-label">Giảm giá tối đa</label>
+                                    <input asp-for="MaxDiscount" value="@(Model.MaxDiscount.HasValue ? Model.MaxDiscount.Value.ToString("0.##") : "")" class="form-control" placeholder="Nhập giảm giá tối đa" />
+                                    <span asp-validation-for="MaxDiscount" class="text-danger"></span>
+                                    <small class="form-text text-muted">Chỉ áp dụng cho voucher phần trăm.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Point" class="form-label">Điểm đổi</label>
+                                    <input asp-for="Point" value="@(Model.Point.HasValue ? Model.Point.Value.ToString() : "")" class="form-control" placeholder="Nhập điểm đổi" />
+                                    <span asp-validation-for="Point" class="text-danger"></span>
+                                    <small class="form-text text-muted">Số điểm cần để đổi voucher này.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="IsRoot" class="form-label">Loại voucher <span class="text-danger">*</span></label>
+                                    <select asp-for="IsRoot" class="form-select">
+                                        <option value="true">Voucher gốc</option>
+                                        <option value="false">Voucher con</option>
+                                    </select>
+                                    <span asp-validation-for="IsRoot" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="IsActive" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                    <select asp-for="IsActive" class="form-select">
+                                        <option value="true">Đang hoạt động</option>
+                                        <option value="false">Không hoạt động</option>
+                                    </select>
+                                    <span asp-validation-for="IsActive" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Metadata" class="form-label">Metadata</label>
+                    <textarea asp-for="Metadata" class="form-control" rows="3" placeholder="Nhập metadata (tùy chọn)"></textarea>
+                    <span asp-validation-for="Metadata" class="text-danger"></span>
+                    <small class="form-text text-muted">Thông tin bổ sung về voucher (tùy chọn).</small>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="@Url.Action("Index", "Voucher")" class="btn btn-secondary me-2">Hủy</a>
+                    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .add-button {
+            transition: all 0.2s ease;
+        }
+
+        .add-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+
+        /* Form styles */
+        .form-label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        .form-text {
+            font-size: 0.8rem;
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(100, 116, 139, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+            color: #475569;
+            transform: translateY(-1px);
+        }
+    </style>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            // Handle discount type change
+            $('#DiscountType').on('change', function() {
+                const discountType = $(this).val();
+
+                if (discountType === '0') { // Percentage
+                    $('#MaxDiscount').closest('.form-group').show();
+                } else {
+                    $('#MaxDiscount').closest('.form-group').hide();
+                }
+            });
+
+            // Trigger change event on page load
+            $('#DiscountType').trigger('change');
+
+            // Format number inputs to use dot as decimal separator
+            $('form').on('submit', function() {
+                // Replace comma with dot in number fields
+                $('input[type="number"], input[data-val-number]').each(function() {
+                    let value = $(this).val();
+                    if (value) {
+                        // Replace comma with dot for decimal separator
+                        value = value.replace(',', '.');
+                        $(this).val(value);
+                    }
+                });
+
+                return true;
+            });
+
+            // Fix number formatting for all numeric inputs
+            $('input[type="number"], input[data-val-number]').each(function() {
+                let value = $(this).val();
+                if (value && value.includes(',')) {
+                    // Replace comma with dot for display
+                    value = value.replace(',', '.');
+                    $(this).val(value);
+                }
+            });
+        });
+    </script>
+}

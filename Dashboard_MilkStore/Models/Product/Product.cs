@@ -5,6 +5,8 @@ namespace Dashboard_MilkStore.Models.Product
         public string ProductId { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;
         public int StockQuantity { get; set; }
+        public int? SoldQuantity { get; set; }
+        public int? Rate { get; set; }
         public string Bar { get; set; } = string.Empty;
         public string SKU { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -58,4 +60,4 @@ namespace Dashboard_MilkStore.Models.Product
         public ProductMetadata Metadata { get; set; } = new();
         public List<Product> Items { get; set; } = new();
     }
-} 
+}

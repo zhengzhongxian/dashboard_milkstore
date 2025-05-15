@@ -376,5 +376,26 @@ namespace Dashboard_MilkStore.Services.Auth
                 return true;
             }
         }
+
+        public string GetRoleFromToken(string token)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                if (!handler.CanReadToken(token))
+                {
+                    return string.Empty;
+                }
+
+                var jwtToken = handler.ReadJwtToken(token);
+                var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role");
+
+                return roleClaim?.Value ?? string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
     }
 }

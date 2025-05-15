@@ -1,0 +1,652 @@
+@model Dashboard_MilkStore.Models.Common.PaginatedResult<Dashboard_MilkStore.Models.Order.OrderViewModel>
+
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+    var customer = ViewBag.Customer as Dashboard_MilkStore.Models.Customer.CustomerDetailViewModel;
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-clock-history fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Lịch sử đơn hàng</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Khách hàng: @(customer?.FullName ?? "N/A")</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Customer")" class="btn btn-light btn-sm rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <!-- Hidden form for sorting and pagination -->
+    <form id="sortForm" method="get" class="d-none">
+        <input type="hidden" name="customerId" value="@ViewBag.CustomerId">
+        <input type="hidden" name="pageNumber" value="1"> <!-- Reset to page 1 when filtering -->
+        <input type="hidden" name="pageSize" value="@ViewBag.CurrentPageSize">
+        <input type="hidden" name="searchTerm" id="hiddenSearchTerm" value="@ViewBag.CurrentSearchTerm">
+        <input type="hidden" name="statusId" value="@ViewBag.CurrentStatusId">
+        <input type="hidden" name="startDate" value="@ViewBag.CurrentStartDate">
+        <input type="hidden" name="endDate" value="@ViewBag.CurrentEndDate">
+    </form>
+
+    @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+    {
+        <div class="alert alert-danger rounded-3 shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(TempData["SuccessMessage"] as string))
+    {
+        <div class="alert alert-success rounded-3 shadow-sm">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(TempData["InfoMessage"] as string))
+    {
+        <div class="alert alert-info rounded-3 shadow-sm">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            @TempData["InfoMessage"]
+        </div>
+    }
+
+    <!-- Order Table -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="search-container mb-3 p-3 border-bottom">
+                <div class="filter-bar">
+                    <!-- Trạng thái filter -->
+                    <div class="filter-item status-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-filter me-1"></i>
+                            <span class="d-none d-sm-inline">Trạng thái:</span>
+                        </div>
+                        <div class="filter-control">
+                            <select id="statusFilter" class="form-select form-select-sm">
+                                <option value="">Tất cả trạng thái</option>
+                                @if (ViewBag.CurrentStatusId == "PENDING")
+                                {
+                                    <option value="PENDING" selected>Chờ xác nhận</option>
+                                }
+                                else
+                                {
+                                    <option value="PENDING">Chờ xác nhận</option>
+                                }
+
+                                @if (ViewBag.CurrentStatusId == "CONFIRMED")
+                                {
+                                    <option value="CONFIRMED" selected>Đã xác nhận</option>
+                                }
+                                else
+                                {
+                                    <option value="CONFIRMED">Đã xác nhận</option>
+                                }
+
+                                @if (ViewBag.CurrentStatusId == "PROCESSING")
+                                {
+                                    <option value="PROCESSING" selected>Đang xử lý</option>
+                                }
+                                else
+                                {
+                                    <option value="PROCESSING">Đang xử lý</option>
+                                }
+
+                                @if (ViewBag.CurrentStatusId == "SHIPPING")
+                                {
+                                    <option value="SHIPPING" selected>Đang giao hàng</option>
+                                }
+                                else
+                                {
+                                    <option value="SHIPPING">Đang giao hàng</option>
+                                }
+
+                                @if (ViewBag.CurrentStatusId == "COMPLETED")
+                                {
+                                    <option value="COMPLETED" selected>Hoàn thành</option>
+                                }
+                                else
+                                {
+                                    <option value="COMPLETED">Hoàn thành</option>
+                                }
+
+                                @if (ViewBag.CurrentStatusId == "CANCELLED")
+                                {
+                                    <option value="CANCELLED" selected>Đã hủy</option>
+                                }
+                                else
+                                {
+                                    <option value="CANCELLED">Đã hủy</option>
+                                }
+                            </select>
+                            <span class="dropdown-icon"><i class="bi bi-chevron-down"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Date range filters -->
+                    <div class="filter-item date-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-calendar-date me-1"></i>
+                            <span class="d-none d-sm-inline">Từ:</span>
+                        </div>
+                        <div class="filter-control">
+                            <input type="date" id="startDate" class="form-control form-control-sm" value="@ViewBag.CurrentStartDate">
+                        </div>
+                    </div>
+
+                    <div class="filter-item date-filter">
+                        <div class="filter-label">
+                            <i class="bi bi-calendar-date me-1"></i>
+                            <span class="d-none d-sm-inline">Đến:</span>
+                        </div>
+                        <div class="filter-control">
+                            <input type="date" id="endDate" class="form-control form-control-sm" value="@ViewBag.CurrentEndDate">
+                        </div>
+                    </div>
+
+                    <!-- Search filter -->
+                    <div class="filter-item search-filter">
+                        <div class="input-group">
+                            <input type="search" id="searchInput" class="form-control form-control-sm rounded-start"
+                                   placeholder="Tìm kiếm đơn hàng..."
+                                   value="@ViewBag.CurrentSearchTerm">
+                            <button id="searchButton" class="btn btn-primary btn-sm rounded-end">
+                                <i class="bi bi-search me-1 d-none d-sm-inline"></i><span class="d-none d-sm-inline">Tìm kiếm</span>
+                                <i class="bi bi-search d-inline d-sm-none"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table table-hover mb-0" id="ordersTable">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th scope="col" class="text-center">
+                                <div>Mã đơn hàng</div>
+                            </th>
+                            <th scope="col" class="text-center">
+                                <div>Ngày đặt</div>
+                            </th>
+                            <th scope="col" class="text-center">
+                                <div>Tổng tiền</div>
+                            </th>
+                            <th scope="col" class="text-center">
+                                <div>Trạng thái</div>
+                            </th>
+                            <th scope="col" class="text-center">
+                                <div>Thao tác</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Items != null && Model.Items.Any())
+                        {
+                            foreach (var order in Model.Items)
+                            {
+                                <tr>
+                                    <td class="text-center align-middle">
+                                        <span class="fw-medium">@order.OrderNumber</span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        @(order.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        @(order.TotalPrice?.ToString("N0") ?? "0") đ
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        @{
+                                            string statusClass = "secondary";
+                                            string statusIcon = "bi-question-circle";
+
+                                            if (order.StatusId == "PENDING")
+                                            {
+                                                statusClass = "warning";
+                                                statusIcon = "bi-hourglass-split";
+                                            }
+                                            else if (order.StatusId == "CONFIRMED")
+                                            {
+                                                statusClass = "info";
+                                                statusIcon = "bi-check-circle";
+                                            }
+                                            else if (order.StatusId == "PROCESSING")
+                                            {
+                                                statusClass = "primary";
+                                                statusIcon = "bi-gear";
+                                            }
+                                            else if (order.StatusId == "SHIPPING")
+                                            {
+                                                statusClass = "info";
+                                                statusIcon = "bi-truck";
+                                            }
+                                            else if (order.StatusId == "COMPLETED")
+                                            {
+                                                statusClass = "success";
+                                                statusIcon = "bi-check2-all";
+                                            }
+                                            else if (order.StatusId == "CANCELLED")
+                                            {
+                                                statusClass = "danger";
+                                                statusIcon = "bi-x-circle";
+                                            }
+                                        }
+                                        <span class="badge bg-@statusClass bg-opacity-10 text-@statusClass border border-@statusClass border-opacity-25 px-3 py-2">
+                                            <i class="bi @statusIcon me-1"></i>
+                                            @order.StatusName
+                                        </span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <a href="@Url.Action("Details", "Order", new { id = order.OrderId })" class="btn btn-sm btn-outline-primary rounded-pill">
+                                            <i class="bi bi-eye"></i> Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy đơn hàng nào
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model?.Metadata != null)
+            {
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 border-top">
+                    <div class="text-muted mb-3 mb-md-0 text-center text-md-start">
+                        <i class="bi bi-list-check me-1"></i>
+                        <span class="d-none d-sm-inline">Hiển thị @((Model.Metadata.PageNumber - 1) * Model.Metadata.PageSize + 1) đến
+                        @Math.Min(Model.Metadata.PageNumber * Model.Metadata.PageSize, Model.Metadata.TotalCount) trong</span>
+                        <span class="fw-medium">@Model.Metadata.TotalCount</span> đơn hàng
+                    </div>
+                    <nav aria-label="Page navigation" class="d-flex justify-content-center">
+                        <ul class="pagination pagination-sm mb-0 flex-wrap justify-content-center">
+                            <li class="page-item @(Model.Metadata.HasPrevious ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("OrderHistory", new {
+                                    customerId = ViewBag.CustomerId,
+                                    pageNumber = Model.Metadata.PageNumber - 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    statusId = ViewBag.CurrentStatusId,
+                                    startDate = ViewBag.CurrentStartDate,
+                                    endDate = ViewBag.CurrentEndDate
+                                })">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            @{
+                                // Hiển thị tối đa 5 trang và thêm dấu "..." nếu cần
+                                const int maxPagesToShow = 5;
+                                int startPage = Math.Max(1, Model.Metadata.PageNumber - maxPagesToShow / 2);
+                                int endPage = Math.Min(Model.Metadata.TotalPages, startPage + maxPagesToShow - 1);
+
+                                // Điều chỉnh startPage nếu endPage đã đạt giới hạn
+                                startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+
+                                // Hiển thị trang đầu tiên và dấu "..." nếu cần
+                                if (startPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link border-0" href="@Url.Action("OrderHistory", new {
+                                            customerId = ViewBag.CustomerId,
+                                            pageNumber = 1,
+                                            pageSize = ViewBag.CurrentPageSize,
+                                            searchTerm = ViewBag.CurrentSearchTerm,
+                                            statusId = ViewBag.CurrentStatusId,
+                                            startDate = ViewBag.CurrentStartDate,
+                                            endDate = ViewBag.CurrentEndDate
+                                        })">1</a>
+                                    </li>
+                                    if (startPage > 2)
+                                    {
+                                        <li class="page-item disabled">
+                                            <span class="page-link border-0">...</span>
+                                        </li>
+                                    }
+                                }
+
+                                // Hiển thị các trang chính
+                                for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
+                                        <a class="page-link border-0" href="@Url.Action("OrderHistory", new {
+                                            customerId = ViewBag.CustomerId,
+                                            pageNumber = i,
+                                            pageSize = ViewBag.CurrentPageSize,
+                                            searchTerm = ViewBag.CurrentSearchTerm,
+                                            statusId = ViewBag.CurrentStatusId,
+                                            startDate = ViewBag.CurrentStartDate,
+                                            endDate = ViewBag.CurrentEndDate
+                                        })">@i</a>
+                                    </li>
+                                }
+
+                                // Hiển thị dấu "..." và trang cuối cùng nếu cần
+                                if (endPage < Model.Metadata.TotalPages)
+                                {
+                                    if (endPage < Model.Metadata.TotalPages - 1)
+                                    {
+                                        <li class="page-item disabled">
+                                            <span class="page-link border-0">...</span>
+                                        </li>
+                                    }
+                                    <li class="page-item">
+                                        <a class="page-link border-0" href="@Url.Action("OrderHistory", new {
+                                            customerId = ViewBag.CustomerId,
+                                            pageNumber = Model.Metadata.TotalPages,
+                                            pageSize = ViewBag.CurrentPageSize,
+                                            searchTerm = ViewBag.CurrentSearchTerm,
+                                            statusId = ViewBag.CurrentStatusId,
+                                            startDate = ViewBag.CurrentStartDate,
+                                            endDate = ViewBag.CurrentEndDate
+                                        })">@Model.Metadata.TotalPages</a>
+                                    </li>
+                                }
+                            }
+                            <li class="page-item @(Model.Metadata.HasNext ? "" : "disabled")">
+                                <a class="page-link border-0" href="@Url.Action("OrderHistory", new {
+                                    customerId = ViewBag.CustomerId,
+                                    pageNumber = Model.Metadata.PageNumber + 1,
+                                    pageSize = ViewBag.CurrentPageSize,
+                                    searchTerm = ViewBag.CurrentSearchTerm,
+                                    statusId = ViewBag.CurrentStatusId,
+                                    startDate = ViewBag.CurrentStartDate,
+                                    endDate = ViewBag.CurrentEndDate
+                                })">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        /* Search container styles */
+        .search-container {
+            background: white;
+            padding: 1rem;
+            position: relative;
+            z-index: 1000; /* Đảm bảo container nằm trên các phần tử khác */
+        }
+
+        /* Filter bar styles */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .filter-label {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            color: #4b5563;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .filter-control {
+            position: relative;
+        }
+
+        /* Status filter styles */
+        .status-filter {
+            min-width: 200px;
+            position: relative;
+            z-index: 1010; /* Đảm bảo dropdown hiển thị trên các phần tử khác */
+        }
+
+        .status-filter .filter-control {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        #statusFilter {
+            width: 100%;
+            position: relative;
+            z-index: 1020;
+            background-color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            appearance: none; /* Ẩn dropdown mặc định của trình duyệt */
+            background-image: none; /* Loại bỏ icon mặc định */
+        }
+
+        /* Tạo dropdown arrow tùy chỉnh */
+        .dropdown-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6366f1;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1030;
+        }
+
+        #statusFilter option {
+            padding: 8px;
+            background-color: white;
+        }
+
+        /* Date filter styles */
+        .date-filter {
+            min-width: 180px;
+        }
+
+        .date-filter .filter-control {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Search filter styles */
+        .search-filter {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-filter .input-group {
+            width: 100%;
+        }
+
+        .search-container .form-control {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .search-container .form-control:focus {
+            background-color: white;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        /* Responsive styles */
+        @@media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-item {
+                width: 100%;
+            }
+
+            .status-filter, .date-filter, .search-filter {
+                min-width: 100%;
+            }
+        }
+
+        /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #ordersTable {
+            width: 100%;
+            min-width: 1000px;
+            margin: 0;
+        }
+
+        #ordersTable thead tr {
+            height: 50px;
+        }
+
+        #ordersTable thead th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        #ordersTable thead th div {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #ordersTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #ordersTable tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.04);
+        }
+
+        /* Price badge */
+        .price-badge {
+            white-space: nowrap;
+        }
+
+        /* Pagination redesign */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background-color: #f1f5f9;
+            color: #6366f1;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .page-link i {
+            font-size: 14px;
+            line-height: 1;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle status filter change
+            $('#statusFilter').on('change', function() {
+                $('#sortForm input[name="statusId"]').val($(this).val());
+                $('#sortForm input[name="pageNumber"]').val(1); // Reset to first page
+                $('#sortForm').submit();
+            });
+
+            // Handle date filters
+            $('#startDate, #endDate').on('change', function() {
+                const startDate = $('#startDate').val();
+                const endDate = $('#endDate').val();
+
+                $('#sortForm input[name="startDate"]').val(startDate);
+                $('#sortForm input[name="endDate"]').val(endDate);
+                $('#sortForm input[name="pageNumber"]').val(1); // Reset to first page
+                $('#sortForm').submit();
+            });
+
+            // Handle search button click
+            $('#searchButton').on('click', function() {
+                $('#sortForm input[name="searchTerm"]').val($('#searchInput').val());
+                $('#sortForm input[name="pageNumber"]').val(1); // Reset to first page
+                $('#sortForm').submit();
+            });
+
+            // Handle search on Enter key
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    $('#sortForm input[name="searchTerm"]').val($(this).val());
+                    $('#sortForm input[name="pageNumber"]').val(1); // Reset to first page
+                    $('#sortForm').submit();
+                }
+            });
+        });
+    </script>
+}

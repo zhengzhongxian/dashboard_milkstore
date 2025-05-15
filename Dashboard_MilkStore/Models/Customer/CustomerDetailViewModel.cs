@@ -64,6 +64,9 @@ namespace Dashboard_MilkStore.Models.Customer
         [Display(Name = "Giới tính")]
         public string Gender { get; set; }
 
+        [Display(Name = "Điểm tích lũy")]
+        public int? Coupoun { get; set; }
+
         // Thông tin cho form cập nhật
         [Display(Name = "Ảnh đại diện mới")]
         public string AvatarBase64 { get; set; }

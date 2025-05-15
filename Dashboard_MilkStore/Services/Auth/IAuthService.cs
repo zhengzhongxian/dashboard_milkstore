@@ -8,5 +8,6 @@ namespace Dashboard_MilkStore.Services.Auth
         Task<AuthResponse> RefreshTokenAsync(string refreshToken);
         bool IsTokenExpired(string token);
         bool IsRefreshTokenExpired(string refreshToken);
+        string GetRoleFromToken(string token);
     }
 }

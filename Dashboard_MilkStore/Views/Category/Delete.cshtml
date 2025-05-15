@@ -1,0 +1,275 @@
+@model Dashboard_MilkStore.Models.Category.Category
+@{
+    ViewData["Title"] = "Xóa Danh mục";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-trash fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Xóa Danh mục</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-exclamation-triangle me-1"></i>Xác nhận xóa danh mục</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Category")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button">
+            <i class="bi bi-arrow-left me-1 text-danger"></i>
+            <span class="text-danger small fw-medium">Quay lại</span>
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Delete Confirmation -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <div class="alert alert-danger mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">Xác nhận xóa danh mục</h5>
+                        <p class="mb-0">Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="category-header d-flex align-items-center">
+                        <div class="category-icon-large me-3">
+                            <i class="bi bi-folder2-open text-danger"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">@Model.CategoryName</h4>
+                            <p class="text-muted mb-0">
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">
+                                    <i class="bi bi-hash me-1"></i>@Model.Categoryid
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="info-card">
+                        <div class="label">Độ ưu tiên</div>
+                        <div class="value">
+                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill">
+                                <i class="bi bi-arrow-up-circle me-1"></i>
+                                @(Model.Priority.HasValue ? Model.Priority.Value.ToString() : "0")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="info-card">
+                        <div class="label">Danh mục cha</div>
+                        <div class="value">
+                            @if (!string.IsNullOrEmpty(Model.ParentName))
+                            {
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">
+                                    <i class="bi bi-diagram-3 me-1"></i>
+                                    @Model.ParentName
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Không có</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="info-card">
+                        <div class="label">Ngày tạo</div>
+                        <div class="value">
+                            @if (Model.CreatedAt.HasValue)
+                            {
+                                <i class="bi bi-calendar-date text-muted me-2"></i>
+                                <span>@Model.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Không có</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="info-card">
+                        <div class="label">Ngày cập nhật</div>
+                        <div class="value">
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <i class="bi bi-calendar-date text-muted me-2"></i>
+                                <span>@Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa cập nhật</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@Model.Categoryid" />
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="@Url.Action("Index", "Category")" class="btn btn-light rounded-pill px-4 py-2">
+                                <i class="bi bi-x me-2"></i>Hủy
+                            </a>
+                            <button type="submit" class="btn btn-danger rounded-pill px-4 py-2">
+                                <i class="bi bi-trash me-2"></i>Xác nhận xóa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #b91c1c;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .action-button {
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+
+        /* Category icon styles */
+        .category-icon-large {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background-color: rgba(239, 68, 68, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        /* Info card styles */
+        .info-card {
+            border-left: 4px solid #ef4444;
+            background-color: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card .label {
+            font-size: 0.8rem;
+            color: #858796;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-card .value {
+            font-weight: 600;
+            color: #5a5c69;
+            font-size: 1.1rem;
+        }
+
+        /* Button styles */
+        .btn {
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            border-color: #b91c1c;
+        }
+
+        .btn-light {
+            background-color: #f8f9fc;
+            border-color: #e0e4f0;
+            color: #6e707e;
+        }
+
+        .btn-light:hover {
+            background-color: #e2e6f1;
+            border-color: #dbe0f0;
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function () {
+                $('.alert-dismissible').alert('close');
+            }, 5000);
+
+            // Add animation to buttons
+            $('.btn').hover(
+                function() { $(this).addClass('shadow'); },
+                function() { $(this).removeClass('shadow'); }
+            );
+        });
+    </script>
+}

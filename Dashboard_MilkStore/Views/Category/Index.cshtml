@@ -1,0 +1,338 @@
+@model List<Dashboard_MilkStore.Models.Category.Category>
+@{
+    ViewData["Title"] = "Quản lý Danh mục";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6062EF 0%, #4F50E2 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-folder fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Quản lý Danh mục</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Quản lý danh mục sản phẩm</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Create", "Category")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 add-button fireworks-btn">
+            <i class="bi bi-plus-circle me-1" style="color: #6062EF"></i>
+            <span class="small fw-medium" style="color: #6062EF">Thêm Danh mục</span>
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Category Table -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="search-container mb-3 p-3 border-bottom">
+                <div class="dataTables_filter">
+                    <input type="search" class="form-control form-control-sm rounded-pill" id="tableSearch" placeholder="Tìm kiếm danh mục..." aria-controls="categoriesTable">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="categoriesTable" class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr style="background-color: #6062EF" class="text-white">
+                            <th class="px-4" style="width: 120px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-hash me-2"></i>
+                                    <span>Mã DM</span>
+                                </div>
+                            </th>
+                            <th style="width: 250px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-folder me-2"></i>
+                                    <span>Tên Danh mục</span>
+                                </div>
+                            </th>
+                            <th style="width: 150px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-arrow-up-circle me-2"></i>
+                                    <span>Độ ưu tiên</span>
+                                </div>
+                            </th>
+                            <th style="width: 200px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-diagram-3 me-2"></i>
+                                    <span>Danh mục cha</span>
+                                </div>
+                            </th>
+                            <th style="width: 180px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-calendar-date me-2"></i>
+                                    <span>Ngày tạo</span>
+                                </div>
+                            </th>
+                            <th class="pe-4" style="width: 150px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-gear me-2"></i>
+                                    <span>Thao tác</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var category in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold" style="color: #6062EF">
+                                        <span title="@category.Categoryid">#@category.Categoryid.Substring(0, Math.Min(8, category.Categoryid.Length))@(category.Categoryid.Length > 8 ? "..." : "")</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon me-2">
+                                                <i class="bi bi-folder2" style="color: #6062EF"></i>
+                                            </div>
+                                            <div class="fw-medium">@category.CategoryName</div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill">
+                                            @(category.Priority.HasValue ? category.Priority.Value.ToString() : "0")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(category.ParentName))
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-diagram-3 text-muted me-2"></i>
+                                                <span>@category.ParentName</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-calendar-date text-muted me-2"></i>
+                                            <span>@(category.CreatedAt?.ToString("yyyy-MM-dd") ?? "-")</span>
+                                        </div>
+                                        <small class="text-muted">@(category.CreatedAt?.ToString("HH:mm") ?? "")</small>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a href="@Url.Action("Edit", "Category", new { id = category.Categoryid })" class="btn btn-sm rounded-pill fireworks-btn" style="border-color: #6062EF; color: #6062EF" title="Sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", "Category", new { id = category.Categoryid })" class="btn btn-sm btn-outline-danger rounded-pill fireworks-btn" title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                            <a href="@Url.Action("Details", "Category", new { id = category.Categoryid })" class="btn btn-sm rounded-pill fireworks-btn" style="border-color: #6062EF; color: #6062EF" title="Chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy danh mục
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4F50E2;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .add-button {
+            transition: all 0.2s ease;
+        }
+
+        .add-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+
+        /* Search container styles */
+        .search-container {
+            background: white;
+            padding: 1rem;
+        }
+
+        .search-container .form-control {
+            max-width: 300px;
+            margin-left: auto;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .search-container .form-control:focus {
+            background-color: white;
+            border-color: #6062EF;
+            box-shadow: 0 0 0 0.2rem rgba(96, 98, 239, 0.15);
+        }
+
+        /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #categoriesTable {
+            width: 100%;
+            min-width: 800px;
+            margin: 0;
+        }
+
+        #categoriesTable thead tr {
+            height: 50px;
+        }
+
+        #categoriesTable thead th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        #categoriesTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #categoriesTable tbody tr:hover {
+            background-color: rgba(96, 98, 239, 0.04);
+        }
+
+        /* Category icon styles */
+        .category-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: rgba(96, 98, 239, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* Pagination redesign */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background-color: #f1f5f9;
+            color: #6062EF;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #6062EF 0%, #4F50E2 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(96, 98, 239, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .page-link i {
+            font-size: 14px;
+            line-height: 1;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function () {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Initialize DataTable
+            var table = $('#categoriesTable').DataTable({
+                "paging": false,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+                "dom": "<'row'<'col-sm-12'tr>>",
+                "language": {
+                    "zeroRecords": "Không tìm thấy danh mục phù hợp"
+                }
+            });
+
+            // Bind custom search input
+            $('#tableSearch').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+
+            // Add animation to buttons
+            $('.fireworks-btn').hover(
+                function() { $(this).addClass('shadow'); },
+                function() { $(this).removeClass('shadow'); }
+            );
+        });
+    </script>
+}

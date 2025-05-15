@@ -1,16 +1,21 @@
 using Dashboard_MilkStore.CoreHelpers;
 using Dashboard_MilkStore.Middleware;
+using Dashboard_MilkStore.Services.Api;
 using Dashboard_MilkStore.Services.Auth;
+using Dashboard_MilkStore.Services.Category;
 using Dashboard_MilkStore.Services.Customer;
 using Dashboard_MilkStore.Services.Order;
+using Dashboard_MilkStore.Services.Parent;
 using Dashboard_MilkStore.Services.Product;
 using Dashboard_MilkStore.Services.Statistics;
+using Dashboard_MilkStore.Services.Voucher;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -20,8 +25,11 @@ builder.Services.AddSession(options =>
 
 // Register services
 builder.Services.AddScoped<CallAPI>();
+builder.Services.AddScoped<IApiClient, ApiClient>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IParentService, ParentService>();
 
 // Register StatisticsService with base URL
 var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
@@ -37,6 +45,9 @@ builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 
 // Register Customer Service
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+
+// Register Voucher Service
+builder.Services.AddScoped<IVoucherService, VoucherService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

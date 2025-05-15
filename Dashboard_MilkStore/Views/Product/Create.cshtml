@@ -143,6 +143,39 @@
                     </div>
                 </div>
 
+                <!-- Categories Section -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-header bg-transparent border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Danh mục sản phẩm</h5>
+                                <button type="button" class="btn btn-primary btn-sm rounded-pill" onclick="showAddCategoryModal()" style="background-color: #6062EF; border-color: #6062EF;">
+                                    <i class="bi bi-plus-circle me-2"></i>Thêm danh mục
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Mã danh mục</th>
+                                            <th>Tên danh mục</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoriesTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center">Chưa có danh mục nào được thiết lập</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Dimensions Section -->
                 <div class="col-12">
                     <div class="card border-0 bg-light">
@@ -251,6 +284,40 @@
                     <i class="bi bi-x me-2"></i>Hủy
                 </button>
                 <button type="button" class="btn btn-primary rounded-pill px-4" onclick="addDimensionToTable()">
+                    <i class="bi bi-check2 me-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalTitle" aria-modal="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #6062EF; color: white;">
+                <h5 class="modal-title" id="categoryModalTitle">Thêm danh mục</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="mb-3">
+                        <label for="categorySelect" class="form-label">Chọn danh mục</label>
+                        <select id="categorySelect" class="form-select">
+                            <option value="">-- Chọn danh mục --</option>
+                            @foreach (var category in Model.Categories)
+                            {
+                                <option value="@category.Value" data-name="@category.Text">@category.Text</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="addCategoryToTable()" style="background-color: #6062EF; border-color: #6062EF;">
                     <i class="bi bi-check2 me-2"></i>OK
                 </button>
             </div>
@@ -470,6 +537,15 @@
                     }
                 });
 
+                // Thêm các trường ẩn cho danh mục
+                const categoryRows = $('#categoriesTableBody tr').not(':has(td[colspan])');
+                categoryRows.each(function(index) {
+                    const categoryId = $(this).data('category-id');
+                    if (categoryId) {
+                        $('#hiddenFields').append(`<input type="hidden" name="CategoryIds[${index}]" value="${categoryId}">`);
+                    }
+                });
+
                 // Hiển thị loading indicator
                 Swal.fire({
                     title: 'Đang xử lý...',
@@ -585,6 +661,110 @@
                     } else {
                         // Cập nhật lại STT
                         $('#priceTable tbody tr').each(function(index) {
+                            $(this).find('td').first().text(index + 1);
+                        });
+                    }
+                }
+            });
+        });
+
+        // Category management functions
+        function showAddCategoryModal() {
+            // Reset form
+            $('#categorySelect').val('');
+
+            // Lấy danh sách các danh mục đã chọn
+            const selectedCategoryIds = [];
+            $('#categoriesTableBody tr[data-category-id]').each(function() {
+                selectedCategoryIds.push($(this).data('category-id'));
+            });
+
+            // Ẩn các option đã được chọn
+            $('#categorySelect option').each(function() {
+                const categoryId = $(this).val();
+                if (categoryId && selectedCategoryIds.includes(categoryId)) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+
+            $('#categoryModal').modal('show');
+        }
+
+        function addCategoryToTable() {
+            const categorySelect = $('#categorySelect');
+            const categoryId = categorySelect.val();
+            const categoryName = categorySelect.find('option:selected').text();
+
+            if (!categoryId) {
+                Swal.fire('Lỗi!', 'Vui lòng chọn danh mục', 'error');
+                return;
+            }
+
+            // Kiểm tra xem danh mục đã được thêm chưa
+            if ($(`#categoriesTableBody tr[data-category-id="${categoryId}"]`).length > 0) {
+                Swal.fire('Lỗi!', 'Danh mục này đã được thêm', 'error');
+                return;
+            }
+
+            // Tính index mới
+            const currentIndex = $('#categoriesTableBody tr').length;
+            const newIndex = currentIndex === 1 && $('#categoriesTableBody tr td').text().includes('Chưa có danh mục') ? 1 : currentIndex + 1;
+
+            const newRow = `
+                <tr class="table-warning" data-category-id="${categoryId}">
+                    <td>${newIndex}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span>${categoryId.substring(0, 8)}...</span>
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>${categoryName}</td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-category">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            // Thêm row mới vào bảng
+            if ($('#categoriesTableBody tr td').length === 1 && $('#categoriesTableBody tr td').text().includes('Chưa có danh mục')) {
+                $('#categoriesTableBody').empty();
+            }
+            $('#categoriesTableBody').append(newRow);
+
+            // Đóng modal
+            $('#categoryModal').modal('hide');
+        }
+
+        // Remove category row
+        $(document).on('click', '.remove-category', function() {
+            // Lưu lại categoryId trước khi xóa row
+            const categoryId = $(this).closest('tr').data('category-id');
+
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: 'Bạn có chắc muốn xóa danh mục này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $(this).closest('tr').remove();
+
+                    // Hiển thị lại option trong dropdown
+                    $(`#categorySelect option[value="${categoryId}"]`).show();
+
+                    // Nếu không còn danh mục nào, hiển thị thông báo
+                    if ($('#categoriesTableBody tr').length === 0) {
+                        $('#categoriesTableBody').html('<tr><td colspan="4" class="text-center">Chưa có danh mục nào được thiết lập</td></tr>');
+                    } else {
+                        // Cập nhật lại STT
+                        $('#categoriesTableBody tr').each(function(index) {
                             $(this).find('td').first().text(index + 1);
                         });
                     }

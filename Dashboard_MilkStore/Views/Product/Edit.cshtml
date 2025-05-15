@@ -16,7 +16,14 @@
                 <p class="text-white-50 mb-0 small">Cập nhật thông tin sản phẩm #@Model.ProductId</p>
             </div>
         </div>
-        <a href="@Url.Action("Index", "Product")" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button fireworks-btn">
+        <a href="@Url.Action("Index", "Product", new {
+                searchTerm = ViewBag.SearchTerm,
+                categoryId = ViewBag.CategoryId,
+                pageNumber = ViewBag.PageNumber,
+                pageSize = ViewBag.PageSize,
+                sortBy = ViewBag.SortBy,
+                sortAscending = ViewBag.SortAscending
+            })" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button fireworks-btn">
             <i class="bi bi-arrow-left me-1 text-primary"></i>
             <span class="text-primary small fw-medium">Quay lại</span>
         </a>
@@ -311,6 +318,61 @@
                     </div>
                 </div>
 
+                <!-- Categories Section -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-header bg-transparent border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Danh mục sản phẩm</h5>
+                                <button type="button" class="btn btn-primary btn-sm rounded-pill" onclick="showAddCategoryModal()">
+                                    <i class="bi bi-plus-circle me-2"></i>Thêm danh mục
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Mã danh mục</th>
+                                            <th>Tên danh mục</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoriesTableBody">
+                                        @if (Model.ProductCategories != null && Model.ProductCategories.Any())
+                                        {
+                                            var categoryIndex = 1;
+                                            foreach (var category in Model.ProductCategories)
+                                            {
+                                                <tr id="category-@category.CategoryId">
+                                                    <td>@(categoryIndex++)</td>
+                                                    <td>@category.CategoryId</td>
+                                                    <td>@category.CategoryName</td>
+                                                    <td>
+                                                        <button type="button"
+                                                                class="btn btn-outline-danger btn-sm"
+                                                                onclick="deleteCategory('@category.CategoryId')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="4" class="text-center">Chưa có danh mục nào được thiết lập</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Status -->
                 <div class="col-md-6">
                     <label asp-for="StatusId" class="form-label"></label>
@@ -352,7 +414,14 @@
                 <div class="col-12 mt-4">
                     <hr />
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="@Url.Action("Index", "Product")" class="btn btn-light rounded-pill px-4">
+                        <a href="@Url.Action("Index", "Product", new {
+                            searchTerm = ViewBag.SearchTerm,
+                            categoryId = ViewBag.CategoryId,
+                            pageNumber = ViewBag.PageNumber,
+                            pageSize = ViewBag.PageSize,
+                            sortBy = ViewBag.SortBy,
+                            sortAscending = ViewBag.SortAscending
+                        })" class="btn btn-light rounded-pill px-4">
                             <i class="bi bi-x me-2"></i>Hủy
                         </a>
                         <button type="submit" class="btn btn-primary rounded-pill px-4">
@@ -472,6 +541,55 @@
     </div>
 </div>
 
+<!-- Add Category Modal -->
+<div class="modal fade"
+     id="categoryModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="categoryModalTitle"
+     aria-modal="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoryModalTitle">Thêm danh mục</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="mb-3">
+                        <label for="categoryId" class="form-label">Danh mục</label>
+                        <select class="form-select" id="categoryId" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            @if (Model.Categories != null)
+                            {
+                                foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Value">@category.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Hủy
+                </button>
+                <button type="button"
+                        class="btn btn-primary rounded-pill px-4"
+                        onclick="addCategoryToTable()">
+                    <i class="bi bi-check2 me-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
@@ -483,6 +601,13 @@
             window.dimensionChanges = {}; // Khởi tạo object để lưu các thay đổi dimension
             window.deletedPrices = []; // Thêm mảng để lưu các giá bị xóa (global scope)
             window.priceChanges = {}; // Khởi tạo object để lưu các thay đổi giá
+            // Khởi tạo mảng để lưu các danh mục bị xóa và danh mục mới (global scope)
+            window.deletedCategories = [];
+            window.newCategories = [];
+            console.log("Initialized category arrays:", {
+                deletedCategories: window.deletedCategories,
+                newCategories: window.newCategories
+            });
             let updatedOrders = {};
 
             // Image preview for new uploads
@@ -894,7 +1019,21 @@
                 // Lấy token CSRF từ form
                 const token = $('input[name="__RequestVerificationToken"]').val();
 
-                // If there are no image changes, dimension changes, and price changes, redirect to index
+                // Prepare data for category changes
+                const categoryChanges = {
+                    deletedCategoryIds: Array.isArray(window.deletedCategories) ? window.deletedCategories : [],
+                    newCategoryIds: Array.isArray(window.newCategories) ? window.newCategories : []
+                };
+
+                // Đảm bảo rằng các mảng không phải là undefined
+                if (!categoryChanges.deletedCategoryIds) categoryChanges.deletedCategoryIds = [];
+                if (!categoryChanges.newCategoryIds) categoryChanges.newCategoryIds = [];
+
+                console.log("Category changes:", categoryChanges);
+                console.log("window.deletedCategories:", window.deletedCategories);
+                console.log("window.newCategories:", window.newCategories);
+
+                // If there are no image changes, dimension changes, price changes, and category changes, redirect to index
                 if (imageChanges.deletedImageIds.length === 0 &&
                     imageChanges.newImages.length === 0 &&
                     imageChanges.updatedOrders.length === 0 &&
@@ -903,7 +1042,9 @@
                     dimensionChanges.updatedDimensions.length === 0 &&
                     priceChanges.deletedPriceIds.length === 0 &&
                     priceChanges.newPrices.length === 0 &&
-                    priceChanges.updatedPrices.length === 0) {
+                    priceChanges.updatedPrices.length === 0 &&
+                    categoryChanges.deletedCategoryIds.length === 0 &&
+                    categoryChanges.newCategoryIds.length === 0) {
 
                     Swal.fire({
                         title: 'Thành công!',
@@ -916,14 +1057,134 @@
                     return;
                 }
 
-                // Process price changes first, then dimension changes, then image changes
+                // Process price changes first, then dimension changes, then category changes, then image changes
                 processPriceChanges(productId, priceChanges, token, function() {
                     // After price changes are processed, process dimension changes
                     processDimensionChanges(productId, dimensionChanges, token, function() {
-                        // After dimension changes are processed, process image changes
-                        processImageChangesOnly(productId, imageChanges);
+                        // After dimension changes are processed, process category changes
+                        processCategoryChanges(productId, categoryChanges, token, function() {
+                            // After category changes are processed, process image changes
+                            processImageChangesOnly(productId, imageChanges);
+                        });
                     });
                 });
+            }
+
+            // Function to process category changes
+            function processCategoryChanges(productId, categoryChanges, token, callback) {
+                console.log("processCategoryChanges called with:", {
+                    productId: productId,
+                    categoryChanges: categoryChanges,
+                    token: token ? "Token exists" : "No token"
+                });
+
+                // If there are no category changes, call the callback immediately
+                if ((!categoryChanges.deletedCategoryIds || categoryChanges.deletedCategoryIds.length === 0) &&
+                    (!categoryChanges.newCategoryIds || categoryChanges.newCategoryIds.length === 0)) {
+                    console.log("No category changes to process, calling callback immediately");
+                    if (callback) callback();
+                    return;
+                }
+
+                // Thêm log để kiểm tra
+                console.log("Category changes detected:", {
+                    deletedCategoryIds: categoryChanges.deletedCategoryIds,
+                    newCategoryIds: categoryChanges.newCategoryIds
+                });
+
+                // Process new categories
+                const addPromises = categoryChanges.newCategoryIds.map(categoryId => {
+                    return new Promise((resolve, reject) => {
+                        const data = {
+                            productId: productId,
+                            categoryId: categoryId
+                        };
+
+                        console.log(`Adding category ${categoryId} to product ${productId}`);
+
+                        $.ajax({
+                            url: '@Url.Action("AddProductCategory", "Product")',
+                            type: 'POST',
+                            headers: {
+                                'RequestVerificationToken': token
+                            },
+                            data: JSON.stringify(data),
+                            contentType: 'application/json',
+                            success: function(response) {
+                                console.log(`Successfully added category ${categoryId}:`, response);
+                                resolve(response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(`Error adding category ${categoryId}:`, {
+                                    status: status,
+                                    error: error,
+                                    responseText: xhr.responseText
+                                });
+                                reject(xhr);
+                            }
+                        });
+                    });
+                });
+
+                // Process deleted categories
+                const deletePromises = categoryChanges.deletedCategoryIds.map(categoryId => {
+                    return new Promise((resolve, reject) => {
+                        const data = {
+                            productId: productId,
+                            categoryId: categoryId
+                        };
+
+                        console.log(`Deleting category ${categoryId} from product ${productId}`);
+
+                        $.ajax({
+                            url: '@Url.Action("DeleteProductCategory", "Product")',
+                            type: 'POST',
+                            headers: {
+                                'RequestVerificationToken': token
+                            },
+                            data: JSON.stringify(data),
+                            contentType: 'application/json',
+                            success: function(response) {
+                                console.log(`Successfully deleted category ${categoryId}:`, response);
+                                resolve(response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(`Error deleting category ${categoryId}:`, {
+                                    status: status,
+                                    error: error,
+                                    responseText: xhr.responseText
+                                });
+                                reject(xhr);
+                            }
+                        });
+                    });
+                });
+
+                // Xử lý các thao tác thêm mới trước
+                Promise.all([...addPromises])
+                    .then(addResults => {
+                        console.log("Add category operations completed:", addResults);
+
+                        // Sau khi thêm mới xong, xử lý các thao tác xóa
+                        return Promise.all([...deletePromises])
+                            .then(deleteResults => {
+                                console.log("Delete category operations completed:", deleteResults);
+
+                                // Tất cả các thao tác đã hoàn thành
+                                console.log("All category operations completed");
+                                if (callback) callback();
+                            });
+                    })
+                    .catch(error => {
+                        console.error("Error processing categories:", error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra khi xử lý danh mục sản phẩm',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                        if (callback) callback();
+                    });
             }
 
             // Function to process dimension changes
@@ -1979,6 +2240,230 @@
 
             // Reset form
             $('#dimensionForm')[0].reset();
+        }
+
+        // Category functions
+        function showAddCategoryModal() {
+            // Lọc danh sách danh mục để loại bỏ các danh mục đã được chọn
+            const selectedCategories = [];
+
+            // Lấy danh sách danh mục đã chọn từ bảng
+            $('#categoriesTableBody tr').each(function() {
+                const categoryId = $(this).attr('id');
+                if (categoryId && categoryId.startsWith('category-')) {
+                    const id = categoryId.replace('category-', '');
+                    selectedCategories.push(id);
+                }
+            });
+
+            // Lấy danh sách danh mục đã thêm tạm thời
+            const tempCategories = window.newCategories.map(c => c);
+
+            // Kết hợp danh sách
+            const allSelectedCategories = [...selectedCategories, ...tempCategories];
+
+            // Ẩn các danh mục đã chọn trong dropdown
+            $('#categoryId option').each(function() {
+                const value = $(this).val();
+                if (value && allSelectedCategories.includes(value)) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+
+            // Hiển thị modal
+            $('#categoryModal').modal('show');
+        }
+
+        function addCategoryToTable() {
+            console.log("addCategoryToTable called");
+
+            const categoryId = $('#categoryId').val();
+            const categoryText = $('#categoryId option:selected').text();
+            const productId = $('#productId').val();
+
+            console.log(`Selected categoryId: ${categoryId}, categoryText: ${categoryText}, productId: ${productId}`);
+
+            if (!categoryId) {
+                console.log("No category selected, showing error");
+                Swal.fire('Lỗi!', 'Vui lòng chọn danh mục', 'error');
+                return;
+            }
+
+            // Tính index mới
+            const currentIndex = $('#categoriesTableBody tr').length;
+            const hasEmptyMessage = $('#categoriesTableBody tr td').text().includes('Chưa có danh mục');
+            const newIndex = currentIndex === 1 && hasEmptyMessage ? 1 : currentIndex + 1;
+
+            console.log(`Current index: ${currentIndex}, hasEmptyMessage: ${hasEmptyMessage}, newIndex: ${newIndex}`);
+
+            // Tạo ID tạm thời duy nhất
+            const tempId = Date.now();
+
+            // Thêm row mới vào bảng với trạng thái tạm thời
+            const newRow = `
+                <tr id="category-temp-${categoryId}" class="table-warning">
+                    <td>${newIndex}</td>
+                    <td>${categoryId}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            ${categoryText}
+                            <span class="badge bg-warning text-dark">Tạm thời</span>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="deleteCategory('temp-${categoryId}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            // Thêm row mới vào bảng
+            if ($('#categoriesTableBody tr td').length === 1 && $('#categoriesTableBody tr td').text().includes('Chưa có danh mục')) {
+                console.log("Clearing empty message from table");
+                $('#categoriesTableBody').empty();
+            }
+
+            console.log("Appending new row to table");
+            $('#categoriesTableBody').append(newRow);
+
+            // Thêm vào danh sách danh mục mới để theo dõi
+            console.log(`Before addition: newCategories = ${JSON.stringify(window.newCategories)}`);
+            window.newCategories.push(categoryId);
+            console.log(`After addition: newCategories = ${JSON.stringify(window.newCategories)}`);
+
+            // Đóng modal
+            $('#categoryModal').modal('hide');
+
+            // Reset form
+            $('#categoryForm')[0].reset();
+
+            console.log("Category added successfully (temporary)");
+        }
+
+        function deleteCategory(categoryId) {
+            console.log(`deleteCategory called with categoryId: ${categoryId}`);
+
+            const isTemp = categoryId.startsWith('temp-');
+            const actualId = isTemp ? categoryId.replace('temp-', '') : categoryId;
+            const productId = $('#productId').val();
+
+            console.log(`isTemp: ${isTemp}, actualId: ${actualId}, productId: ${productId}`);
+
+            if (isTemp) {
+                // Nếu là danh mục tạm thời, xóa khỏi danh sách newCategories
+                console.log(`Removing temporary category ${actualId} from newCategories`);
+                console.log(`Before removal: newCategories = ${JSON.stringify(window.newCategories)}`);
+
+                const index = window.newCategories.indexOf(actualId);
+                if (index > -1) {
+                    window.newCategories.splice(index, 1);
+                    console.log(`Category removed at index ${index}`);
+                } else {
+                    console.log(`Category not found in newCategories`);
+                }
+
+                console.log(`After removal: newCategories = ${JSON.stringify(window.newCategories)}`);
+
+                // Xóa row khỏi bảng
+                const element = $(`#category-temp-${actualId}`);
+                console.log(`Removing element with selector #category-temp-${actualId}, found: ${element.length > 0}`);
+                element.remove();
+            } else {
+                // Hiển thị dialog xác nhận
+                Swal.fire({
+                    title: 'Xác nhận đánh dấu xóa?',
+                    text: 'Danh mục sẽ biến mất khỏi giao diện và chỉ bị xóa thật sự khi bạn nhấn "Lưu thay đổi".',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đánh dấu xóa',
+                    cancelButtonText: 'Hủy',
+                    confirmButtonColor: '#d33',
+                    footer: '<span class="text-muted">Bạn có thể hủy thao tác này bằng cách tải lại trang mà không lưu</span>'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Đánh dấu danh mục để xóa (không gọi API ngay)
+                        console.log(`Marking category ${actualId} for deletion`);
+
+                        // Thêm vào danh sách deletedCategories để xử lý khi submit form
+                        console.log(`Adding category ${actualId} to deletedCategories`);
+                        console.log(`Before addition: deletedCategories = ${JSON.stringify(window.deletedCategories)}`);
+                        window.deletedCategories.push(actualId);
+                        console.log(`After addition: deletedCategories = ${JSON.stringify(window.deletedCategories)}`);
+
+                        // Đánh dấu row là đã xóa
+                        const element = $(`#category-${actualId}`);
+                        console.log(`Marking element with selector #category-${actualId}, found: ${element.length > 0}`);
+
+                        element.addClass('table-danger');
+                        element.find('td:nth-child(3)').append('<span class="badge bg-danger ms-2">Đánh dấu xóa</span>');
+
+                        // Thay đổi nút xóa thành nút khôi phục
+                        element.find('button').replaceWith(`
+                            <button type="button"
+                                    class="btn btn-outline-success btn-sm"
+                                    onclick="restoreCategory('${actualId}')">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        `);
+
+                        // Hiển thị thông báo
+                        Swal.fire({
+                            title: 'Đã đánh dấu xóa!',
+                            text: 'Danh mục sẽ bị xóa khi bạn nhấn "Lưu thay đổi". Bạn có thể khôi phục bằng cách nhấn vào nút khôi phục.',
+                            icon: 'info'
+                        });
+                    }
+                });
+            }
+        }
+
+        function restoreCategory(categoryId) {
+            console.log(`restoreCategory called with categoryId: ${categoryId}`);
+
+            // Xóa khỏi danh sách deletedCategories
+            console.log(`Before removal: deletedCategories = ${JSON.stringify(window.deletedCategories)}`);
+
+            const index = window.deletedCategories.indexOf(categoryId);
+            if (index > -1) {
+                window.deletedCategories.splice(index, 1);
+                console.log(`Category removed at index ${index}`);
+            } else {
+                console.log(`Category not found in deletedCategories`);
+            }
+
+            console.log(`After removal: deletedCategories = ${JSON.stringify(window.deletedCategories)}`);
+
+            // Khôi phục row
+            const element = $(`#category-${categoryId}`);
+            console.log(`Restoring element with selector #category-${categoryId}, found: ${element.length > 0}`);
+
+            element.removeClass('table-danger');
+            element.find('.badge.bg-danger').remove();
+
+            // Thay đổi nút khôi phục thành nút xóa
+            element.find('button').replaceWith(`
+                <button type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        onclick="deleteCategory('${categoryId}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `);
+
+            // Hiển thị thông báo
+            Swal.fire({
+                title: 'Đã khôi phục!',
+                text: 'Danh mục đã được khôi phục.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            console.log(`Category ${categoryId} restored successfully`);
         }
     </script>
 }
