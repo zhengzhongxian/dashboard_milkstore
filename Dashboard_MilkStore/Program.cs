@@ -1,5 +1,6 @@
 using Dashboard_MilkStore.CoreHelpers;
 using Dashboard_MilkStore.Middleware;
+using Dashboard_MilkStore.Services.Admin;
 using Dashboard_MilkStore.Services.Api;
 using Dashboard_MilkStore.Services.Auth;
 using Dashboard_MilkStore.Services.Category;
@@ -48,6 +49,9 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 // Register Voucher Service
 builder.Services.AddScoped<IVoucherService, VoucherService>();
+
+// Register Admin Service
+builder.Services.AddScoped<IAdminService, AdminService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

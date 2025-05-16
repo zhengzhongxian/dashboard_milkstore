@@ -45,5 +45,8 @@ namespace Dashboard_MilkStore.Models.Customer
 
         [Display(Name = "Giới tính")]
         public string Gender { get; set; }
+
+        [Display(Name = "Điểm tích lũy")]
+        public int? Coupoun { get; set; }
     }
 }

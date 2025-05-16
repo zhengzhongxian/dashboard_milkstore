@@ -3,6 +3,34 @@
   "WorkspaceRootPath": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\controllers\\customercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\controllers\\customercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\views\\admin\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\views\\admin\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\views\\customer\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\views\\customer\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\views\\order\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\views\\order\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Product\\ProductCategoryChangesViewModel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Dashboard_MilkStore\\Models\\Product\\ProductCategoryChangesViewModel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\controllers\\product\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\controllers\\product\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -21,10 +49,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\models\\product\\productdimensionchangesviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\models\\product\\productdimensionchangesviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\models\\product\\productcategorychangesviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|solutionrelative:dashboard_milkstore\\models\\product\\productcategorychangesviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6656F696-3515-48D1-825A-866074D107CE}|Dashboard_MilkStore\\Dashboard_MilkStore.csproj|c:\\users\\admin\\desktop\\hk2-season3\\web-technology\\dashboard_milkstore\\dashboard_milkstore\\views\\product\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -53,12 +77,12 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 79,
+          "DockedWidth": 75,
           "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 11,
               "Title": "ProductDimensionChangesViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Product\\ProductDimensionChangesViewModel.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Models\\Product\\ProductDimensionChangesViewModel.cs",
@@ -70,20 +94,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
               "Title": "ProductController.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
               "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
               "RelativeToolTip": "Dashboard_MilkStore\\Controllers\\Product\\ProductController.cs",
-              "ViewState": "AgIAAOkFAAAAAAAAAAAUwPMFAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAO0FAAAAAAAAAADwv/MFAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-14T02:38:38.382Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 14,
               "Title": "Category.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Category\\Category.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Models\\Category\\Category.cs",
@@ -95,7 +119,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 15,
               "Title": "CategoryResponse.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Category\\CategoryResponse.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Models\\Category\\CategoryResponse.cs",
@@ -107,7 +131,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 13,
               "Title": "CreateCategoryViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Category\\CreateCategoryViewModel.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Models\\Category\\CreateCategoryViewModel.cs",
@@ -119,7 +143,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 16,
               "Title": "CategoryService.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Services\\Category\\CategoryService.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Services\\Category\\CategoryService.cs",
@@ -132,16 +156,90 @@
           ]
         },
         {
-          "DockedWidth": 480,
-          "SelectedChildIndex": 1,
+          "DockedWidth": 484,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "CustomerController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\CustomerController.cs",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Controllers\\CustomerController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\CustomerController.cs",
+              "RelativeToolTip": "Dashboard_MilkStore\\Controllers\\CustomerController.cs",
+              "ViewState": "AgIAAK0AAAAAAAAAAADwv8EAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T10:30:31.887Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Admin\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Views\\Admin\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Admin\\Edit.cshtml",
+              "RelativeToolTip": "Dashboard_MilkStore\\Views\\Admin\\Edit.cshtml",
+              "ViewState": "AgIAAKIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-16T10:27:21.073Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Admin\\Index.cshtml",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Views\\Admin\\Index.cshtml",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Admin\\Index.cshtml",
+              "RelativeToolTip": "Dashboard_MilkStore\\Views\\Admin\\Index.cshtml",
+              "ViewState": "AgIAADYBAAAAAAAAAAAIwEsBAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-16T10:26:46.663Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Order\\Details.cshtml",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Views\\Order\\Details.cshtml",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Order\\Details.cshtml",
+              "RelativeToolTip": "Dashboard_MilkStore\\Views\\Order\\Details.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAK4CAABoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-16T10:22:13.855Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Customer\\Details.cshtml",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Views\\Customer\\Details.cshtml",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Customer\\Details.cshtml",
+              "RelativeToolTip": "Dashboard_MilkStore\\Views\\Customer\\Details.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-16T10:21:46.19Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Dashboard_MilkStore\\Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Dashboard_MilkStore\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAAD4BAAAAAAAAAADwv1MBAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-16T10:14:58.323Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "CallAPI.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\CoreHelpers\\CallAPI.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\CoreHelpers\\CallAPI.cs",
@@ -154,7 +252,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 10,
               "Title": "ProductCategoryViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Product\\ProductCategoryViewModel.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Models\\Product\\ProductCategoryViewModel.cs",
@@ -166,7 +264,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 9,
               "Title": "ProductService.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Services\\Product\\ProductService.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Services\\Product\\ProductService.cs",
@@ -174,12 +272,11 @@
               "RelativeToolTip": "Dashboard_MilkStore\\Services\\Product\\ProductService.cs",
               "ViewState": "AgIAAEAEAAAAAAAAAAAgwDkEAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-14T06:15:50.031Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-14T06:15:50.031Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 12,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Views\\Product\\Index.cshtml",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Views\\Product\\Index.cshtml",
@@ -191,15 +288,18 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "ProductCategoryChangesViewModel.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Product\\ProductCategoryChangesViewModel.cs",
               "RelativeDocumentMoniker": "Dashboard_MilkStore\\Models\\Product\\ProductCategoryChangesViewModel.cs",
               "ToolTip": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\Models\\Product\\ProductCategoryChangesViewModel.cs",
               "RelativeToolTip": "Dashboard_MilkStore\\Models\\Product\\ProductCategoryChangesViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-14T06:17:10.419Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
             }
           ]
         }

@@ -35,6 +35,8 @@
             --dark-bg: #1a2639;
             --dark-text: #212529;
             --light-text: #6c757d;
+            --sidebar-bg-start: #1a2639;
+            --sidebar-bg-end: #2c3e50;
 
             /* Layout dimensions */
             --sidebar-width: 280px;
@@ -86,7 +88,7 @@
         /* Sidebar styling */
         .sidebar {
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, #1a2639 0%, #2c3e50 100%);
+            background: linear-gradient(180deg, var(--sidebar-bg-start) 0%, var(--sidebar-bg-end) 100%);
             box-shadow: 0 0 30px rgba(0,0,0,0.1);
             position: fixed;
             height: 100%;
@@ -94,6 +96,7 @@
             z-index: 1000;
             color: white;
             padding-bottom: 20px;
+            overflow-x: visible;
         }
 
         /* Collapsed sidebar */
@@ -194,56 +197,50 @@
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
+            gap: 0.8rem;
+            padding: 0.9rem 1.2rem;
             color: rgba(255, 255, 255, 0.7);
-            border-radius: var(--border-radius);
-            margin: 0.5rem 1rem;
-            transition: all var(--transition-speed);
+            border-radius: 10px;
+            margin: 0.4rem 0.8rem;
+            transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
-            font-size: 1.05rem;
-            height: 3.5rem; /* Đặt chiều cao cố định */
+            overflow: visible;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
         }
 
-            .nav-link:hover, .nav-link.active {
-                background-color: rgba(255, 255, 255, 0.1);
+            .nav-link:hover {
+                background: rgba(255, 255, 255, 0.05);
                 color: white;
-                transform: translateX(5px);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .nav-link.active {
+                background: linear-gradient(135deg, rgba(0, 180, 216, 0.15) 0%, rgba(0, 0, 0, 0.2) 100%);
+                color: white;
+                border: 1px solid rgba(0, 180, 216, 0.2);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
 
             .nav-link i {
-                font-size: 1.4rem;
-                min-width: 30px;
+                font-size: 1.2rem;
+                min-width: 24px;
                 text-align: center;
+                color: rgba(255, 255, 255, 0.6);
+                transition: all 0.3s ease;
+            }
+
+            .nav-link:hover i {
                 color: var(--accent-color);
-            }
-
-            .nav-link:after {
-                content: '';
-                position: absolute;
-                left: 0;
-                top: 0;
-                height: 100%;
-                width: 0;
-                opacity: 0;
-                transition: all var(--transition-speed);
-            }
-
-            .nav-link:hover:after {
-                width: 4px;
-                opacity: 0.5;
-                background: var(--accent-color);
-            }
-
-            .nav-link.active:after {
-                width: 5px;
-                opacity: 1;
-                background: var(--accent-color);
+                transform: scale(1.1);
             }
 
             .nav-link.active i {
-                color: white;
+                color: var(--accent-color);
             }
 
         /* Main content area */
@@ -1026,6 +1023,7 @@
         .sidebar-content {
             height: calc(100% - 80px); /* Trừ đi chiều cao của header */
             overflow-y: auto; /* Cho phép cuộn nếu menu dài */
+            overflow-x: visible; /* Cho phép nội dung tràn ra ngoài */
         }
 
         /* Tùy chỉnh thanh cuộn cho sidebar */
@@ -1050,16 +1048,104 @@
         .sidebar-menu .nav {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.3rem;
+            padding: 0.5rem;
         }
 
         .nav-item {
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 0.3rem;
+            position: relative;
         }
 
-        /* Đã được thay thế ở trên */
+        /* Dropdown menu styles - Modern Design */
+        .nav-link[data-bs-toggle="collapse"] {
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: visible;
+            padding-right: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link[data-bs-toggle="collapse"]:hover {
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link[data-bs-toggle="collapse"] .bi-chevron-down {
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            position: absolute;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+        }
+
+        .nav-link[aria-expanded="true"] {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .nav-link[aria-expanded="true"] .bi-chevron-down {
+            transform: rotate(180deg);
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .collapse {
+            margin-bottom: 12px;
+            padding: 5px 8px;
+            border-top: none;
+        }
+
+        .collapse .nav-link {
+            padding: 0.6rem 1rem;
+            height: auto;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: visible;
+        }
+
+        .collapse .nav-link i {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+
+        .collapse .nav-link:hover {
+            transform: translateX(3px);
+            color: white;
+        }
+
+        .collapse .nav-link.active {
+            color: white;
+        }
+
+        .collapse .nav-link.active i {
+            color: var(--accent-color);
+        }
+
+        .collapse .nav-link:hover i {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
 
         /* Mobile responsive */
         @@media (max-width: 768px) {
@@ -1148,13 +1234,7 @@
                                     <span>Trang chủ</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")"
-                                   href="@Url.Action("Index", "Product")">
-                                    <i class="bi bi-cart"></i>
-                                    <span>Sản phẩm</span>
-                                </a>
-                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Order" ? "active" : "")"
                                    href="@Url.Action("Index", "Order")">
@@ -1162,20 +1242,101 @@
                                     <span>Đơn hàng</span>
                                 </a>
                             </li>
+                            @{
+                                var sidebarToken = Context.Session.GetString("Token") ?? "";
+                                var sidebarRoleId = "f5f5d5c5-7d7d-4d4d-9d9d-9d9d9d9d9d9d"; // Default to Staff
+
+                                if (!string.IsNullOrEmpty(sidebarToken))
+                                {
+                                    try
+                                    {
+                                        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                                        if (handler.CanReadToken(sidebarToken))
+                                        {
+                                            var jwtToken = handler.ReadJwtToken(sidebarToken);
+                                            var roleIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role" || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
+                                            if (roleIdClaim != null && !string.IsNullOrEmpty(roleIdClaim.Value))
+                                            {
+                                                sidebarRoleId = roleIdClaim.Value;
+                                            }
+                                        }
+                                    }
+                                    catch { /* Ignore errors and use default */ }
+                                }
+                                var isAdmin = sidebarRoleId == "d3f3c3b3-5b5b-4b4b-9b9b-7b7b7b7b7b7b";
+                            }
+
+                            @if (isAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")"
+                                       data-bs-toggle="collapse" href="#accountManagementCollapse" role="button"
+                                       aria-expanded="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "true" : "false")"
+                                       aria-controls="accountManagementCollapse">
+                                        <i class="bi bi-people-fill"></i>
+                                        <span>Quản lý tài khoản</span>
+                                        <i class="bi bi-chevron-down"></i>
+                                    </a>
+                                    <div class="collapse @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "show" : "")" id="accountManagementCollapse">
+                                        <ul class="nav flex-column mt-2">
+                                            <li class="nav-item">
+                                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")"
+                                                   href="@Url.Action("Index", "Customer")">
+                                                    <i class="bi bi-person"></i>
+                                                    <span>Khách hàng</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")"
+                                                   href="@Url.Action("Index", "Admin")">
+                                                    <i class="bi bi-person-gear"></i>
+                                                    <span>Quản trị viên</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")"
+                                       href="@Url.Action("Index", "Customer")">
+                                        <i class="bi bi-people"></i>
+                                        <span>Khách hàng</span>
+                                    </a>
+                                </li>
+                            }
+
                             <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")"
-                                   href="@Url.Action("Index", "Customer")">
-                                    <i class="bi bi-people"></i>
-                                    <span>Khách hàng</span>
+                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")"
+                                   data-bs-toggle="collapse" href="#productManagementCollapse" role="button"
+                                   aria-expanded="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "true" : "false")"
+                                   aria-controls="productManagementCollapse">
+                                    <i class="bi bi-box"></i>
+                                    <span>Quản lý sản phẩm</span>
+                                    <i class="bi bi-chevron-down"></i>
                                 </a>
+                                <div class="collapse @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "show" : "")" id="productManagementCollapse">
+                                    <ul class="nav flex-column mt-2">
+                                        <li class="nav-item">
+                                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")"
+                                               href="@Url.Action("Index", "Product")">
+                                                <i class="bi bi-cart"></i>
+                                                <span>Sản phẩm</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")"
+                                               href="@Url.Action("Index", "Category")">
+                                                <i class="bi bi-folder"></i>
+                                                <span>Danh mục</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")"
-                                   href="@Url.Action("Index", "Category")">
-                                    <i class="bi bi-folder"></i>
-                                    <span>Danh mục</span>
-                                </a>
-                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" ? "active" : "")"
                                    href="@Url.Action("Index", "Inventory")">
@@ -1223,12 +1384,36 @@
 
                         @if (isLoggedIn)
                         {
+                            var token = Context.Session.GetString("Token") ?? "";
+                            var headerRoleId = "f5f5d5c5-7d7d-4d4d-9d9d-9d9d9d9d9d9d"; // Default to Staff
+
+                            if (!string.IsNullOrEmpty(token))
+                            {
+                                try
+                                {
+                                    var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                                    if (handler.CanReadToken(token))
+                                    {
+                                        var jwtToken = handler.ReadJwtToken(token);
+                                        var roleIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role" || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
+                                        if (roleIdClaim != null && !string.IsNullOrEmpty(roleIdClaim.Value))
+                                        {
+                                            headerRoleId = roleIdClaim.Value;
+                                        }
+                                    }
+                                }
+                                catch { /* Ignore errors and use default */ }
+                            }
+                            var isAdminHeader = headerRoleId == "d3f3c3b3-5b5b-4b4b-9b9b-7b7b7b7b7b7b";
+                            var displayName = isAdminHeader ? "Admin" : "Staff";
+                            var initials = isAdminHeader ? "AD" : "ST";
+
                             <div class="dropdown">
                                 <a href="#" class="user-welcome-link" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="welcome-text">Welcome, <span class="username">admin</span></div>
+                                    <div class="welcome-text">Welcome, <span class="username">@displayName</span></div>
                                     <div class="user-avatar-container">
                                         <div class="user-avatar-circle">
-                                            <span>AD</span>
+                                            <span>@initials</span>
                                         </div>
                                         <i class="bi bi-chevron-down ms-2 small"></i>
                                     </div>

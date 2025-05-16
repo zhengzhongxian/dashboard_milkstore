@@ -1,0 +1,696 @@
+@model Dashboard_MilkStore.Models.Common.PaginatedResult<Dashboard_MilkStore.Models.Admin.AdminViewModel>
+@{
+    ViewData["Title"] = "Quản lý Admin & Nhân viên";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded-3 shadow-sm header-custom"
+         style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-people-fill fs-4 text-white me-2 header-icon"></i>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Quản lý Admin & Nhân viên</h5>
+                <p class="text-white-50 mb-0 small"><i class="bi bi-info-circle me-1"></i>Danh sách người dùng có quyền quản trị</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and filter container -->
+    <div class="search-container mb-4 rounded-3 shadow-sm">
+        <div class="filter-bar">
+            <!-- Role filter -->
+            <div class="filter-item role-filter">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-person-badge text-primary"></i>
+                    </span>
+                    <select id="roleFilter" class="form-select form-select-sm border-start-0"
+                            value="@ViewBag.CurrentRoleFilter">
+                        <option value="">Tất cả vai trò</option>
+                        @if (ViewBag.CurrentRoleFilter == "Admin")
+                        {
+                            <option value="Admin" selected>Admin</option>
+                        }
+                        else
+                        {
+                            <option value="Admin">Admin</option>
+                        }
+
+                        @if (ViewBag.CurrentRoleFilter == "Staff")
+                        {
+                            <option value="Staff" selected>Nhân viên</option>
+                        }
+                        else
+                        {
+                            <option value="Staff">Nhân viên</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Search filter -->
+            <div class="filter-item search-filter">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-primary"></i>
+                    </span>
+                    <input type="search" id="searchInput" class="form-control form-control-sm border-start-0 border-end-0"
+                           placeholder="Tìm kiếm người dùng..."
+                           value="@ViewBag.CurrentSearchTerm">
+                    <button id="searchButton" class="btn btn-primary btn-sm" style="border-radius: 0;">
+                        <span>Tìm kiếm</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nút thêm mới đã bị xóa theo yêu cầu -->
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="usersTable" class="table table-hover align-middle mb-0">
+            <thead>
+                <tr style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" class="text-white">
+                    <th class="px-4 text-center" style="width: 120px;">
+                        <a href="@Url.Action("Index", "Admin", new {
+                            pageNumber = ViewBag.CurrentPageNumber,
+                            pageSize = ViewBag.CurrentPageSize,
+                            sortBy = "UserId",
+                            sortAscending = ViewBag.CurrentSortBy == "UserId" ? !ViewBag.CurrentSortAscending : false,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })" class="text-white text-decoration-none d-flex align-items-center justify-content-center">
+                            <span>ID</span>
+                            @if (ViewBag.CurrentSortBy == "UserId")
+                            {
+                                <i class="bi @(ViewBag.CurrentSortAscending ? "bi-sort-up" : "bi-sort-down") ms-1"></i>
+                            }
+                        </a>
+                    </th>
+                    <th class="px-3">
+                        <a href="@Url.Action("Index", "Admin", new {
+                            pageNumber = ViewBag.CurrentPageNumber,
+                            pageSize = ViewBag.CurrentPageSize,
+                            sortBy = "Username",
+                            sortAscending = ViewBag.CurrentSortBy == "Username" ? !ViewBag.CurrentSortAscending : false,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })" class="text-white text-decoration-none d-flex align-items-center">
+                            <span>Tên đăng nhập</span>
+                            @if (ViewBag.CurrentSortBy == "Username")
+                            {
+                                <i class="bi @(ViewBag.CurrentSortAscending ? "bi-sort-up" : "bi-sort-down") ms-1"></i>
+                            }
+                        </a>
+                    </th>
+                    <th class="px-3">
+                        <a href="@Url.Action("Index", "Admin", new {
+                            pageNumber = ViewBag.CurrentPageNumber,
+                            pageSize = ViewBag.CurrentPageSize,
+                            sortBy = "Email",
+                            sortAscending = ViewBag.CurrentSortBy == "Email" ? !ViewBag.CurrentSortAscending : false,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })" class="text-white text-decoration-none d-flex align-items-center">
+                            <span>Email</span>
+                            @if (ViewBag.CurrentSortBy == "Email")
+                            {
+                                <i class="bi @(ViewBag.CurrentSortAscending ? "bi-sort-up" : "bi-sort-down") ms-1"></i>
+                            }
+                        </a>
+                    </th>
+                    <th class="px-3 text-center">
+                        <a href="@Url.Action("Index", "Admin", new {
+                            pageNumber = ViewBag.CurrentPageNumber,
+                            pageSize = ViewBag.CurrentPageSize,
+                            sortBy = "RoleName",
+                            sortAscending = ViewBag.CurrentSortBy == "RoleName" ? !ViewBag.CurrentSortAscending : false,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })" class="text-white text-decoration-none d-flex align-items-center justify-content-center">
+                            <span>Vai trò</span>
+                            @if (ViewBag.CurrentSortBy == "RoleName")
+                            {
+                                <i class="bi @(ViewBag.CurrentSortAscending ? "bi-sort-up" : "bi-sort-down") ms-1"></i>
+                            }
+                        </a>
+                    </th>
+                    <th class="px-3 text-center">
+                        <a href="@Url.Action("Index", "Admin", new {
+                            pageNumber = ViewBag.CurrentPageNumber,
+                            pageSize = ViewBag.CurrentPageSize,
+                            sortBy = "StatusName",
+                            sortAscending = ViewBag.CurrentSortBy == "StatusName" ? !ViewBag.CurrentSortAscending : false,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })" class="text-white text-decoration-none d-flex align-items-center justify-content-center">
+                            <span>Trạng thái</span>
+                            @if (ViewBag.CurrentSortBy == "StatusName")
+                            {
+                                <i class="bi @(ViewBag.CurrentSortAscending ? "bi-sort-up" : "bi-sort-down") ms-1"></i>
+                            }
+                        </a>
+                    </th>
+                    <th class="px-3 text-center">
+                        <a href="@Url.Action("Index", "Admin", new {
+                            pageNumber = ViewBag.CurrentPageNumber,
+                            pageSize = ViewBag.CurrentPageSize,
+                            sortBy = "CreatedAt",
+                            sortAscending = ViewBag.CurrentSortBy == "CreatedAt" ? !ViewBag.CurrentSortAscending : false,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })" class="text-white text-decoration-none d-flex align-items-center justify-content-center">
+                            <span>Ngày tạo</span>
+                            @if (ViewBag.CurrentSortBy == "CreatedAt")
+                            {
+                                <i class="bi @(ViewBag.CurrentSortAscending ? "bi-sort-up" : "bi-sort-down") ms-1"></i>
+                            }
+                        </a>
+                    </th>
+                    <th class="px-3 text-center" style="width: 120px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Items.Any())
+                {
+                    foreach (var user in Model.Items)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <div class="user-id-badge">
+                                    <i class="bi bi-fingerprint me-1"></i>
+                                    <span>@user.UserId.Substring(0, Math.Min(8, user.UserId.Length))...</span>
+                                </div>
+                            </td>
+                            <td>@user.Username</td>
+                            <td>@user.Email</td>
+                            <td class="text-center">
+                                @if (user.RoleName == "Admin")
+                                {
+                                    <div class="role-badge admin">
+                                        <i class="bi bi-shield-lock me-1"></i>
+                                        <span>@user.RoleName</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="role-badge staff">
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        <span>@user.RoleName</span>
+                                    </div>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (!user.IsActive)
+                                {
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <div class="status-icon inactive me-2">
+                                            <i class="bi bi-x-circle"></i>
+                                        </div>
+                                        <span class="status-text">Không hoạt động</span>
+                                    </div>
+                                }
+                                else if (user.StatusName == "Banned")
+                                {
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <div class="status-icon banned me-2">
+                                            <i class="bi bi-slash-circle"></i>
+                                        </div>
+                                        <span class="status-text">Bị cấm</span>
+                                    </div>
+                                }
+                                else if (!string.IsNullOrEmpty(user.StatusName))
+                                {
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <div class="status-icon active me-2">
+                                            <i class="bi bi-check-circle"></i>
+                                        </div>
+                                        <span class="status-text">@user.StatusName</span>
+                                    </div>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @(user.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                            </td>
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    <a href="@Url.Action("Edit", "Admin", new { id = user.UserId })"
+                                       class="btn btn-icon btn-sm btn-primary action-btn"
+                                       data-bs-toggle="tooltip"
+                                       title="Chỉnh sửa">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <!-- Nút xem chi tiết đã bị xóa theo yêu cầu -->
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            <i class="bi bi-database-exclamation me-2"></i>Không tìm thấy người dùng
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model?.Metadata != null)
+    {
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 border-top">
+            <div class="text-muted mb-3 mb-md-0 text-center text-md-start">
+                <span class="d-none d-sm-inline">Hiển thị @((Model.Metadata.PageNumber - 1) * Model.Metadata.PageSize + 1) đến
+                @Math.Min(Model.Metadata.PageNumber * Model.Metadata.PageSize, Model.Metadata.TotalCount) trong</span>
+                <span class="fw-medium">@Model.Metadata.TotalCount</span> người dùng
+            </div>
+            <nav aria-label="Page navigation" class="d-flex justify-content-center">
+                <ul class="pagination pagination-sm mb-0 flex-wrap justify-content-center">
+                    <li class="page-item @(Model.Metadata.HasPrevious ? "" : "disabled")">
+                        <a class="page-link border-0" href="@Url.Action("Index", "Admin", new {
+                            pageNumber = Model.Metadata.PageNumber - 1,
+                            pageSize = Model.Metadata.PageSize,
+                            sortBy = ViewBag.CurrentSortBy,
+                            sortAscending = ViewBag.CurrentSortAscending,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    @{
+                        // Hiển thị tối đa 5 trang và thêm dấu "..." nếu cần
+                        const int maxPagesToShow = 5;
+                        int startPage = Math.Max(1, Model.Metadata.PageNumber - maxPagesToShow / 2);
+                        int endPage = Math.Min(Model.Metadata.TotalPages, startPage + maxPagesToShow - 1);
+
+                        // Điều chỉnh startPage nếu endPage đã đạt giới hạn
+                        startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+
+                        // Hiển thị trang đầu tiên và dấu "..." nếu cần
+                        if (startPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link border-0" href="@Url.Action("Index", "Admin", new {
+                                    pageNumber = 1,
+                                    pageSize = Model.Metadata.PageSize,
+                                    sortBy = ViewBag.CurrentSortBy,
+                                    sortAscending = ViewBag.CurrentSortAscending,
+                                    roleFilter = ViewBag.CurrentRoleFilter,
+                                    searchTerm = ViewBag.CurrentSearchTerm
+                                })">1</a>
+                            </li>
+                            if (startPage > 2)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link border-0">...</span>
+                                </li>
+                            }
+                        }
+
+                        // Hiển thị các trang chính
+                        for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == Model.Metadata.PageNumber ? "active" : "")">
+                                <a class="page-link border-0" href="@Url.Action("Index", "Admin", new {
+                                    pageNumber = i,
+                                    pageSize = Model.Metadata.PageSize,
+                                    sortBy = ViewBag.CurrentSortBy,
+                                    sortAscending = ViewBag.CurrentSortAscending,
+                                    roleFilter = ViewBag.CurrentRoleFilter,
+                                    searchTerm = ViewBag.CurrentSearchTerm
+                                })">@i</a>
+                            </li>
+                        }
+
+                        // Hiển thị dấu "..." và trang cuối cùng nếu cần
+                        if (endPage < Model.Metadata.TotalPages)
+                        {
+                            if (endPage < Model.Metadata.TotalPages - 1)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link border-0">...</span>
+                                </li>
+                            }
+                            <li class="page-item">
+                                <a class="page-link border-0" href="@Url.Action("Index", "Admin", new {
+                                    pageNumber = Model.Metadata.TotalPages,
+                                    pageSize = Model.Metadata.PageSize,
+                                    sortBy = ViewBag.CurrentSortBy,
+                                    sortAscending = ViewBag.CurrentSortAscending,
+                                    roleFilter = ViewBag.CurrentRoleFilter,
+                                    searchTerm = ViewBag.CurrentSearchTerm
+                                })">@Model.Metadata.TotalPages</a>
+                            </li>
+                        }
+                    }
+                    <li class="page-item @(Model.Metadata.HasNext ? "" : "disabled")">
+                        <a class="page-link border-0" href="@Url.Action("Index", "Admin", new {
+                            pageNumber = Model.Metadata.PageNumber + 1,
+                            pageSize = Model.Metadata.PageSize,
+                            sortBy = ViewBag.CurrentSortBy,
+                            sortAscending = ViewBag.CurrentSortAscending,
+                            roleFilter = ViewBag.CurrentRoleFilter,
+                            searchTerm = ViewBag.CurrentSearchTerm
+                        })">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        /* Search container styles */
+        .search-container {
+            background: white;
+            padding: 1rem;
+            position: relative;
+            z-index: 1000; /* Đảm bảo container nằm trên các phần tử khác */
+        }
+
+        /* Filter bar styles */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-item {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .role-filter {
+            max-width: 200px;
+        }
+
+        .search-filter {
+            flex: 2;
+            min-width: 250px;
+        }
+
+        .search-container .form-control {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .search-container .form-control:focus {
+            background-color: white;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        /* Responsive styles */
+        @@media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-item {
+                width: 100%;
+            }
+
+            .role-filter, .search-filter {
+                min-width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        #usersTable {
+            width: 100%;
+            min-width: 900px;
+            margin: 0;
+        }
+
+        #usersTable thead tr {
+            height: 50px;
+        }
+
+        #usersTable thead th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        #usersTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #usersTable tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Pagination redesign */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background-color: #f1f5f9;
+            color: #6366f1;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .page-link i {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        /* Status icons */
+        .status-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-icon.active {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-icon.inactive {
+            background-color: rgba(148, 163, 184, 0.15);
+            color: #64748b;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .status-icon.banned {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Role badges */
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .role-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .role-badge.admin {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .role-badge.staff {
+            background-color: rgba(6, 182, 212, 0.15);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        /* User ID badge */
+        .user-id-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary.action-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border: none;
+        }
+
+        .btn-info.action-btn {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border: none;
+            color: white;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Handle search button click
+            $('#searchButton').on('click', function() {
+                applyFilters();
+            });
+
+            // Handle search input enter key
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    applyFilters();
+                    return false;
+                }
+            });
+
+            // Handle role filter change
+            $('#roleFilter').on('change', function() {
+                applyFilters();
+            });
+
+            // Function to apply filters
+            function applyFilters() {
+                var searchTerm = $('#searchInput').val();
+                var roleFilter = $('#roleFilter').val();
+
+                window.location.href = '@Url.Action("Index", "Admin")' +
+                    '?pageNumber=1' +
+                    '&pageSize=@ViewBag.CurrentPageSize' +
+                    '&sortBy=@ViewBag.CurrentSortBy' +
+                    '&sortAscending=@ViewBag.CurrentSortAscending.ToString().ToLower()' +
+                    '&roleFilter=' + encodeURIComponent(roleFilter) +
+                    '&searchTerm=' + encodeURIComponent(searchTerm);
+            }
+        });
+    </script>
+}

@@ -1,12 +1,14 @@
 using Dashboard_MilkStore.Models.Customer;
 using Dashboard_MilkStore.Models.Order;
 using Dashboard_MilkStore.Models.Voucher;
+using Dashboard_MilkStore.Services.Auth;
 using Dashboard_MilkStore.Services.Customer;
 using Dashboard_MilkStore.Services.Order;
 using Dashboard_MilkStore.Services.Voucher;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,19 +22,22 @@ namespace Dashboard_MilkStore.Controllers
         private readonly ILogger<CustomerController> _logger;
         private readonly IOrderService _orderService;
         private readonly IVoucherService _voucherService;
+        private readonly IAuthService _authService;
 
         public CustomerController(
             ICustomerService customerService,
             IHttpContextAccessor httpContextAccessor,
             ILogger<CustomerController> logger,
             IOrderService orderService,
-            IVoucherService voucherService)
+            IVoucherService voucherService,
+            IAuthService authService)
         {
             _customerService = customerService;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
             _orderService = orderService;
             _voucherService = voucherService;
+            _authService = authService;
         }
 
         public async Task<IActionResult> Index(
@@ -185,6 +190,12 @@ namespace Dashboard_MilkStore.Controllers
 
             try
             {
+                // Kiểm tra vai trò của người dùng
+                string role = _authService.GetRoleFromToken(token);
+                bool isAdmin = role == "d3f3c3b3-5b5b-4b4b-9b9b-7b7b7b7b7b7b"; // ID của Admin
+                bool isStaff = role == "f5f5d5c5-7d7d-4d4d-9d9d-9d9d9d9d9d9d"; // ID của Staff
+                string password = Request.Form["Password"];
+
                 // Xử lý ảnh base64 nếu có
                 if (Request.Form.Files.Count > 0)
                 {
@@ -207,15 +218,57 @@ namespace Dashboard_MilkStore.Controllers
                 // Xử lý checkbox IsActive
                 model.IsActive = Request.Form.Keys.Contains("IsActive");
 
-                // Cập nhật thông tin khách hàng
-                var response = await _customerService.UpdateCustomerDetailAsync(id, model, token);
-                if (response.Success)
+                // Nếu là admin, luôn sử dụng API của Admin để đảm bảo cập nhật được coupon
+                if (isAdmin)
                 {
-                    TempData["SuccessMessage"] = "Cập nhật thông tin khách hàng thành công";
+                    // Tạo model cho API Admin
+                    var adminModel = new Dashboard_MilkStore.Models.Admin.UpdateCustomerAdminViewModel
+                    {
+                        CustomerId = model.CustomerId,
+                        Username = model.Username,
+                        Email = model.Email,
+                        Password = password, // Có thể rỗng nếu không thay đổi mật khẩu
+                        Surname = model.Surname,
+                        Middlename = model.Middlename,
+                        Firstname = model.Firstname,
+                        PhoneNumber = model.PhoneNumber,
+                        Address = model.Address,
+                        Avatar = model.Avatar,
+                        AvatarBase64 = model.AvatarBase64,
+                        Dob = model.Dob,
+                        Gender = model.Gender,
+                        Coupoun = model.Coupoun,
+                        IsActive = model.IsActive,
+                        StatusId = model.StatusId,
+                        CreatedAt = model.CreatedAt,
+                        UpdatedAt = model.UpdatedAt
+                    };
+
+                    // Gọi API Admin để cập nhật
+                    var adminService = HttpContext.RequestServices.GetService<Dashboard_MilkStore.Services.Admin.IAdminService>();
+                    var response = await adminService.UpdateCustomerFullAsync(id, adminModel, token);
+
+                    if (response.Success)
+                    {
+                        TempData["SuccessMessage"] = "Cập nhật thông tin khách hàng thành công";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = response.Message ?? "Không thể cập nhật thông tin khách hàng";
+                    }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = response.Message ?? "Không thể cập nhật thông tin khách hàng";
+                    // Cập nhật thông tin khách hàng bằng API thông thường
+                    var response = await _customerService.UpdateCustomerDetailAsync(id, model, token);
+                    if (response.Success)
+                    {
+                        TempData["SuccessMessage"] = "Cập nhật thông tin khách hàng thành công";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = response.Message ?? "Không thể cập nhật thông tin khách hàng";
+                    }
                 }
 
                 return RedirectToAction(nameof(Details), new { id });

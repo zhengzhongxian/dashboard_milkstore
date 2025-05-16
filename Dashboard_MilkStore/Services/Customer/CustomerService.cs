@@ -136,7 +136,8 @@ namespace Dashboard_MilkStore.Services.Customer
                     Address = viewModel.Address,
                     AvatarBase64 = viewModel.AvatarBase64,
                     Dob = viewModel.Dob,
-                    Gender = viewModel.Gender
+                    Gender = viewModel.Gender,
+                    Coupoun = viewModel.Coupoun
                 };
 
                 var url = $"{_baseUrl}/api/Customer/{customerId}/detail";

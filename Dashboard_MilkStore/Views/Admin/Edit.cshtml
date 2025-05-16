@@ -1,0 +1,282 @@
+@model Dashboard_MilkStore.Models.Admin.UpdateAdminViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin người dùng";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center header-custom mb-4">
+        <div class="d-flex align-items-center">
+            <div class="header-icon">
+                <i class="bi bi-person-gear fs-4 text-white"></i>
+            </div>
+            <div>
+                <h5 class="mb-0 text-white fw-semibold">Chỉnh sửa thông tin người dùng</h5>
+                <p class="text-white-50 mb-0 small">Cập nhật thông tin người dùng #@Model.UserId</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Admin", new {
+            pageNumber = ViewBag.CurrentPageNumber,
+            pageSize = ViewBag.CurrentPageSize,
+            sortBy = ViewBag.CurrentSortBy,
+            sortAscending = ViewBag.CurrentSortAscending,
+            roleFilter = ViewBag.CurrentRoleFilter,
+            searchTerm = ViewBag.CurrentSearchTerm
+        })" class="btn btn-sm btn-light rounded-pill shadow-sm px-3 action-button">
+            <i class="bi bi-arrow-left me-1 text-primary"></i>
+            <span class="text-primary small fw-medium">Quay lại</span>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="UserId" />
+
+                        <!-- Thông tin tài khoản -->
+                        <div class="mb-4 pb-3 border-bottom">
+                            <h5 class="mb-3 d-flex align-items-center section-title">
+                                <i class="bi bi-person-lines-fill me-2 text-primary"></i>
+                                Thông tin tài khoản
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="Username" class="form-label">Tên đăng nhập</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        <input asp-for="Username" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Username" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Email" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input asp-for="Email" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Password" class="form-label">Mật khẩu mới</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                        <input asp-for="Password" type="password" class="form-control" id="passwordInput" placeholder="Để trống nếu không thay đổi" />
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Để trống nếu không muốn thay đổi mật khẩu</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vai trò và trạng thái -->
+                        <div class="mb-4 pb-3 border-bottom">
+                            <h5 class="mb-3 d-flex align-items-center section-title">
+                                <i class="bi bi-shield-lock me-2 text-primary"></i>
+                                Vai trò và trạng thái
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="RoleId" class="form-label">Vai trò</label>
+                                    <select asp-for="RoleId" class="form-select">
+                                        @foreach (var role in Model.Roles.Where(r => r.RoleName == "Admin" || r.RoleName == "Staff"))
+                                        {
+                                            <option value="@role.RoleId">@role.RoleName</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="RoleId" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="StatusId" class="form-label">Trạng thái</label>
+                                    <select asp-for="StatusId" class="form-select">
+                                        @foreach (var status in Model.UserStatuses)
+                                        {
+                                            <option value="@status.StatusId">@status.Name</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="StatusId" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between border rounded-3 px-3 py-2 mt-4">
+                            <label class="form-check-label mb-0" for="isActive">Trạng thái hoạt động</label>
+                            <div class="form-check form-switch">
+                                <input type="checkbox" class="form-check-input" id="isActive" name="IsActive" @(Model.IsActive ? "checked" : "")>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <a href="@Url.Action("Index", "Admin", new {
+                                pageNumber = ViewBag.CurrentPageNumber,
+                                pageSize = ViewBag.CurrentPageSize,
+                                sortBy = ViewBag.CurrentSortBy,
+                                sortAscending = ViewBag.CurrentSortAscending,
+                                roleFilter = ViewBag.CurrentRoleFilter,
+                                searchTerm = ViewBag.CurrentSearchTerm
+                            })" class="btn btn-light me-2">
+                                <i class="bi bi-x-circle me-1"></i>Hủy
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle me-1"></i>Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Header custom styles */
+        .header-custom {
+            transition: all 0.3s ease;
+            border-left: 7px solid #4338ca;
+            border-top-left-radius: 15px !important;
+            border-bottom-left-radius: 15px !important;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-custom:hover {
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.15)!important;
+        }
+
+        .header-icon {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .action-button {
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 .25rem .5rem rgba(0,0,0,.1)!important;
+        }
+
+        /* Form styles */
+        .form-label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .form-control, .form-select {
+            padding: 0.5rem 0.75rem;
+            border-color: #e5e7eb;
+            border-radius: 0.375rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+
+        .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .form-switch .form-check-input {
+            width: 2.5em;
+            height: 1.25em;
+        }
+
+        .form-check-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .btn-primary:hover {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .btn-light {
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+        }
+
+        .btn-light:hover {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        /* Section title */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .section-title i {
+            background-color: rgba(99, 102, 241, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        /* Input group styling */
+        .input-group {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 0.125rem 0.25rem rgba(99, 102, 241, 0.03);
+        }
+
+        .input-group-text {
+            background-color: #f8fafc;
+            border-color: #e5e7eb;
+            color: #6366f1;
+        }
+
+        .input-group .form-control {
+            border-left: 0;
+        }
+
+        /* Border styling */
+        .border-bottom {
+            border-bottom: 1.5px solid #e5e7eb !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Toggle password visibility
+            $('#togglePassword').on('click', function() {
+                const passwordInput = $('#passwordInput');
+                const icon = $(this).find('i');
+
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    icon.removeClass('bi-eye').addClass('bi-eye-slash');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    icon.removeClass('bi-eye-slash').addClass('bi-eye');
+                }
+            });
+        });
+    </script>
+}

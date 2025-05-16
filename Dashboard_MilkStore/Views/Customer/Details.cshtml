@@ -1,7 +1,12 @@
 @model Dashboard_MilkStore.Models.Customer.CustomerDetailViewModel
+@inject Dashboard_MilkStore.Services.Auth.IAuthService AuthService
 @{
     ViewData["Title"] = "Chi tiết khách hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var token = Context.Session.GetString("Token");
+    string role = AuthService.GetRoleFromToken(token);
+    bool isAdmin = role == "d3f3c3b3-5b5b-4b4b-9b9b-7b7b7b7b7b7b"; // ID của Admin
+    bool isStaff = role == "f5f5d5c5-7d7d-4d4d-9d9d-9d9d9d9d9d9d"; // ID của Staff
 }
 
 
@@ -58,6 +63,7 @@
                                     <i class="bi bi-gift me-1"></i>
                                     @(Model.Coupoun ?? 0) điểm
                                 </span>
+                                <!-- Đã loại bỏ nút chỉnh sửa coupon ở đây -->
                             </div>
                         </div>
 
@@ -122,6 +128,20 @@
                                     </div>
                                     <span asp-validation-for="Email" class="text-danger small"></span>
                                 </div>
+                                @if (isAdmin)
+                                {
+                                    <div class="col-md-6">
+                                        <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                            <input type="password" id="newPassword" name="Password" class="form-control" placeholder="Để trống nếu không thay đổi" />
+                                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <small class="form-text text-muted">Để trống nếu không muốn thay đổi mật khẩu</small>
+                                    </div>
+                                }
                             </div>
                         </div>
 
@@ -165,6 +185,17 @@
                                     </div>
                                     <span asp-validation-for="Dob" class="text-danger small"></span>
                                 </div>
+                                @if (isAdmin)
+                                {
+                                    <div class="col-md-6">
+                                        <label asp-for="Coupoun" class="form-label">Điểm tích lũy</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-gift"></i></span>
+                                            <input asp-for="Coupoun" class="form-control" />
+                                        </div>
+                                        <small class="form-text text-muted">Điểm tích lũy sẽ được lưu khi nhấn nút "Lưu thay đổi"</small>
+                                    </div>
+                                }
                             </div>
                             <div class="mt-2">
                                 <label asp-for="Address" class="form-label"></label>
@@ -214,27 +245,34 @@
                                     </select>
                                     <span asp-validation-for="StatusId" class="text-danger small"></span>
                                 </div>
-                                <div class="col-md-4">
-                                    <label asp-for="RoleId" class="form-label">Vai trò</label>
-                                    <select asp-for="RoleId" class="form-select">
-                                        <option value="">-- Chọn vai trò --</option>
-                                        @if (Model.Roles != null)
-                                        {
-                                            foreach (var role in Model.Roles)
+                                @if (!isStaff)
+                                {
+                                    <div class="col-md-4">
+                                        <label asp-for="RoleId" class="form-label">Vai trò</label>
+                                        <select asp-for="RoleId" class="form-select">
+                                            <option value="">-- Chọn vai trò --</option>
+                                            @if (Model.Roles != null)
                                             {
-                                                if (role.RoleId.Trim() == Model.RoleId.Trim())
+                                                foreach (var roleItem in Model.Roles)
                                                 {
-                                                    <option value="@role.RoleId" selected="selected">@role.RoleName</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="@role.RoleId">@role.RoleName</option>
+                                                    if (roleItem.RoleId.Trim() == Model.RoleId.Trim())
+                                                    {
+                                                        <option value="@roleItem.RoleId" selected="selected">@roleItem.RoleName</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@roleItem.RoleId">@roleItem.RoleName</option>
+                                                    }
                                                 }
                                             }
-                                        }
-                                    </select>
-                                    <span asp-validation-for="RoleId" class="text-danger small"></span>
-                                </div>
+                                        </select>
+                                        <span asp-validation-for="RoleId" class="text-danger small"></span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <input type="hidden" asp-for="RoleId" />
+                                }
                             </div>
                             <div class="d-flex align-items-center justify-content-between border rounded-3 px-3 py-2 mt-4">
                                 <label class="form-check-label mb-0" for="isActive">Trạng thái hoạt động</label>
@@ -268,6 +306,8 @@
         </div>
     </div>
 </div>
+
+<!-- Đã loại bỏ modal chỉnh sửa điểm tích lũy -->
 
 @section Styles {
     <style>
@@ -620,6 +660,20 @@
                 function() { $(this).addClass('border-primary'); },
                 function() { $(this).removeClass('border-primary'); }
             );
+
+            // Toggle password visibility
+            $('#togglePassword').on('click', function() {
+                const passwordInput = $('#newPassword');
+                const icon = $(this).find('i');
+
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    icon.removeClass('bi-eye').addClass('bi-eye-slash');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    icon.removeClass('bi-eye-slash').addClass('bi-eye');
+                }
+            });
         });
     </script>
 }
