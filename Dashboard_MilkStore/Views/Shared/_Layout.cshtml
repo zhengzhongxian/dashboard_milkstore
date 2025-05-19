@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Dashboard_MilkStore.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/super-responsive.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
 
     <style>
@@ -1212,6 +1213,9 @@
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header d-flex justify-content-between align-items-center">
@@ -1338,31 +1342,10 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inventory" ? "active" : "")"
-                                   href="@Url.Action("Index", "Inventory")">
-                                    <i class="bi bi-box-seam"></i>
-                                    <span>Kho hàng</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Voucher" ? "active" : "")"
                                    href="@Url.Action("Index", "Voucher")">
                                     <i class="bi bi-ticket-perforated"></i>
                                     <span>Voucher</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Report" ? "active" : "")"
-                                   href="@Url.Action("Index", "Report")">
-                                    <i class="bi bi-graph-up"></i>
-                                    <span>Báo cáo</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Privacy" ? "active" : "")"
-                                   href="@Url.Action("Index", "Privacy")">
-                                    <i class="bi bi-shield-check"></i>
-                                    <span>Bảo mật</span>
                                 </a>
                             </li>
                         </ul>
@@ -1591,6 +1574,7 @@
 
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
 
             // Check if sidebar is collapsed
             if (sidebar.classList.contains('collapsed')) {
@@ -1603,15 +1587,42 @@
                 // Update buttons state
                 updateButtonsState(false);
 
-                // Adjust main content
-                mainContent.style.marginLeft = '280px';
-                mainContent.style.maxWidth = 'calc(100% - 280px)';
+                // Show overlay on mobile
+                if (window.innerWidth < 992) {
+                    overlay.classList.add('active');
+                }
+
+                // Adjust main content based on screen size
+                if (window.innerWidth < 992) {
+                    // Use transform for better performance on mobile
+                    if (window.innerWidth < 576) {
+                        mainContent.style.transform = 'translateX(85%)';
+                    } else if (window.innerWidth < 768) {
+                        mainContent.style.transform = 'translateX(85%)';
+                    } else {
+                        mainContent.style.transform = 'translateX(280px)';
+                    }
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    // For desktop
+                    mainContent.style.transform = 'translateX(0)';
+                    mainContent.style.marginLeft = '280px';
+                    mainContent.style.maxWidth = 'calc(100% - 280px)';
+                }
 
                 console.log('Sidebar expanded via toggle button');
             } else {
                 // On mobile, toggle active class
                 sidebar.classList.toggle('active');
                 mainContent.classList.toggle('active');
+
+                // Toggle overlay
+                if (sidebar.classList.contains('active') && window.innerWidth < 992) {
+                    overlay.classList.add('active');
+                } else {
+                    overlay.classList.remove('active');
+                }
+
                 console.log('Sidebar toggled on mobile');
             }
         });
@@ -1654,6 +1665,7 @@
 
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
 
             // Toggle collapsed class
             sidebar.classList.toggle('collapsed');
@@ -1665,6 +1677,9 @@
             // Update buttons state
             updateButtonsState(isCollapsed);
 
+            // Toggle overlay
+            overlay.classList.remove('active');
+
             // Log for debugging
             console.log('Sidebar collapse button clicked. Collapsed:', isCollapsed);
 
@@ -1673,11 +1688,26 @@
 
             // Adjust main content
             if (isCollapsed) {
+                mainContent.style.transform = 'translateX(0)';
                 mainContent.style.marginLeft = '0';
                 mainContent.style.maxWidth = '100%';
             } else {
-                mainContent.style.marginLeft = '280px';
-                mainContent.style.maxWidth = 'calc(100% - 280px)';
+                if (window.innerWidth < 992) {
+                    // Use transform for better performance on mobile
+                    if (window.innerWidth < 576) {
+                        mainContent.style.transform = 'translateX(85%)';
+                    } else if (window.innerWidth < 768) {
+                        mainContent.style.transform = 'translateX(85%)';
+                    } else {
+                        mainContent.style.transform = 'translateX(280px)';
+                    }
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    // For desktop
+                    mainContent.style.transform = 'translateX(0)';
+                    mainContent.style.marginLeft = '280px';
+                    mainContent.style.maxWidth = 'calc(100% - 280px)';
+                }
             }
         });
 
@@ -1686,6 +1716,7 @@
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            const overlay = document.getElementById('sidebarOverlay');
 
             console.log('DOMContentLoaded - Sidebar collapsed state:', isCollapsed);
 
@@ -1693,6 +1724,7 @@
                 sidebar.classList.add('collapsed');
 
                 // Adjust main content
+                mainContent.style.transform = 'translateX(0)';
                 mainContent.style.marginLeft = '0';
                 mainContent.style.maxWidth = '100%';
 
@@ -1701,19 +1733,69 @@
             } else {
                 sidebar.classList.remove('collapsed');
 
-                // Adjust main content
-                mainContent.style.marginLeft = '280px';
-                mainContent.style.maxWidth = 'calc(100% - 280px)';
-
-                // Update buttons
-                updateButtonsState(false);
+                // Adjust main content based on screen size
+                if (window.innerWidth < 992) {
+                    // On mobile, collapse sidebar by default regardless of previous state
+                    sidebar.classList.add('collapsed');
+                    mainContent.style.transform = 'translateX(0)';
+                    mainContent.style.marginLeft = '0';
+                    mainContent.style.maxWidth = '100%';
+                    updateButtonsState(true);
+                    localStorage.setItem('sidebarCollapsed', 'true');
+                } else {
+                    // For desktop
+                    mainContent.style.transform = 'translateX(0)';
+                    mainContent.style.marginLeft = '280px';
+                    mainContent.style.maxWidth = 'calc(100% - 280px)';
+                    updateButtonsState(false);
+                }
             }
 
             // Add a small delay to ensure transitions work properly after page load
             setTimeout(function() {
                 sidebar.style.transition = 'all 0.3s ease';
-                mainContent.style.transition = 'all 0.3s ease';
+                mainContent.style.transition = 'all 0.3s ease, transform 0.3s ease';
+                overlay.style.transition = 'opacity 0.3s ease';
             }, 100);
+
+            // Add click event to overlay to close sidebar
+            overlay.addEventListener('click', function() {
+                if (!sidebar.classList.contains('collapsed')) {
+                    // Collapse sidebar
+                    sidebar.classList.add('collapsed');
+                    localStorage.setItem('sidebarCollapsed', 'true');
+                    updateButtonsState(true);
+
+                    // Hide overlay
+                    overlay.classList.remove('active');
+
+                    // Reset main content
+                    mainContent.style.transform = 'translateX(0)';
+                    mainContent.style.marginLeft = '0';
+                    mainContent.style.maxWidth = '100%';
+                }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                // If on mobile and sidebar is open, adjust content position
+                if (window.innerWidth < 992 && !sidebar.classList.contains('collapsed')) {
+                    if (window.innerWidth < 576) {
+                        mainContent.style.transform = 'translateX(85%)';
+                    } else if (window.innerWidth < 768) {
+                        mainContent.style.transform = 'translateX(85%)';
+                    } else {
+                        mainContent.style.transform = 'translateX(280px)';
+                    }
+                    mainContent.style.marginLeft = '0';
+                } else if (window.innerWidth >= 992 && !sidebar.classList.contains('collapsed')) {
+                    // On desktop with sidebar open
+                    mainContent.style.transform = 'translateX(0)';
+                    mainContent.style.marginLeft = '280px';
+                    mainContent.style.maxWidth = 'calc(100% - 280px)';
+                    overlay.classList.remove('active');
+                }
+            });
         });
 
 

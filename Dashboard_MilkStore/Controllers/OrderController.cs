@@ -207,7 +207,56 @@ namespace Dashboard_MilkStore.Controllers
                 var userRole = _authService.GetRoleFromToken(token);
                 bool isAdmin = userRole == "d3f3c3b3-5b5b-4b4b-9b9b-7b7b7b7b7b7b";
 
-                // Use different endpoints based on user role
+                // Lấy thông tin đơn hàng hiện tại
+                var currentOrder = await _orderService.GetOrderByIdAsync(orderId);
+                if (currentOrder == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy đơn hàng";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Kiểm tra quy trình cập nhật trạng thái
+                bool isValidStatusChange = false;
+
+                // Xác định các trạng thái hợp lệ dựa trên trạng thái hiện tại
+                var validNextStatuses = new List<string>();
+
+                switch (currentOrder.StatusId)
+                {
+                    case "PENDING":
+                        validNextStatuses.Add("CONFIRMED");
+                        validNextStatuses.Add("CANCELLED");
+                        break;
+                    case "CONFIRMED":
+                        validNextStatuses.Add("PROCESSING");
+                        validNextStatuses.Add("CANCELLED");
+                        break;
+                    case "PROCESSING":
+                        validNextStatuses.Add("SHIPPING");
+                        break;
+                    case "SHIPPING":
+                        validNextStatuses.Add("COMPLETED");
+                        break;
+                    case "COMPLETED":
+                    case "CANCELLED":
+                        // Không có trạng thái hợp lệ tiếp theo
+                        break;
+                }
+
+                // Kiểm tra nếu trạng thái mới nằm trong danh sách trạng thái hợp lệ
+                isValidStatusChange = validNextStatuses.Contains(statusId);
+
+                // Admin cũng tuân theo quy trình cập nhật trạng thái giống như staff
+                // Không cần thêm logic riêng cho admin vì cả admin và staff đều sử dụng cùng một quy trình
+
+                // Nếu không phải là cập nhật hợp lệ
+                if (!isValidStatusChange)
+                {
+                    TempData["ErrorMessage"] = "Không thể cập nhật trạng thái đơn hàng theo cách này";
+                    return RedirectToAction(nameof(Details), new { id = orderId });
+                }
+
+                // Sử dụng endpoint phù hợp dựa trên vai trò người dùng
                 var result = isAdmin
                     ? await _orderService.AdminUpdateOrderStatusAsync(orderId, statusId)
                     : await _orderService.UpdateOrderStatusAsync(orderId, statusId);

@@ -1,0 +1,422 @@
+/* Responsive CSS cho tất cả các dòng iPhone từ iPhone 4 đến iPhone 16 Pro Max */
+
+/* iPhone 4, 4S, 5, 5S, 5C, SE (1st gen) - Width: 320px */
+@media only screen and (min-width: 320px) and (max-width: 374px) {
+  /* Dashboard Header */
+  .dashboard-header {
+    padding: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .dashboard-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.7rem;
+  }
+
+  /* Statistic Cards */
+  .equal-height-cards > div {
+    padding: 0 5px;
+    margin-bottom: 8px;
+  }
+
+  .stat-card {
+    min-height: 80px;
+  }
+
+  .stat-card-inner {
+    padding: 8px;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .stat-icon {
+    font-size: 16px;
+    top: 8px;
+    right: 8px;
+  }
+
+  /* Chart Container */
+  .chart-container {
+    min-height: 150px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .chart-title {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+
+  /* Statistic Title */
+  .statistic-title {
+    gap: 8px;
+    margin-bottom: 1rem;
+    padding-left: 5px;
+  }
+
+  .statistic-icon {
+    font-size: 1.2rem;
+    width: 25px;
+    height: 25px;
+  }
+
+  .statistic-main {
+    font-size: 1rem;
+  }
+
+  .statistic-sub {
+    font-size: 1rem;
+  }
+
+  /* Product Details */
+  .product-details {
+    max-height: 150px;
+  }
+
+  .product-sales-info {
+    padding: 8px;
+    max-height: 150px;
+  }
+
+  .product-item {
+    padding: 4px;
+    margin-bottom: 5px;
+  }
+
+  .product-image {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+  }
+
+  .product-name {
+    font-size: 0.75rem;
+  }
+
+  .product-stats {
+    font-size: 0.65rem;
+  }
+
+  /* Back Button */
+  .back-to-revenue {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+/* iPhone 6, 6S, 7, 8, SE (2nd gen) - Width: 375px */
+@media only screen and (min-width: 375px) and (max-width: 413px) {
+  /* Dashboard Header */
+  .dashboard-header {
+    padding: 0.6rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .dashboard-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+    margin-right: 0.6rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.75rem;
+  }
+
+  /* Statistic Cards */
+  .equal-height-cards > div {
+    padding: 0 5px;
+    margin-bottom: 10px;
+  }
+
+  .stat-card {
+    min-height: 90px;
+  }
+
+  .stat-card-inner {
+    padding: 10px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  /* Chart Container */
+  .chart-container {
+    min-height: 180px;
+    padding: 12px;
+  }
+
+  .chart-title {
+    font-size: 0.85rem;
+  }
+
+  /* Statistic Title */
+  .statistic-main {
+    font-size: 1.1rem;
+  }
+
+  .statistic-sub {
+    font-size: 1.1rem;
+  }
+}
+
+/* iPhone 6+, 6S+, 7+, 8+, X, XS, 11 Pro, 12 mini, 13 mini - Width: 414px-428px */
+@media only screen and (min-width: 414px) and (max-width: 428px) {
+  /* Dashboard Header */
+  .dashboard-header {
+    padding: 0.7rem;
+  }
+
+  .dashboard-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.8rem;
+  }
+
+  /* Statistic Cards */
+  .stat-card {
+    min-height: 95px;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  /* Chart Container */
+  .chart-container {
+    min-height: 200px;
+  }
+
+  .chart-title {
+    font-size: 0.9rem;
+  }
+}
+
+/* iPhone XR, 11, 12, 12 Pro, 13, 13 Pro, 14, 14 Pro - Width: 390px-430px */
+@media only screen and (min-width: 390px) and (max-width: 430px) {
+  /* Các điều chỉnh đặc biệt cho iPhone với notch */
+  .chart-container canvas {
+    max-height: 220px;
+  }
+}
+
+/* iPhone 12 Pro Max, 13 Pro Max, 14 Plus, 14 Pro Max, 15, 15 Pro, 15 Pro Max, 16, 16 Pro, 16 Pro Max - Width: 428px-430px */
+@media only screen and (min-width: 428px) and (max-width: 430px) {
+  /* Các điều chỉnh đặc biệt cho iPhone màn hình lớn */
+  .chart-container canvas {
+    max-height: 250px;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+  }
+}
+
+/* Điều chỉnh cho tất cả các iPhone trong chế độ landscape */
+@media only screen and (max-height: 428px) and (orientation: landscape) {
+  .equal-height-cards {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+  }
+
+  .equal-height-cards > div {
+    min-width: 200px;
+    margin-right: 10px;
+  }
+
+  .chart-container {
+    min-height: 120px;
+  }
+
+  .chart-container canvas {
+    max-height: 120px;
+  }
+
+  .dashboard-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .row {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Điều chỉnh cho thống kê thời gian thực trong chế độ landscape */
+  .realtime-stats-container {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .mini-stat-item {
+    min-width: 180px;
+    flex: 0 0 auto;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: none;
+  }
+
+  .realtime-stats-header {
+    padding: 6px 10px;
+  }
+
+  .realtime-header-title {
+    font-size: 0.9rem;
+  }
+
+  .realtime-header-subtitle {
+    font-size: 0.65rem;
+  }
+
+  .mini-stat-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .mini-stat-value {
+    font-size: 1rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.65rem;
+  }
+}
+
+/* Điều chỉnh chung cho tất cả các iPhone */
+@media only screen and (max-width: 430px) {
+  /* Đảm bảo các phần tử không bị tràn */
+  .container-fluid {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* Giảm khoảng cách giữa các hàng */
+  .row {
+    margin-bottom: 10px;
+  }
+
+  /* Đảm bảo biểu đồ hiển thị đúng */
+  canvas {
+    width: 100% !important;
+  }
+
+  /* Điều chỉnh kích thước font cho các phần tử */
+  .card-header {
+    padding: 0.5rem;
+  }
+
+  .card-body {
+    padding: 0.5rem;
+  }
+
+  /* Điều chỉnh cho thống kê thời gian thực */
+  .realtime-stats-card {
+    margin-bottom: 12px;
+  }
+
+  .realtime-stats-header {
+    padding: 8px 10px;
+  }
+
+  .realtime-stats-container {
+    flex-wrap: wrap;
+  }
+
+  .mini-stat-item {
+    flex: 1 0 50%;
+    min-width: 0;
+    padding: 8px 10px;
+  }
+
+  .mini-stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .mini-stat-value {
+    font-size: 1.1rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Điều chỉnh cho iPhone SE, 5, 5S */
+@media only screen and (max-width: 320px) {
+  .mini-stat-item {
+    flex: 1 0 100%;
+    padding: 6px 8px;
+  }
+
+  .mini-stat-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    margin-right: 6px;
+  }
+
+  .mini-stat-value {
+    font-size: 1rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.65rem;
+  }
+
+  .realtime-header-title {
+    font-size: 0.8rem;
+  }
+
+  .realtime-header-subtitle {
+    font-size: 0.6rem;
+  }
+
+  .realtime-header-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}

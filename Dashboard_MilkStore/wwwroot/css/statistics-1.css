@@ -564,3 +564,387 @@ canvas {
     display: none;
   }
 }
+
+/* CSS cho thẻ thống kê thời gian thực */
+.realtime-stats-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.realtime-stats-header {
+  background: linear-gradient(135deg, #7367f0, #a66de9);
+  padding: 12px 15px;
+  border: none;
+}
+
+.realtime-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: white;
+  font-size: 16px;
+}
+
+.realtime-header-title {
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.realtime-header-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.realtime-stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  background-color: #f8f9fa;
+}
+
+.mini-stat-item {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: white;
+  transition: all 0.3s ease;
+}
+
+.mini-stat-item:last-child {
+  border-right: none;
+}
+
+.mini-stat-item:hover {
+  background-color: #f8f9fa;
+}
+
+.mini-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: var(--stat-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: white;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.mini-stat-item:hover .mini-stat-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.mini-stat-info {
+  flex: 1;
+}
+
+.mini-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #2d3436;
+  line-height: 1.2;
+}
+
+.mini-stat-label {
+  font-size: 0.8rem;
+  color: #636e72;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Hiệu ứng khi cập nhật giá trị */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.value-updated {
+  animation: pulse 0.5s ease;
+  color: var(--stat-color);
+}
+
+/* Responsive cho thống kê thời gian thực */
+@media (max-width: 992px) {
+  .mini-stat-item {
+    flex: 1 0 50%;
+  }
+
+  .stat-card {
+    min-height: 90px;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .equal-height-cards > div {
+    width: 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .stat-card {
+    min-height: 80px;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  .mini-stat-value {
+    font-size: 1.3rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .mini-stat-item {
+    flex: 1 0 100%;
+    border-right: none;
+    padding: 10px 15px;
+  }
+
+  .realtime-stats-container {
+    flex-direction: column;
+  }
+
+  .mini-stat-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+
+  .mini-stat-value {
+    font-size: 1.2rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.7rem;
+  }
+
+  .realtime-header-title {
+    font-size: 0.9rem;
+  }
+
+  .realtime-header-subtitle {
+    font-size: 0.65rem;
+  }
+
+  .realtime-header-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+}
+
+/* Thêm media query cho iPhone và màn hình nhỏ */
+@media (max-width: 414px) {
+  .equal-height-cards > div {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0 5px;
+    margin-bottom: 10px;
+  }
+
+  .stat-card {
+    min-height: 70px;
+    padding: 8px;
+  }
+
+  .stat-card-inner {
+    padding: 8px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .stat-icon {
+    font-size: 18px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .mini-stat-item {
+    padding: 8px 10px;
+  }
+
+  .mini-stat-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+
+  .mini-stat-value {
+    font-size: 1.1rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.65rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .dashboard-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  .realtime-stats-card {
+    margin-bottom: 15px;
+  }
+
+  .realtime-stats-header {
+    padding: 8px 10px;
+  }
+
+  .chart-container {
+    min-height: 250px;
+    padding: 10px;
+  }
+
+  .chart-title {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+}
+
+/* Media query cho iPhone cực nhỏ (iPhone SE, iPhone 5/5S) */
+@media (max-width: 320px) {
+  .equal-height-cards > div {
+    margin-bottom: 8px;
+  }
+
+  .stat-card {
+    min-height: 60px;
+    padding: 5px;
+  }
+
+  .stat-card-inner {
+    padding: 5px;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+    margin-bottom: 1px;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+  }
+
+  .stat-icon {
+    font-size: 16px;
+    top: 5px;
+    right: 5px;
+  }
+
+  .mini-stat-item {
+    padding: 6px 8px;
+  }
+
+  .mini-stat-icon {
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+    margin-right: 6px;
+  }
+
+  .mini-stat-value {
+    font-size: 0.9rem;
+  }
+
+  .mini-stat-label {
+    font-size: 0.6rem;
+  }
+
+  .dashboard-title {
+    font-size: 1rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.6rem;
+  }
+
+  .dashboard-icon {
+    width: 25px;
+    height: 25px;
+    font-size: 0.9rem;
+    margin-right: 8px;
+  }
+
+  .realtime-header-title {
+    font-size: 0.8rem;
+  }
+
+  .realtime-header-subtitle {
+    font-size: 0.6rem;
+  }
+
+  .realtime-header-icon {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+
+  .chart-container {
+    min-height: 200px;
+    padding: 8px;
+  }
+
+  .chart-title {
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+  }
+}

@@ -708,6 +708,28 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th>Trạng thái thanh toán</th>
+                                    <td>
+                                        @{
+                                            string paymentBadgeClass = Model.IsSuccess == true
+                                                ? "bg-success bg-opacity-10 text-success"
+                                                : "bg-secondary bg-opacity-10 text-secondary";
+
+                                            string paymentStatusText = Model.IsSuccess == true
+                                                ? "Đã thanh toán"
+                                                : "Chưa thanh toán";
+
+                                            string paymentStatusIcon = Model.IsSuccess == true
+                                                ? "bi-check-circle-fill"
+                                                : "bi-clock-history";
+                                        }
+                                        <span class="status-badge @paymentBadgeClass">
+                                            <i class="bi @paymentStatusIcon"></i>
+                                            @paymentStatusText
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>Mã khách hàng</th>
                                     <td>@(Model.CustomerId ?? "-")</td>
                                 </tr>
@@ -913,26 +935,7 @@
                             <option value="">-- Chọn trạng thái --</option>
                             @if (ViewBag.OrderStatuses != null)
                             {
-                                if (ViewBag.IsAdmin)
                                 {
-                                    // Admin có thể chọn bất kỳ trạng thái nào
-                                    foreach (var status in ViewBag.OrderStatuses)
-                                    {
-                                        bool isCurrentStatus = status.StatusId == Model.StatusId;
-
-                                        if (isCurrentStatus)
-                                        {
-                                            <option value="@status.StatusId" selected>@status.Name (Hiện tại)</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@status.StatusId">@status.Name</option>
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    // Staff chỉ có thể chọn theo quy trình
                                     // Xác định các trạng thái hợp lệ dựa trên trạng thái hiện tại
                                     var validNextStatuses = new List<string>();
 
@@ -957,6 +960,9 @@
                                             // Không có trạng thái hợp lệ tiếp theo
                                             break;
                                     }
+
+                                    // Admin cũng tuân theo quy trình cập nhật trạng thái giống như staff
+                                    // Không cần thêm logic riêng cho admin vì cả admin và staff đều sử dụng cùng một quy trình
 
                                     foreach (var status in ViewBag.OrderStatuses)
                                     {
@@ -987,37 +993,26 @@
                         <strong>Lưu ý:</strong> Việc thay đổi trạng thái đơn hàng sẽ được ghi nhận và không thể hoàn tác.
                     </div>
 
-                    @if (ViewBag.IsAdmin)
+                    @if (Model.StatusId == "COMPLETED" || Model.StatusId == "CANCELLED")
                     {
-                        <div class="alert admin-status-alert">
-                            <i class="bi bi-shield-fill-check me-2"></i>
-                            <strong>Chế độ Admin:</strong> Bạn có thể cập nhật đơn hàng sang bất kỳ trạng thái nào, bao gồm cả đơn hàng đã hoàn thành hoặc đã hủy.
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Không thể cập nhật trạng thái đơn hàng đã hoàn thành hoặc đã hủy.
                         </div>
                     }
-                    else
-                    {
-                        @if (Model.StatusId == "COMPLETED" || Model.StatusId == "CANCELLED")
-                        {
-                            <div class="alert alert-danger">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                Không thể cập nhật trạng thái đơn hàng đã hoàn thành hoặc đã hủy.
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle-fill me-2"></i>
-                                <strong>Quy trình cập nhật trạng thái:</strong>
-                                <ul class="mb-0 mt-1">
-                                    <li>Đơn hàng <strong>chờ xác nhận</strong> chỉ có thể chuyển sang <strong>đã xác nhận</strong> hoặc <strong>đã hủy</strong></li>
-                                    <li>Đơn hàng <strong>đã xác nhận</strong> chỉ có thể chuyển sang <strong>đang xử lý</strong> hoặc <strong>đã hủy</strong></li>
-                                    <li>Đơn hàng <strong>đang xử lý</strong> chỉ có thể chuyển sang <strong>đang giao</strong></li>
-                                    <li>Đơn hàng <strong>đang giao</strong> chỉ có thể chuyển sang <strong>đã hoàn thành</strong></li>
-                                    <li>Đơn hàng <strong>đã hoàn thành</strong> hoặc <strong>đã hủy</strong> không thể thay đổi trạng thái</li>
-                                </ul>
-                            </div>
-                        }
-                    }
+
+                    <div class="alert @(ViewBag.IsAdmin ? "admin-status-alert" : "alert-info")">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Quy trình cập nhật trạng thái:</strong>
+                        <ul class="mb-0 mt-1">
+                            <li>Đơn hàng <strong>chờ xác nhận</strong> chỉ có thể chuyển sang <strong>đã xác nhận</strong> hoặc <strong>đã hủy</strong></li>
+                            <li>Đơn hàng <strong>đã xác nhận</strong> chỉ có thể chuyển sang <strong>đang xử lý</strong> hoặc <strong>đã hủy</strong></li>
+                            <li>Đơn hàng <strong>đang xử lý</strong> chỉ có thể chuyển sang <strong>đang giao</strong></li>
+                            <li>Đơn hàng <strong>đang giao</strong> chỉ có thể chuyển sang <strong>đã hoàn thành</strong></li>
+                            <li>Đơn hàng <strong>đã hoàn thành</strong> hoặc <strong>đã hủy</strong> không thể thay đổi trạng thái</li>
+                        </ul>
+
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">

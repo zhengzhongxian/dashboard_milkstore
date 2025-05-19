@@ -226,7 +226,7 @@
                                         <div class="status-icon active me-2">
                                             <i class="bi bi-check-circle"></i>
                                         </div>
-                                        <span class="status-text">@user.StatusName</span>
+                                        <span class="status-text active-text">@user.StatusName</span>
                                     </div>
                                 }
                             </td>
@@ -549,9 +549,10 @@
         }
 
         .status-icon.active {
-            background-color: rgba(34, 197, 94, 0.15);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.3);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3);
         }
 
         .status-icon.inactive {
@@ -569,6 +570,11 @@
         .status-text {
             font-size: 0.85rem;
             font-weight: 500;
+        }
+
+        .active-text {
+            color: #16a34a;
+            font-weight: 600;
         }
 
         /* Role badges */

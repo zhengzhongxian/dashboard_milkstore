@@ -159,6 +159,12 @@
                                     <span>Trạng thái</span>
                                 </div>
                             </th>
+                            <th class="text-center" style="width: 150px;">
+                                <div class="d-inline-flex align-items-center">
+                                    <i class="bi bi-credit-card me-2"></i>
+                                    <span>Trạng thái thanh toán</span>
+                                </div>
+                            </th>
                             <th class="text-center" style="width: 120px;">
                                 <div class="d-inline-flex align-items-center">
                                     <i class="bi bi-gear me-2"></i>
@@ -236,6 +242,25 @@
                                         <span class="badge rounded-pill @badgeClass">
                                             <i class="bi @statusIcon me-1"></i>
                                             @statusText
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @{
+                                            string paymentBadgeClass = order.IsSuccess == true
+                                                ? "bg-success bg-opacity-10 text-success"
+                                                : "bg-secondary bg-opacity-10 text-secondary";
+
+                                            string paymentStatusText = order.IsSuccess == true
+                                                ? "Đã thanh toán"
+                                                : "Chưa thanh toán";
+
+                                            string paymentStatusIcon = order.IsSuccess == true
+                                                ? "bi-check-circle-fill"
+                                                : "bi-clock-history";
+                                        }
+                                        <span class="badge rounded-pill @paymentBadgeClass">
+                                            <i class="bi @paymentStatusIcon me-1"></i>
+                                            @paymentStatusText
                                         </span>
                                     </td>
                                     <td class="text-end pe-4">

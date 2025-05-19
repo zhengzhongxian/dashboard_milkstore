@@ -17,12 +17,20 @@
       "PackagePath": "staticwebassets\\css\\product-management-1.css"
     },
     {
+      "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\responsive-ip.css",
+      "PackagePath": "staticwebassets\\css\\responsive-ip.css"
+    },
+    {
       "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
-      "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics.css",
-      "PackagePath": "staticwebassets\\css\\statistics.css"
+      "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics-1.css",
+      "PackagePath": "staticwebassets\\css\\statistics-1.css"
+    },
+    {
+      "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\super-responsive.css",
+      "PackagePath": "staticwebassets\\css\\super-responsive.css"
     },
     {
       "Id": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\favicon.ico",

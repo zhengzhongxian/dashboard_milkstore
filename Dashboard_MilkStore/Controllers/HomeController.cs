@@ -33,13 +33,17 @@ namespace Dashboard_MilkStore.Controllers
                 int currentYear = DateTime.Now.Year;
 
                 // Gọi API để lấy doanh thu theo tháng - không cần truyền token nữa
-                var response = await _statisticsService.GetMonthlyRevenueForYearAsync(currentYear);
+                var revenueResponse = await _statisticsService.GetMonthlyRevenueForYearAsync(currentYear);
+
+                // Gọi API để lấy thống kê dashboard
+                var dashboardStats = await _statisticsService.GetDashboardStatsAsync();
 
                 // Tạo view model
                 var viewModel = new HomeViewModel
                 {
-                    YearlyRevenue = response.Data,
-                    CurrentYear = currentYear
+                    YearlyRevenue = revenueResponse.Data,
+                    CurrentYear = currentYear,
+                    DashboardStats = dashboardStats
                 };
 
                 return View(viewModel);
@@ -75,6 +79,32 @@ namespace Dashboard_MilkStore.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi khi lấy dữ liệu doanh số sản phẩm");
+                return StatusCode(500, new { Success = false, Message = $"Lỗi: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDashboardStats()
+        {
+            try
+            {
+                // Kiểm tra xem người dùng đã đăng nhập chưa
+                if (HttpContext.Session.GetString("Token") == null)
+                {
+                    return Unauthorized(new { Success = false, Message = "Unauthorized" });
+                }
+
+                // Gọi API để lấy thống kê dashboard
+                var dashboardStats = await _statisticsService.GetDashboardStatsAsync();
+
+                return Ok(new {
+                    Success = true,
+                    Data = dashboardStats
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy dữ liệu thống kê dashboard");
                 return StatusCode(500, new { Success = false, Message = $"Lỗi: {ex.Message}" });
             }
         }

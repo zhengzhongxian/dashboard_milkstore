@@ -1,0 +1,255 @@
+/* Super Responsive CSS cho Layout */
+
+/* Responsive cho tất cả các thiết bị */
+@media (max-width: 1200px) {
+  .container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+/* Tablet và màn hình nhỏ */
+@media (max-width: 992px) {
+  /* Sidebar khi mở */
+  .sidebar:not(.collapsed) {
+    width: 280px;
+    z-index: 1050;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Main content khi sidebar mở */
+  .sidebar:not(.collapsed) ~ .main-content {
+    transform: translateX(280px);
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Overlay khi sidebar mở */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    transition: opacity 0.3s ease;
+  }
+  
+  .sidebar-overlay.active {
+    display: block;
+  }
+  
+  /* Cải thiện hiển thị cho card và table */
+  .card {
+    overflow: hidden;
+  }
+  
+  .table-responsive {
+    width: 100%;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Điện thoại */
+@media (max-width: 768px) {
+  /* Sidebar khi mở trên điện thoại */
+  .sidebar:not(.collapsed) {
+    width: 85%;
+    max-width: 320px;
+  }
+  
+  /* Main content khi sidebar mở */
+  .sidebar:not(.collapsed) ~ .main-content {
+    transform: translateX(85%);
+    max-width: 100%;
+  }
+  
+  /* Cải thiện hiển thị cho header */
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .dashboard-title-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  /* Cải thiện hiển thị cho top-nav */
+  .top-nav {
+    padding: 0.8rem;
+  }
+  
+  .user-welcome-container {
+    min-width: auto;
+  }
+  
+  /* Cải thiện hiển thị cho card */
+  .card-header {
+    padding: 0.8rem;
+  }
+  
+  .card-body {
+    padding: 0.8rem;
+  }
+  
+  /* Cải thiện hiển thị cho bảng */
+  .table th, .table td {
+    padding: 0.5rem;
+  }
+  
+  /* Cải thiện hiển thị cho form */
+  .form-group {
+    margin-bottom: 0.8rem;
+  }
+  
+  .form-control {
+    font-size: 0.9rem;
+  }
+  
+  /* Cải thiện hiển thị cho button */
+  .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* iPhone và màn hình nhỏ */
+@media (max-width: 576px) {
+  /* Sidebar khi mở trên iPhone */
+  .sidebar:not(.collapsed) {
+    width: 85%;
+    max-width: 280px;
+  }
+  
+  /* Main content khi sidebar mở */
+  .sidebar:not(.collapsed) ~ .main-content {
+    transform: translateX(85%);
+  }
+  
+  /* Cải thiện hiển thị cho sidebar */
+  .sidebar-header {
+    padding: 1rem;
+  }
+  
+  .sidebar-brand {
+    font-size: 1.2rem;
+  }
+  
+  .nav-link {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Cải thiện hiển thị cho top-nav */
+  .top-nav {
+    padding: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Cải thiện hiển thị cho card */
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .card-header {
+    padding: 0.7rem;
+  }
+  
+  .card-body {
+    padding: 0.7rem;
+  }
+  
+  /* Cải thiện hiển thị cho bảng */
+  .table th, .table td {
+    padding: 0.4rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Cải thiện hiển thị cho pagination */
+  .pagination {
+    flex-wrap: wrap;
+  }
+  
+  .page-link {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* iPhone SE và màn hình cực nhỏ */
+@media (max-width: 375px) {
+  /* Sidebar khi mở trên iPhone SE */
+  .sidebar:not(.collapsed) {
+    width: 85%;
+    max-width: 260px;
+  }
+  
+  /* Cải thiện hiển thị cho sidebar */
+  .sidebar-header {
+    padding: 0.8rem;
+  }
+  
+  .sidebar-brand {
+    font-size: 1.1rem;
+  }
+  
+  .nav-link {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Cải thiện hiển thị cho top-nav */
+  .top-nav {
+    padding: 0.5rem;
+  }
+  
+  /* Cải thiện hiển thị cho card */
+  .card-header {
+    padding: 0.6rem;
+  }
+  
+  .card-body {
+    padding: 0.6rem;
+  }
+  
+  /* Cải thiện hiển thị cho bảng */
+  .table th, .table td {
+    padding: 0.3rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Xử lý chế độ landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Sidebar khi mở trong chế độ landscape */
+  .sidebar:not(.collapsed) {
+    width: 70%;
+    max-width: 250px;
+  }
+  
+  /* Main content khi sidebar mở */
+  .sidebar:not(.collapsed) ~ .main-content {
+    transform: translateX(70%);
+  }
+  
+  /* Cải thiện hiển thị cho sidebar */
+  .sidebar-header {
+    padding: 0.6rem;
+  }
+  
+  .sidebar-content {
+    max-height: calc(100% - 60px);
+  }
+  
+  .nav-link {
+    padding: 0.5rem 0.8rem;
+    margin: 0.2rem 0.5rem;
+  }
+}

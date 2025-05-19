@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "oljZXScCf1GlrUG0cZqhBEengEUuDv/6LWP2oRKqQyQ=",
+  "Hash": "pjm7fk9JJVG+7UfyyKOMlTET4ODUuHuoRDupLbgwHyc=",
   "Source": "Dashboard_MilkStore",
   "BasePath": "_content/Dashboard_MilkStore",
   "Mode": "Default",
@@ -122,6 +122,27 @@
       "OriginalItemSpec": "wwwroot\\css\\product-management-1.css"
     },
     {
+      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\responsive-ip.css",
+      "SourceId": "Dashboard_MilkStore",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\",
+      "BasePath": "_content/Dashboard_MilkStore",
+      "RelativePath": "css/responsive-ip#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "mi5w6tl785",
+      "Integrity": "ErI+IMHLx2af5qaxZ/XzS55OsrQZzAeCY/y3O1t1Mng=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\responsive-ip.css"
+    },
+    {
       "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\site.css",
       "SourceId": "Dashboard_MilkStore",
       "SourceType": "Discovered",
@@ -143,12 +164,12 @@
       "OriginalItemSpec": "wwwroot\\css\\site.css"
     },
     {
-      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics.css",
+      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics-1.css",
       "SourceId": "Dashboard_MilkStore",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\",
       "BasePath": "_content/Dashboard_MilkStore",
-      "RelativePath": "css/statistics#[.{fingerprint}]?.css",
+      "RelativePath": "css/statistics-1#[.{fingerprint}]?.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -157,11 +178,32 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "i43qahkwvy",
-      "Integrity": "rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc=",
+      "Fingerprint": "5vek8y8mef",
+      "Integrity": "QVhRU/angc4yrv3sSg8M2RCmCbTPuPB6zlqyUsUnxHQ=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\statistics.css"
+      "OriginalItemSpec": "wwwroot\\css\\statistics-1.css"
+    },
+    {
+      "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\super-responsive.css",
+      "SourceId": "Dashboard_MilkStore",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\",
+      "BasePath": "_content/Dashboard_MilkStore",
+      "RelativePath": "css/super-responsive#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "2uvt48q0cw",
+      "Integrity": "lnX74hZ/RSTV9Vg8CtPAT6GRHRcOFffjwfYVJsoz42A=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\super-responsive.css"
     },
     {
       "Identity": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\favicon.ico",
@@ -283,8 +325,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "ec03yxqban",
-      "Integrity": "fgrTJNB1gkgoSm2/VAlc0zNNHTmovhrcV+ItqOl3N/k=",
+      "Fingerprint": "u37tf80eeg",
+      "Integrity": "Otj/bzDNsVdVW/1D4BlsT1UMjGnj3BtuoVG5Oe262b4=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\chart-responsive.js"
@@ -1798,6 +1840,88 @@
       ]
     },
     {
+      "Route": "css/responsive-ip.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\responsive-ip.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7457"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ErI+IMHLx2af5qaxZ/XzS55OsrQZzAeCY/y3O1t1Mng=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 09:16:14 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ErI+IMHLx2af5qaxZ/XzS55OsrQZzAeCY/y3O1t1Mng="
+        }
+      ]
+    },
+    {
+      "Route": "css/responsive-ip.mi5w6tl785.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\responsive-ip.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7457"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ErI+IMHLx2af5qaxZ/XzS55OsrQZzAeCY/y3O1t1Mng=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 09:16:14 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "mi5w6tl785"
+        },
+        {
+          "Name": "label",
+          "Value": "css/responsive-ip.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ErI+IMHLx2af5qaxZ/XzS55OsrQZzAeCY/y3O1t1Mng="
+        }
+      ]
+    },
+    {
       "Route": "css/site.css",
       "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\site.css",
       "Selectors": [],
@@ -1880,8 +2004,8 @@
       ]
     },
     {
-      "Route": "css/statistics.css",
-      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics.css",
+      "Route": "css/statistics-1.5vek8y8mef.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics-1.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1890,7 +2014,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "9794"
+          "Value": "16478"
         },
         {
           "Name": "Content-Type",
@@ -1898,48 +2022,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc=\""
+          "Value": "\"QVhRU/angc4yrv3sSg8M2RCmCbTPuPB6zlqyUsUnxHQ=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 07 May 2025 05:17:03 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc="
-        }
-      ]
-    },
-    {
-      "Route": "css/statistics.i43qahkwvy.css",
-      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "9794"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Wed, 07 May 2025 05:17:03 GMT"
+          "Value": "Mon, 19 May 2025 09:17:13 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1949,15 +2036,134 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "i43qahkwvy"
+          "Value": "5vek8y8mef"
         },
         {
           "Name": "label",
-          "Value": "css/statistics.css"
+          "Value": "css/statistics-1.css"
         },
         {
           "Name": "integrity",
-          "Value": "sha256-rv+rci7kTpePU44UYUJVmZDuQQEYj0QKdeX+mIHUKDc="
+          "Value": "sha256-QVhRU/angc4yrv3sSg8M2RCmCbTPuPB6zlqyUsUnxHQ="
+        }
+      ]
+    },
+    {
+      "Route": "css/statistics-1.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\statistics-1.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "16478"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QVhRU/angc4yrv3sSg8M2RCmCbTPuPB6zlqyUsUnxHQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 09:17:13 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-QVhRU/angc4yrv3sSg8M2RCmCbTPuPB6zlqyUsUnxHQ="
+        }
+      ]
+    },
+    {
+      "Route": "css/super-responsive.2uvt48q0cw.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\super-responsive.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4717"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"lnX74hZ/RSTV9Vg8CtPAT6GRHRcOFffjwfYVJsoz42A=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 08:08:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "2uvt48q0cw"
+        },
+        {
+          "Name": "label",
+          "Value": "css/super-responsive.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-lnX74hZ/RSTV9Vg8CtPAT6GRHRcOFffjwfYVJsoz42A="
+        }
+      ]
+    },
+    {
+      "Route": "css/super-responsive.css",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\css\\super-responsive.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4717"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"lnX74hZ/RSTV9Vg8CtPAT6GRHRcOFffjwfYVJsoz42A=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 08:08:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-lnX74hZ/RSTV9Vg8CtPAT6GRHRcOFffjwfYVJsoz42A="
         }
       ]
     },
@@ -2536,51 +2742,6 @@
       ]
     },
     {
-      "Route": "js/chart-responsive.ec03yxqban.js",
-      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\js\\chart-responsive.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "3372"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"fgrTJNB1gkgoSm2/VAlc0zNNHTmovhrcV+ItqOl3N/k=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 01:40:13 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "ec03yxqban"
-        },
-        {
-          "Name": "label",
-          "Value": "js/chart-responsive.js"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-fgrTJNB1gkgoSm2/VAlc0zNNHTmovhrcV+ItqOl3N/k="
-        }
-      ]
-    },
-    {
       "Route": "js/chart-responsive.js",
       "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\js\\chart-responsive.js",
       "Selectors": [],
@@ -2591,7 +2752,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "3372"
+          "Value": "6842"
         },
         {
           "Name": "Content-Type",
@@ -2599,11 +2760,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"fgrTJNB1gkgoSm2/VAlc0zNNHTmovhrcV+ItqOl3N/k=\""
+          "Value": "\"Otj/bzDNsVdVW/1D4BlsT1UMjGnj3BtuoVG5Oe262b4=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 05 May 2025 01:40:13 GMT"
+          "Value": "Mon, 19 May 2025 08:00:28 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2613,7 +2774,52 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-fgrTJNB1gkgoSm2/VAlc0zNNHTmovhrcV+ItqOl3N/k="
+          "Value": "sha256-Otj/bzDNsVdVW/1D4BlsT1UMjGnj3BtuoVG5Oe262b4="
+        }
+      ]
+    },
+    {
+      "Route": "js/chart-responsive.u37tf80eeg.js",
+      "AssetFile": "C:\\Users\\ADMIN\\Desktop\\HK2-Season3\\web-technology\\Dashboard_MilkStore\\Dashboard_MilkStore\\wwwroot\\js\\chart-responsive.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6842"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Otj/bzDNsVdVW/1D4BlsT1UMjGnj3BtuoVG5Oe262b4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 19 May 2025 08:00:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "u37tf80eeg"
+        },
+        {
+          "Name": "label",
+          "Value": "js/chart-responsive.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Otj/bzDNsVdVW/1D4BlsT1UMjGnj3BtuoVG5Oe262b4="
         }
       ]
     },
