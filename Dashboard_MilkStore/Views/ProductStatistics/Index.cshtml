@@ -1,0 +1,765 @@
+@model Dashboard_MilkStore.Models.Product.ProductStatisticsViewModel
+@{
+    ViewData["Title"] = "Thống kê doanh thu sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header with gradient background -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded-3 shadow-sm header-custom position-relative" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 4px 16px 0 rgba(99,102,241,0.12); border-bottom: 3px solid #a5b4fc;">
+        <div class="d-flex align-items-center gap-2">
+            <div class="header-icon d-flex align-items-center justify-content-center bg-white bg-opacity-25 shadow-lg" style="width:38px;height:38px;font-size:1.3rem;border-radius:10px;">
+                <i class="bi bi-graph-up-arrow text-white"></i>
+            </div>
+            <div>
+                <h5 class="mb-0 text-white fw-bold" style="letter-spacing:0.5px;font-size:1.15rem;">Thống kê doanh thu sản phẩm</h5>
+                <p class="text-white-50 mb-0 small fw-medium" style="font-size:0.95rem;"><i class="bi bi-info-circle me-1"></i>Phân tích doanh thu theo tháng</p>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Product")" class="btn add-button d-flex align-items-center gap-2 px-3 py-1 fs-6 shadow-sm">
+            <i class="bi bi-arrow-left"></i>
+            <span>Quay lại</span>
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Product Info Card -->
+    <div class="card border-0 shadow-lg rounded-4 mb-4" style="background: linear-gradient(135deg, #f3f4f6 60%, #e0e7ff 100%);">
+        <div class="card-body p-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3 mb-3 mb-md-0">
+                <div id="productImage" class="product-image-container me-0" style="width:90px;height:90px;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(99,102,241,0.10);border:3px solid #a5b4fc;background:linear-gradient(135deg,#e0e7ff 0%,#f8fafc 100%);">
+                    <div class="no-image d-flex align-items-center justify-content-center w-100 h-100" style="background:#f3f4f6;color:#bdbdbd;font-size:2rem;">
+                        <i class="bi bi-image"></i>
+                    </div>
+                </div>
+                <div>
+                    <h4 id="productName" class="mb-1 fw-bold text-primary fs-3">Đang tải...</h4>
+                    <span class="badge d-inline-flex align-items-center gap-2 px-3 py-2" style="background: linear-gradient(90deg,#6366f1,#4f46e5);color:#fff;font-size:1rem;border-radius: 999px;box-shadow:0 2px 8px rgba(99,102,241,0.10);">
+                        <i class="bi bi-upc-scan"></i>
+                        <span id="productId">@Model.ProductId</span>
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <select id="statsYear" class="form-select form-select-sm rounded-pill me-2" style="width: auto;min-width:110px;border:1.5px solid #6366f1;">
+                    @for (int year = DateTime.Now.Year; year >= 2020; year--)
+                    {
+                        if (year == Model.Year)
+                        {
+                            <option value="@year" selected>Năm @year</option>
+                        }
+                        else
+                        {
+                            <option value="@year">Năm @year</option>
+                        }
+                    }
+                </select>
+                <button id="loadStatsBtn" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);border:none;">
+                    <i class="bi bi-arrow-repeat me-1"></i>Tải dữ liệu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="statsLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Đang tải...</span>
+        </div>
+        <p class="mt-2 text-muted">Đang tải dữ liệu thống kê...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div id="statsError" class="alert alert-danger d-none" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span id="statsErrorMessage">Không thể tải dữ liệu thống kê. Vui lòng thử lại sau.</span>
+    </div>
+
+    <!-- Statistics Content -->
+    <div id="statsContent" class="d-none">
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="card border-0 summary-card summary-card-revenue position-relative overflow-hidden">
+                    <div class="summary-watermark"><i class="bi bi-currency-dollar"></i></div>
+                    <div class="card-body p-4">
+                        <div class="summary-title mb-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-currency-dollar"></i>
+                            <span>Tổng doanh thu</span>
+                        </div>
+                        <div class="summary-value mb-0" id="totalRevenue">0đ</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 summary-card summary-card-qty position-relative overflow-hidden">
+                    <div class="summary-watermark"><i class="bi bi-box-seam"></i></div>
+                    <div class="card-body p-4">
+                        <div class="summary-title mb-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Tổng số lượng bán ra</span>
+                        </div>
+                        <div class="summary-value mb-0" id="totalQuantity">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="card border-0 shadow-lg mb-4 rounded-4">
+            <div class="card-body p-4">
+                <h6 class="card-title text-primary mb-3 fs-6 fw-semibold">
+                    <i class="bi bi-bar-chart-line me-2"></i>Biểu đồ doanh thu theo tháng
+                </h6>
+                <div class="chart-container" style="position: relative; height: 400px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Data Table -->
+        <div class="card border-0 shadow-lg rounded-4 mb-4" style="background: #fff;">
+            <div class="card-body p-4">
+                <h6 class="card-title text-primary mb-3 fs-6 fw-semibold d-flex align-items-center gap-2">
+                    <i class="bi bi-table me-2"></i>Dữ liệu chi tiết theo tháng
+                </h6>
+                <div class="table-responsive">
+                    <table class="table mb-0" style="border-radius:14px;overflow:hidden;">
+                        <thead style="background: linear-gradient(90deg,#6366f1,#4f46e5);color:#fff;">
+                            <tr style="font-size:0.98rem;">
+                                <th><i class="bi bi-calendar3"></i> Tháng</th>
+                                <th class="text-end"><i class="bi bi-cash-coin"></i> Doanh thu</th>
+                                <th class="text-end"><i class="bi bi-box-seam"></i> Số lượng</th>
+                                <th class="text-end"><i class="bi bi-tag"></i> Giá trung bình</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statsTableBody">
+                            <!-- Dữ liệu sẽ được thêm vào đây bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .header-custom {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            border-left: 7px solid #4338ca;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 16px 0 rgba(99,102,241,0.12);
+            padding: 0.75rem 1.2rem;
+        }
+        .header-icon {
+            font-size: 1.3rem;
+            background: rgba(255,255,255,0.18);
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+        .add-button {
+            background: #fff;
+            color: #6366f1;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 999px;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
+            transition: all 0.2s;
+        }
+        .add-button:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .product-image-container {
+            width: 90px;
+            height: 90px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.10);
+            border: 3px solid #a5b4fc;
+            background: linear-gradient(135deg,#e0e7ff 0%,#f8fafc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        .no-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f3f4f6;
+            color: #bdbdbd;
+            font-size: 2rem;
+        }
+        .card {
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(99,102,241,0.08);
+            border: none;
+            background: #fff;
+        }
+        .table thead tr {
+            background: linear-gradient(90deg,#6366f1,#4f46e5);
+            color: #fff;
+        }
+        .table th, .table td {
+            padding: 0.65rem 0.85rem;
+            font-size: 0.97rem;
+            font-weight: 500;
+            vertical-align: middle;
+            color: #22292f;
+        }
+        .table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        .table tbody tr {
+            background: #fff;
+        }
+        .table td {
+            font-size: 0.97rem;
+            color: #22292f;
+        }
+        .table td.zero, .table td.creative-zero {
+            color: #bdbdbd !important;
+            font-style: italic;
+            opacity: 0.7;
+        }
+        .table td .creative-badge, .creative-badge-revenue, .creative-badge-qty, .creative-badge-price {
+            background: none !important;
+            color: inherit !important;
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            display: inline;
+            gap: 0;
+        }
+        .creative-watermark-icon, .creative-header-bar {
+            display: none !important;
+        }
+        @@media (max-width: 991px) {
+            .header-custom {
+                padding: 1rem 1.2rem;
+            }
+            .product-image-container {
+                width: 70px;
+                height: 70px;
+            }
+        }
+        @@media (max-width: 767px) {
+            .header-custom {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 0.5rem;
+            }
+            .add-button {
+                width: 100%;
+                margin-top: 0.7rem;
+            }
+        }
+        .monthly-data-card {
+            border-radius: 2rem !important;
+            box-shadow: 0 8px 32px 0 rgba(99,102,241,0.13);
+            transition: box-shadow 0.25s, border 0.25s;
+        }
+        .monthly-data-card:hover {
+            box-shadow: 0 12px 36px 0 rgba(99,102,241,0.18), 0 0 0 4px #a5b4fc33;
+        }
+        .monthly-data-table thead tr {
+            background: linear-gradient(90deg,#6366f1,#4f46e5);
+            color: #fff;
+        }
+        .monthly-data-table th, .monthly-data-table td {
+            padding: 1.1rem 1.25rem;
+            font-size: 1.05rem;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+        .monthly-data-table tbody tr {
+            transition: background 0.18s;
+        }
+        .monthly-data-table tbody tr:hover {
+            background: #ede9fe;
+        }
+        .monthly-data-table td {
+            background: #fff;
+        }
+        @@media (max-width: 767px) {
+            .monthly-data-card {
+                border-radius: 1.2rem !important;
+            }
+            .monthly-data-table th, .monthly-data-table td {
+                padding: 0.7rem 0.5rem;
+                font-size: 0.98rem;
+            }
+        }
+        .creative-monthly-data-card {
+            border-radius: 2.5rem !important;
+            box-shadow: 0 12px 40px 0 rgba(99,102,241,0.16);
+            border: 2.5px solid #a5b4fc33;
+            position: relative;
+            overflow: visible;
+            transition: box-shadow 0.25s, border 0.25s;
+        }
+        .creative-monthly-data-card:hover {
+            box-shadow: 0 16px 48px 0 rgba(99,102,241,0.22), 0 0 0 6px #a5b4fc44;
+            border-color: #6366f1;
+        }
+        .creative-header-bar {
+            background: linear-gradient(90deg,#6366f1,#4f46e5);
+            border-radius: 1.5rem 1.5rem 0 0;
+            box-shadow: 0 2px 12px 0 rgba(99,102,241,0.08);
+        }
+        .creative-table-head th {
+            background: transparent !important;
+            color: #f3f4f6 !important;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            letter-spacing: 0.01em;
+        }
+        .creative-table td, .creative-table th {
+            padding: 0.65rem 0.85rem;
+            font-size: 0.97rem;
+            font-weight: 500;
+            vertical-align: middle;
+            color: #22292f;
+        }
+        .creative-table tbody tr {
+            transition: background 0.18s, transform 0.18s, box-shadow 0.18s, border-left 0.18s;
+        }
+        .creative-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        .creative-table tbody tr[data-has-revenue="true"] {
+            background: linear-gradient(90deg,#e0f2fe 60%,#f0fdfa 100%);
+            border-left: 4px solid #10b981;
+            box-shadow: 0 2px 8px 0 rgba(16,185,129,0.06);
+        }
+        .creative-table tbody tr:hover {
+            background: #ede9fe !important;
+            transform: scale(1.008);
+            box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
+            border-left: 4px solid #6366f1;
+        }
+        .creative-table td .creative-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            border-radius: 999px;
+            font-size: 0.93rem;
+            font-weight: 600;
+            padding: 0.18em 0.7em;
+            box-shadow: 0 1px 2px rgba(99,102,241,0.06);
+        }
+        .creative-badge-revenue {
+            background: linear-gradient(90deg,#6ee7b7,#34d399);
+            color: #166534;
+        }
+        .creative-badge-qty {
+            background: linear-gradient(90deg,#bae6fd,#6366f1);
+            color: #1e293b;
+        }
+        .creative-badge-price {
+            background: linear-gradient(90deg,#fde68a,#fbbf24);
+            color: #92400e;
+        }
+        .creative-table td.creative-zero {
+            color: #bdbdbd !important;
+            font-style: italic;
+            opacity: 0.7;
+        }
+        .creative-watermark-icon {
+            position: absolute;
+            right: 2.5rem;
+            bottom: 1.5rem;
+            font-size: 4.2rem;
+            color: #6366f110;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @@media (max-width: 767px) {
+            .creative-monthly-data-card {
+                border-radius: 1.2rem !important;
+            }
+            .creative-table th, .creative-table td {
+                padding: 0.45rem 0.3rem;
+                font-size: 0.89rem;
+            }
+            .creative-watermark-icon {
+                font-size: 2.2rem;
+                right: 1rem;
+                bottom: 0.5rem;
+            }
+        }
+        .table td .badge-data {
+            display: inline-block;
+            border-radius: 999px;
+            font-size: 0.93rem;
+            font-weight: 600;
+            padding: 0.13em 0.8em;
+            margin: 0;
+            box-shadow: none;
+            vertical-align: middle;
+        }
+        .badge-data-revenue {
+            background: linear-gradient(90deg,#6ee7b7,#34d399);
+            color: #166534;
+        }
+        .badge-data-qty {
+            background: linear-gradient(90deg,#bae6fd,#6366f1);
+            color: #1e293b;
+        }
+        .badge-data-price {
+            background: linear-gradient(90deg,#fde68a,#fbbf24);
+            color: #92400e;
+        }
+        .summary-card {
+            border-radius: 1.1rem !important;
+            box-shadow: 0 4px 16px 0 rgba(99,102,241,0.10);
+            background: linear-gradient(120deg, #6366f1 60%, #4f46e5 100%);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.18s, transform 0.18s, background 0.18s;
+        }
+        .summary-card-qty {
+            background: linear-gradient(120deg, #10b981 60%, #34d399 100%);
+        }
+        .summary-card:hover {
+            box-shadow: 0 8px 24px 0 rgba(99,102,241,0.13);
+            transform: scale(1.012);
+            background-position: right center;
+        }
+        .summary-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+            border-bottom: 2px solid rgba(255,255,255,0.13);
+            display: inline-block;
+            padding-bottom: 0.08em;
+            margin-bottom: 0.4em;
+            background: linear-gradient(90deg,rgba(255,255,255,0.10),rgba(255,255,255,0));
+        }
+        .summary-value {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            text-shadow: 0 1px 6px rgba(99,102,241,0.10), 0 1px 0 #fff;
+            filter: drop-shadow(0 1px 4px rgba(99,102,241,0.07));
+            position: relative;
+            z-index: 2;
+        }
+        .summary-card-qty .summary-value {
+            text-shadow: 0 1px 6px rgba(16,185,129,0.10), 0 1px 0 #fff;
+            filter: drop-shadow(0 1px 4px rgba(16,185,129,0.07));
+        }
+        .summary-watermark {
+            position: absolute;
+            right: 1.1rem;
+            bottom: 0.7rem;
+            font-size: 2.2rem;
+            color: #fff2;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+        @@media (max-width: 991px) {
+            .summary-card {
+                border-radius: 0.7rem !important;
+            }
+            .summary-watermark {
+                font-size: 1.3rem;
+                right: 0.5rem;
+                bottom: 0.2rem;
+            }
+            .summary-value {
+                font-size: 1.1rem;
+            }
+        }
+        @@media (max-width: 767px) {
+            .summary-card {
+                border-radius: 0.5rem !important;
+            }
+            .summary-title {
+                font-size: 0.89rem;
+            }
+            .summary-value {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Biến lưu trữ biểu đồ
+            let revenueChart = null;
+            let productId = '@Model.ProductId';
+            let currentYear = '@Model.Year';
+
+            // Tải dữ liệu thống kê khi trang được tải
+            loadProductStats(productId, currentYear);
+
+            // Xử lý sự kiện khi nhấn nút tải dữ liệu
+            $('#loadStatsBtn').click(function() {
+                currentYear = $('#statsYear').val();
+                loadProductStats(productId, currentYear);
+                window.history.pushState({}, '', `/ProductStatistics/Index/${productId}?year=${currentYear}`);
+            });
+            $('#statsYear').change(function() {
+                currentYear = $(this).val();
+            });
+
+            function loadProductStats(productId, year) {
+                $('#statsContent').addClass('d-none');
+                $('#statsError').addClass('d-none');
+                $('#statsLoading').removeClass('d-none');
+                $.ajax({
+                    url: 'https://localhost:5000/api/statistics/product-monthly-revenue/' + productId + '/' + year,
+                    type: 'GET',
+                    headers: {
+                        'Authorization':'@Context.Session.GetString("Token")'
+                    },
+                    success: function(response) {
+                        $('#statsLoading').addClass('d-none');
+                        if (response.success) {
+                            displayProductStats(response.data);
+                        } else {
+                            $('#statsErrorMessage').text(response.message || 'Không thể tải dữ liệu thống kê');
+                            $('#statsError').removeClass('d-none');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#statsLoading').addClass('d-none');
+                        $('#statsErrorMessage').text('Lỗi khi tải dữ liệu: ' + (xhr.responseJSON?.message || error));
+                        $('#statsError').removeClass('d-none');
+                        console.error('Error loading product stats:', error);
+                    }
+                });
+            }
+
+            function displayProductStats(data) {
+                $('#productName').text(data.productName);
+                $('#productId').text(data.productId);
+                if (data.imageUrl) {
+                    $('#productImage').html(`<img src="${data.imageUrl}" alt="${data.productName}" class="product-image">`);
+                }
+                $('#totalRevenue').text(formatCurrency(data.totalRevenue));
+                $('#totalQuantity').text(formatNumber(data.totalQuantity));
+                const tableBody = $('#statsTableBody');
+                tableBody.empty();
+
+                // Mapping for English month names to Vietnamese
+                const monthNamesVi = {
+                    "January": "Tháng 1",
+                    "February": "Tháng 2",
+                    "March": "Tháng 3",
+                    "April": "Tháng 4",
+                    "May": "Tháng 5",
+                    "June": "Tháng 6",
+                    "July": "Tháng 7",
+                    "August": "Tháng 8",
+                    "September": "Tháng 9",
+                    "October": "Tháng 10",
+                    "November": "Tháng 11",
+                    "December": "Tháng 12"
+                };
+
+                data.monthlyRevenues.forEach(function(month) {
+                    const avgPrice = month.quantity > 0 ? month.revenue / month.quantity : 0;
+                    const vietnameseMonthName = monthNamesVi[month.monthName] || month.monthName; // Use English name if translation not found
+                    tableBody.append(`
+                        <tr>
+                            <td>${vietnameseMonthName}</td>
+                            <td class="text-end ${month.revenue > 0 ? '' : 'zero'}">
+                                ${month.revenue > 0 ? `<span class='badge-data badge-data-revenue'>${formatCurrency(month.revenue)}</span>` : '-'}
+                            </td>
+                            <td class="text-end ${month.quantity > 0 ? '' : 'zero'}">
+                                ${month.quantity > 0 ? `<span class='badge-data badge-data-qty'>${formatNumber(month.quantity)}</span>` : '-'}
+                            </td>
+                            <td class="text-end ${avgPrice > 0 ? '' : 'zero'}">
+                                ${avgPrice > 0 ? `<span class='badge-data badge-data-price'>${formatCurrency(avgPrice)}</span>` : '-'}
+                            </td>
+                        </tr>
+                    `);
+                });
+                renderRevenueChart(data);
+                $('#statsContent').removeClass('d-none');
+            }
+
+            // Hàm vẽ biểu đồ đẹp hơn
+            function renderRevenueChart(data) {
+                const labels = data.monthlyRevenues.map(m => {
+                    // Mapping for English month names to Vietnamese (duplicate for chart labels)
+                    const monthNamesVi = {
+                        "January": "Tháng 1",
+                        "February": "Tháng 2",
+                        "March": "Tháng 3",
+                        "April": "Tháng 4",
+                        "May": "Tháng 5",
+                        "June": "Tháng 6",
+                        "July": "Tháng 7",
+                        "August": "Tháng 8",
+                        "September": "Tháng 9",
+                        "October": "Tháng 10",
+                        "November": "Tháng 11",
+                        "December": "Tháng 12"
+                    };
+                    return monthNamesVi[m.monthName] || m.monthName; // Use English name if translation not found
+                });
+                const revenueData = data.monthlyRevenues.map(m => m.revenue);
+                const quantityData = data.monthlyRevenues.map(m => m.quantity);
+                if (revenueChart) revenueChart.destroy();
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                // Tạo gradient cho bar chart
+                const gradientBar = ctx.createLinearGradient(0, 0, 0, 400);
+                gradientBar.addColorStop(0, '#6366f1');
+                gradientBar.addColorStop(0.5, '#4f46e5');
+                gradientBar.addColorStop(1, '#38bdf8');
+                // Tạo gradient cho line chart
+                const gradientLine = ctx.createLinearGradient(0, 0, 400, 0);
+                gradientLine.addColorStop(0, '#f43f5e');
+                gradientLine.addColorStop(1, '#fbbf24');
+                revenueChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Doanh thu (VNĐ)',
+                                data: revenueData,
+                                backgroundColor: gradientBar,
+                                borderColor: '#6366f1',
+                                borderWidth: 2,
+                                borderRadius: 16,
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.6,
+                                order: 2,
+                                hoverBackgroundColor: '#a5b4fc',
+                                shadowOffsetX: 2,
+                                shadowOffsetY: 4,
+                                shadowBlur: 8,
+                                shadowColor: 'rgba(99,102,241,0.18)'
+                            },
+                            {
+                                label: 'Số lượng',
+                                data: quantityData,
+                                type: 'line',
+                                fill: false,
+                                borderColor: gradientLine,
+                                backgroundColor: gradientLine,
+                                pointBackgroundColor: '#f43f5e',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: '#f43f5e',
+                                pointRadius: 7,
+                                pointHoverRadius: 10,
+                                borderWidth: 4,
+                                tension: 0.35,
+                                order: 1,
+                                shadowOffsetX: 2,
+                                shadowOffsetY: 4,
+                                shadowBlur: 8,
+                                shadowColor: 'rgba(244,63,94,0.12)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#6366f1',
+                                    font: { weight: 'bold', size: 15 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#4f46e5',
+                                bodyColor: '#6366f1',
+                                borderColor: '#a5b4fc',
+                                borderWidth: 1.5,
+                                cornerRadius: 10,
+                                padding: 12,
+                                titleFont: { weight: 'bold', size: 15 },
+                                bodyFont: { size: 14 },
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.dataset.label === 'Doanh thu (VNĐ)') {
+                                            label += formatCurrency(context.raw);
+                                        } else {
+                                            label += formatNumber(context.raw);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#6366f1', font: { weight: 'bold', size: 13 } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(99,102,241,0.08)' },
+                                ticks: {
+                                    color: '#6366f1',
+                                    font: { weight: 'bold', size: 13 },
+                                    callback: function(value) {
+                                        if (value >= 1000000) {
+                                            return (value / 1000000).toFixed(1) + 'M';
+                                        } else if (value >= 1000) {
+                                            return (value / 1000).toFixed(0) + 'K';
+                                        }
+                                        return value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            function formatCurrency(value) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+            }
+            function formatNumber(value) {
+                return new Intl.NumberFormat('vi-VN').format(value);
+            }
+        });
+    </script>
+}

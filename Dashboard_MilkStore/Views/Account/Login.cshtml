@@ -86,6 +86,58 @@
         font-size: 1.1rem;
         margin-right: 0.75rem;
     }
+
+    /* Responsive styles for mobile */
+    @@media (max-width: 576px) {
+        .text-danger {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .validation-summary {
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger i {
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        .tooltip .tooltip-inner {
+            max-width: 250px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+    }
+
+    /* iPhone SE, 5, 5S - Width: 320px */
+    @@media only screen and (max-width: 320px) {
+        .text-danger {
+            font-size: 0.75rem;
+        }
+
+        .validation-summary {
+            padding: 0.6rem 0.8rem;
+        }
+
+        .alert-danger {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .tooltip .tooltip-inner {
+            max-width: 220px;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
+        }
+    }
 </style>
 
 <div class="login-container">
@@ -183,8 +235,30 @@
 
         // Focus first input field and setup validation
         document.addEventListener('DOMContentLoaded', function() {
-            // Focus username field
-            document.querySelector('#Username').focus();
+            // Chỉ focus username field trên desktop, không focus trên mobile để tránh hiện bàn phím
+            if (window.innerWidth > 768) {
+                document.querySelector('#Username').focus();
+            }
+
+            // Thêm sự kiện để xử lý khi người dùng nhấn Enter trên bàn phím di động
+            document.querySelectorAll('input').forEach(function(input) {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+
+                        // Nếu là input cuối cùng, submit form
+                        if (this.id === 'Password') {
+                            document.querySelector('form').submit();
+                        } else {
+                            // Di chuyển đến input tiếp theo
+                            const nextInput = this.closest('.form-group').nextElementSibling.querySelector('input');
+                            if (nextInput) {
+                                nextInput.focus();
+                            }
+                        }
+                    }
+                });
+            });
 
             // Add animation to validation messages
             $('form').on('submit', function() {
@@ -225,9 +299,14 @@
                 $this.attr('data-bs-toggle', 'tooltip');
                 $this.attr('data-bs-placement', 'bottom');
 
+                // Điều chỉnh vị trí tooltip dựa trên kích thước màn hình
+                var placement = window.innerWidth < 576 ? 'top' : 'bottom';
+                $this.attr('data-bs-placement', placement);
+
                 // Khởi tạo tooltip với các tùy chọn
+                var tooltipMaxWidth = window.innerWidth < 320 ? '220px' : (window.innerWidth < 576 ? '250px' : '300px');
                 var tooltip = new bootstrap.Tooltip($this[0], {
-                    template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner" style="max-width: 300px; text-align: left;"></div></div>'
+                    template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner" style="max-width: ' + tooltipMaxWidth + '; text-align: left;"></div></div>'
                 });
 
                 // Thêm sự kiện click để hiển thị/ẩn tooltip
@@ -236,8 +315,21 @@
                     $(this).tooltip('toggle');
                 });
             });
+
+            // Xử lý viewport height cho iOS
+            function setViewportHeight() {
+                let vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }
+
+            // Thiết lập ban đầu
+            setViewportHeight();
+
+            // Cập nhật khi thay đổi kích thước hoặc xoay màn hình
+            window.addEventListener('resize', setViewportHeight);
+            window.addEventListener('orientationchange', setViewportHeight);
         });
     </script>
 
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-} 
+}

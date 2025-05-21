@@ -55,11 +55,31 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f0f5ff;
             color: var(--dark-text);
-            overflow-x: hidden;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
+            height: 100%;
+        }
+
+        /* Fix for modals */
+        .modal-open {
+            overflow: auto !important;
+            padding-right: 0 !important;
+        }
+
+        .modal {
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050 !important;
+        }
+
+        .modal-backdrop {
+            display: none !important;
+        }
+
+        .modal-dialog {
+            margin: 1.75rem auto;
+            z-index: 1055 !important;
         }
 
         /* Tùy chỉnh thanh cuộn cho toàn trang */
@@ -84,6 +104,83 @@
             display: flex;
             flex: 1;
             position: relative;
+            overflow: visible !important;
+        }
+
+        /* Fix for modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1055 !important;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            outline: 0;
+        }
+
+        .modal-dialog {
+            position: relative;
+            width: auto;
+            margin: 1.75rem auto;
+            pointer-events: auto;
+            transform: translateY(-25px);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 0.3rem;
+            outline: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1050 !important;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.5;
+        }
+
+        /* Hiệu ứng cho các nút trong modal */
+        .modal .btn {
+            transition: all 0.2s ease;
+        }
+
+        .modal .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal .btn:active {
+            transform: translateY(0);
         }
 
         /* Sidebar styling */
@@ -254,6 +351,9 @@
             background-color: #f0f5ff;
             display: flex;
             flex-direction: column;
+            position: relative;
+            z-index: 1;
+            overflow: visible !important;
         }
 
         /* Main content */
@@ -265,6 +365,23 @@
         .sidebar.collapsed ~ .main-content {
             margin-left: 0;
             max-width: 100%;
+        }
+
+        /* Ensure modals are above main content */
+        body.modal-open {
+            overflow: auto !important;
+            padding-right: 0 !important;
+        }
+
+        /* Fix for modal backdrop */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050 !important;
         }
 
         .container-fluid {
@@ -1566,6 +1683,72 @@
     <script src="~/js/fireworks.js" asp-append-version="true"></script>
     <script src="~/js/button-fireworks.js" asp-append-version="true"></script>
 
+    <!-- Fix for Bootstrap modals -->
+    <script>
+        // Fix Bootstrap modal issues
+        $(document).ready(function() {
+            // Ensure modals work correctly
+            $(document).on('show.bs.modal', '.modal', function () {
+                // Set z-index higher than sidebar
+                $(this).css('z-index', '1055');
+
+                // Ensure modal is visible and interactive
+                $(this).css('display', 'block');
+
+                // Add modal-open class to body
+                $('body').addClass('modal-open');
+
+                // Create backdrop if it doesn't exist
+                if ($('.modal-backdrop').length === 0) {
+                    $('body').append('<div class="modal-backdrop fade show"></div>');
+                }
+
+                // Ensure main content doesn't interfere with modal
+                $('#mainContent').css('overflow', 'visible');
+
+                // Ensure sidebar doesn't interfere with modal
+                $('#sidebar').css('z-index', '1040');
+            });
+
+            // Clean up when modal is hidden
+            $(document).on('hidden.bs.modal', '.modal', function () {
+                // Remove modal-open class if no other modals are open
+                if ($('.modal:visible').length === 0) {
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                }
+            });
+
+            // Fix for modals on page load
+            if ($('.modal.show').length > 0) {
+                $('body').addClass('modal-open');
+                if ($('.modal-backdrop').length === 0) {
+                    $('body').append('<div class="modal-backdrop fade show"></div>');
+                }
+            }
+
+            // Fix for transform property affecting modals
+            $(document).on('show.bs.modal', '.modal', function () {
+                // Reset transform on main content when modal is shown
+                $('#mainContent').css('transform', 'none');
+            });
+
+            // Restore transform on main content when modal is hidden
+            $(document).on('hidden.bs.modal', '.modal', function () {
+                // Only restore if sidebar is not collapsed
+                if (!$('#sidebar').hasClass('collapsed') && window.innerWidth < 992) {
+                    if (window.innerWidth < 576) {
+                        $('#mainContent').css('transform', 'translateX(85%)');
+                    } else if (window.innerWidth < 768) {
+                        $('#mainContent').css('transform', 'translateX(85%)');
+                    } else {
+                        $('#mainContent').css('transform', 'translateX(280px)');
+                    }
+                }
+            });
+        });
+    </script>
+
     <script>
         // Toggle sidebar on mobile and expand when collapsed
         document.getElementById('sidebarToggle').addEventListener('click', function(e) {
@@ -1594,13 +1777,16 @@
 
                 // Adjust main content based on screen size
                 if (window.innerWidth < 992) {
-                    // Use transform for better performance on mobile
-                    if (window.innerWidth < 576) {
-                        mainContent.style.transform = 'translateX(85%)';
-                    } else if (window.innerWidth < 768) {
-                        mainContent.style.transform = 'translateX(85%)';
-                    } else {
-                        mainContent.style.transform = 'translateX(280px)';
+                    // Check if any modal is open
+                    if ($('.modal.show').length === 0) {
+                        // Use transform for better performance on mobile
+                        if (window.innerWidth < 576) {
+                            mainContent.style.transform = 'translateX(85%)';
+                        } else if (window.innerWidth < 768) {
+                            mainContent.style.transform = 'translateX(85%)';
+                        } else {
+                            mainContent.style.transform = 'translateX(280px)';
+                        }
                     }
                     mainContent.style.marginLeft = '0';
                 } else {
@@ -1693,13 +1879,16 @@
                 mainContent.style.maxWidth = '100%';
             } else {
                 if (window.innerWidth < 992) {
-                    // Use transform for better performance on mobile
-                    if (window.innerWidth < 576) {
-                        mainContent.style.transform = 'translateX(85%)';
-                    } else if (window.innerWidth < 768) {
-                        mainContent.style.transform = 'translateX(85%)';
-                    } else {
-                        mainContent.style.transform = 'translateX(280px)';
+                    // Check if any modal is open
+                    if ($('.modal.show').length === 0) {
+                        // Use transform for better performance on mobile
+                        if (window.innerWidth < 576) {
+                            mainContent.style.transform = 'translateX(85%)';
+                        } else if (window.innerWidth < 768) {
+                            mainContent.style.transform = 'translateX(85%)';
+                        } else {
+                            mainContent.style.transform = 'translateX(280px)';
+                        }
                     }
                     mainContent.style.marginLeft = '0';
                 } else {
@@ -1778,22 +1967,25 @@
 
             // Handle window resize
             window.addEventListener('resize', function() {
-                // If on mobile and sidebar is open, adjust content position
-                if (window.innerWidth < 992 && !sidebar.classList.contains('collapsed')) {
-                    if (window.innerWidth < 576) {
-                        mainContent.style.transform = 'translateX(85%)';
-                    } else if (window.innerWidth < 768) {
-                        mainContent.style.transform = 'translateX(85%)';
-                    } else {
-                        mainContent.style.transform = 'translateX(280px)';
+                // Check if any modal is open
+                if ($('.modal.show').length === 0) {
+                    // If on mobile and sidebar is open, adjust content position
+                    if (window.innerWidth < 992 && !sidebar.classList.contains('collapsed')) {
+                        if (window.innerWidth < 576) {
+                            mainContent.style.transform = 'translateX(85%)';
+                        } else if (window.innerWidth < 768) {
+                            mainContent.style.transform = 'translateX(85%)';
+                        } else {
+                            mainContent.style.transform = 'translateX(280px)';
+                        }
+                        mainContent.style.marginLeft = '0';
+                    } else if (window.innerWidth >= 992 && !sidebar.classList.contains('collapsed')) {
+                        // On desktop with sidebar open
+                        mainContent.style.transform = 'translateX(0)';
+                        mainContent.style.marginLeft = '280px';
+                        mainContent.style.maxWidth = 'calc(100% - 280px)';
+                        overlay.classList.remove('active');
                     }
-                    mainContent.style.marginLeft = '0';
-                } else if (window.innerWidth >= 992 && !sidebar.classList.contains('collapsed')) {
-                    // On desktop with sidebar open
-                    mainContent.style.transform = 'translateX(0)';
-                    mainContent.style.marginLeft = '280px';
-                    mainContent.style.maxWidth = 'calc(100% - 280px)';
-                    overlay.classList.remove('active');
                 }
             });
         });

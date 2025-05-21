@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>@ViewData["Title"] - MilkStore Dashboard</title>
 
     <!-- Modern fonts -->
@@ -45,6 +47,10 @@
             --transition-speed: 0.3s;
         }
 
+        :root {
+            --vh: 1vh;
+        }
+
         html, body {
             font-family: 'Poppins', sans-serif;
             height: 100%;
@@ -60,7 +66,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            min-height: 100vh; /* Fallback */
+            min-height: calc(var(--vh, 1vh) * 100); /* Sử dụng biến CSS cho iOS */
         }
 
         body::before {
@@ -536,14 +543,14 @@
             }
         }
 
+        /* Responsive styles for tablets and smaller devices */
         @@media (max-width: 992px) {
             .login-container {
                 display: flex;
                 justify-content: center;
-                align-items: flex-start; /* Căn đầu trang thay vì giữa */
+                align-items: center;
                 min-height: 100vh;
-                padding: 2rem 1.5rem;
-                padding-top: 3rem; /* Thêm padding-top */
+                padding: 1.5rem;
             }
 
             .login-card {
@@ -573,6 +580,7 @@
                 padding: 2.5rem;
                 border-radius: var(--border-radius);
                 width: 100%;
+                max-width: 100%;
             }
 
             .logo-container-mobile {
@@ -596,26 +604,29 @@
             }
 
             .form-group {
-                height: 85px; /* Chiều cao cố định cho form-group trên màn hình trung bình */
+                min-height: auto;
+                margin-bottom: 1.5rem;
             }
         }
 
+        /* Responsive styles for mobile phones */
         @@media (max-width: 576px) {
             .login-container {
                 padding: 1rem;
-                padding-top: 2rem;
-                align-items: flex-start;
+                align-items: center;
+                justify-content: center;
                 height: auto;
-                min-height: 100%;
+                min-height: 100vh;
             }
 
             .login-card {
                 max-width: 100%;
                 margin: 0;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
             }
 
             .login-body {
-                padding: 1.5rem;
+                padding: 1.75rem;
                 border-radius: var(--border-radius);
                 width: 100%;
             }
@@ -646,20 +657,128 @@
             }
 
             .form-group {
-                height: 80px; /* Chiều cao cố định cho form-group trên màn hình nhỏ */
-                margin-bottom: 0.75rem;
+                min-height: auto;
+                margin-bottom: 1.25rem;
             }
 
-            body {
-                height: auto;
-                min-height: 100vh;
-                padding-bottom: 1rem;
+            .input-group {
+                margin-bottom: 0.25rem;
+            }
+
+            .form-control {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .input-group-text {
+                padding-left: 0.75rem;
+                min-width: 40px;
             }
 
             .btn-primary {
-                padding: 0.85rem 1.25rem;
-                margin-top: 0.25rem;
+                padding: 0.75rem 1.25rem;
+                margin-top: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .form-check-label, a {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* iPhone SE, 5, 5S - Width: 320px */
+        @@media only screen and (max-width: 320px) {
+            .login-body {
+                padding: 1.25rem;
+            }
+
+            .logo-container-mobile {
+                padding: 0.4rem 0.8rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .logo-container-mobile i {
+                font-size: 1.5rem;
+            }
+
+            .logo-container-mobile h2 {
+                font-size: 1.3rem;
+            }
+
+            .login-body h3 {
+                font-size: 1.3rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .form-control {
+                padding: 0.65rem 0.85rem;
+                font-size: 0.9rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .btn-primary {
+                padding: 0.65rem 1rem;
+            }
+
+            .form-check-label, a {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* iPhone X, XS, 11 Pro, 12 Mini, 13 Mini - Notch support */
+        @@media only screen and (min-width: 375px) and (max-width: 390px) and (min-height: 800px) {
+            .login-container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* iPhone 12, 12 Pro, 13, 13 Pro, 14, 14 Pro - Notch support */
+        @@media only screen and (min-width: 390px) and (max-width: 430px) and (min-height: 844px) {
+            .login-container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* iPhone 12 Pro Max, 13 Pro Max, 14 Plus, 14 Pro Max, 15, 15 Pro, 15 Pro Max, 16, 16 Pro, 16 Pro Max */
+        @@media only screen and (min-width: 428px) and (max-width: 430px) and (min-height: 926px) {
+            .login-container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* Landscape mode for all iPhones */
+        @@media only screen and (max-height: 428px) and (orientation: landscape) {
+            .login-container {
+                padding: 0.75rem;
+                min-height: auto;
+                height: auto;
+            }
+
+            .login-card {
+                margin: 0.5rem 0;
+            }
+
+            .login-body {
+                padding: 1.25rem;
+            }
+
+            .logo-container-mobile {
+                margin-bottom: 1rem;
+            }
+
+            .form-group {
                 margin-bottom: 0.75rem;
+            }
+
+            .btn-primary {
+                margin-top: 0.25rem;
+                margin-bottom: 0.5rem;
             }
         }
     </style>

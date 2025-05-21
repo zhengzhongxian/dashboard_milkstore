@@ -89,38 +89,150 @@
             box-shadow: 0 8px 16px rgba(0,0,0,0.15);
         }
 
-        /* Modal cho hình ảnh phóng to */
-        .img-modal {
-            display: none;
-            position: fixed;
-            z-index: 1050;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            overflow: auto;
+        /* Tùy chỉnh cho modal hình ảnh */
+        #imageModal .modal-dialog {
+            max-width: 100vw;
+            margin: 0;
+            height: 100vh;
+        }
+
+        #imageModal .modal-content {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            /* height: 100vh; */
+            display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
         }
 
-        .img-modal-content {
-            max-width: 80%;
-            max-height: 80vh;
-            margin: auto;
-            display: block;
+        #imageModal .modal-body {
+            padding: 0;
+        }
+
+        #imageModal .image-container {
+            position: relative;
+            overflow: hidden;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            background: rgba(0, 0, 0, 0.2);
+            max-width: 100vw;
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
         }
 
-        .img-modal-close {
-            position: absolute;
+        #imageModal .btn-close {
+            position: fixed;
             top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
+            right: 20px;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            z-index: 1060;
+        }
+
+        #imageModal .btn-close::before,
+        #imageModal .btn-close::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 24px;
+            background-color: white;
+            top: 50%;
+            left: 50%;
+            transition: all 0.3s ease;
+        }
+
+        #imageModal .btn-close::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        #imageModal .btn-close::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+        #imageModal .btn-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        #imageModal img {
+            transition: transform 0.3s ease;
+            cursor: zoom-in;
+            max-width: 400px;
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        @@media (max-width: 500px) {
+            #imageModal img {
+                max-width: 90vw;
+                max-height: 50vh;
+            }
+        }
+
+        #imageModal .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #imageModal .image-container:hover .image-overlay {
+            opacity: 1;
+        }
+
+        #imageModal .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #imageModal .image-caption {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            z-index: 1060;
+        }
+
+        /* Zoom functionality */
+        #imageModal img.zoomed {
+            transform: scale(1.5);
+            cursor: zoom-out;
+        }
+
+        /* Đảm bảo modal hiển thị đúng */
+        .modal.show {
+            display: block;
+            padding-right: 0px !important;
+        }
+
+        /* Đảm bảo modal-dialog căn giữa */
+        .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 1rem);
+            margin: 0 auto !important;
         }
 
         .no-image {
@@ -578,6 +690,40 @@
                 padding: 4px 10px;
                 font-size: 0.75rem;
             }
+
+            #imageModal .btn-close {
+                top: 15px;
+                right: 15px;
+                width: 30px;
+                height: 30px;
+            }
+
+            #imageModal .btn-close::before,
+            #imageModal .btn-close::after {
+                height: 20px;
+            }
+
+            #imageModal .image-caption {
+                bottom: 15px;
+                padding: 0.4rem 1.2rem;
+            }
+        }
+
+        /* Modal cập nhật trạng thái */
+        #updateStatusModal .modal-dialog {
+            margin-top: 2.5rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 5rem);
+        }
+
+        @@media (max-width: 576px) {
+            #updateStatusModal .modal-dialog {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                min-height: calc(100% - 2rem);
+            }
         }
     </style>
 }
@@ -884,15 +1030,33 @@
     </div>
 </div>
 
-<!-- Modal cho hình ảnh phóng to -->
-<div id="imageModal" class="img-modal">
-    <span class="img-modal-close" onclick="closeImageModal()">&times;</span>
-    <img id="modalImage" class="img-modal-content">
+<!-- Modal cho hình ảnh phóng to (sử dụng Bootstrap Modal) -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body p-0">
+                <div class="image-container">
+                    <img id="modalImage" class="img-fluid" alt="">
+                    <div class="image-overlay d-flex align-items-center justify-content-center">
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-light" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-caption">
+                    <h5 id="modalImageTitle" class="mb-0 text-white"></h5>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal cập nhật trạng thái đơn hàng -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header status-modal-header @(ViewBag.IsAdmin ? "admin-modal-header" : "")">
                 <h5 class="modal-title" id="updateStatusModalLabel">
@@ -1038,33 +1202,44 @@
 
 @section Scripts {
     <script>
-        // Mở modal hình ảnh
+        // Mở modal hình ảnh sử dụng Bootstrap Modal
         function openImageModal(imgSrc, imgAlt) {
-            var modal = document.getElementById("imageModal");
-            var modalImg = document.getElementById("modalImage");
-
-            modal.style.display = "flex";
-            modalImg.src = imgSrc;
-            modalImg.alt = imgAlt;
-
-            // Thêm sự kiện click để đóng modal khi click bên ngoài ảnh
-            modal.onclick = function(event) {
-                if (event.target === modal) {
-                    closeImageModal();
-                }
+            const modalImage = document.getElementById("modalImage");
+            const modalImageTitle = document.getElementById("modalImageTitle");
+            const imageContainer = document.querySelector('.image-container');
+            
+            // Hiển thị loading spinner
+            imageContainer.querySelector('.image-overlay').style.opacity = '1';
+            
+            // Đặt thuộc tính src và alt
+            modalImage.src = imgSrc;
+            modalImage.alt = imgAlt || '';
+            modalImageTitle.textContent = imgAlt || '';
+            
+            // Xử lý khi hình ảnh đã tải xong
+            modalImage.onload = function() {
+                imageContainer.querySelector('.image-overlay').style.opacity = '0';
             };
 
-            // Thêm sự kiện phím Escape để đóng modal
-            document.addEventListener('keydown', function(event) {
-                if (event.key === "Escape") {
-                    closeImageModal();
-                }
-            });
+            // Sử dụng Bootstrap Modal API để hiển thị modal
+            var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
         }
 
-        // Đóng modal hình ảnh
-        function closeImageModal() {
-            document.getElementById("imageModal").style.display = "none";
-        }
+        // Xử lý zoom hình ảnh
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalImage = document.getElementById("modalImage");
+            
+            modalImage.addEventListener('click', function() {
+                this.classList.toggle('zoomed');
+            });
+
+            // Xóa src và reset zoom khi modal đóng
+            document.getElementById('imageModal').addEventListener('hidden.bs.modal', function () {
+                modalImage.src = "";
+                modalImage.classList.remove('zoomed');
+                document.getElementById("modalImageTitle").textContent = "";
+            });
+        });
     </script>
 }

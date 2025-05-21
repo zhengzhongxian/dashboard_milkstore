@@ -1,6 +1,10 @@
 ﻿@model Dashboard_MilkStore.Models.Product.ProductResponse
+@inject Dashboard_MilkStore.Services.Auth.IAuthService AuthService
 @{
     ViewData["Title"] = "Quản lý Sản phẩm Sữa";
+    var token = Context.Session.GetString("Token");
+    string role = AuthService.GetRoleFromToken(token);
+    bool isAdmin = role == "d3f3c3b3-5b5b-4b4b-9b9b-7b7b7b7b7b7b"; // ID của Admin
 }
 
 <div class="container-fluid px-4">
@@ -240,6 +244,14 @@
                                                     data-product-id="@product.ProductId">
                                                 <i class="bi bi-eye"></i>
                                             </button>
+                                            @if (isAdmin)
+                                            {
+                                                <a href="@Url.Action("Index", "ProductStatistics", new { id = product.ProductId })"
+                                                   class="btn btn-sm btn-outline-success rounded-circle fireworks-btn"
+                                                   title="Xem thống kê doanh thu">
+                                                    <i class="bi bi-graph-up"></i>
+                                                </a>
+                                            }
                                         </div>
                                     </td>
                                 </tr>
@@ -786,3 +798,4 @@
 }
 
 <div id="quickViewContainer"></div>
+

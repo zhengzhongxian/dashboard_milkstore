@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Dashboard_MilkStore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+47b1479f8273725447171597f21ebafeacef498f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c450550863dab76b076fc9c22b4f1348c254d4ba")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dashboard_MilkStore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dashboard_MilkStore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
