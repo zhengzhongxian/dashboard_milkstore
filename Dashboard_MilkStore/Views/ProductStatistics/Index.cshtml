@@ -545,7 +545,7 @@
                 $('#statsError').addClass('d-none');
                 $('#statsLoading').removeClass('d-none');
                 $.ajax({
-                    url: 'https://localhost:5000/api/statistics/product-monthly-revenue/' + productId + '/' + year,
+                    url: 'https://milkstore-grbpfnduezbpgvgc.eastasia-01.azurewebsites.net/api/statistics/product-monthly-revenue/' + productId + '/' + year,
                     type: 'GET',
                     headers: {
                         'Authorization':'@Context.Session.GetString("Token")'
